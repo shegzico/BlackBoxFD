@@ -231,7 +231,7 @@ export default function RiderDashboardPage() {
     setFetchError('');
     try {
       const [activeRes, completedRes] = await Promise.all([
-        fetch(`/api/deliveries?rider_id=${riderId}&status=assigned,picked_up,in_transit`),
+        fetch(`/api/deliveries?rider_id=${riderId}&status=assigned,picked_up,in_transit&sort=priority`),
         fetch(`/api/deliveries?rider_id=${riderId}&status=delivered,confirmed`),
       ]);
 

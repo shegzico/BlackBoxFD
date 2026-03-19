@@ -5,16 +5,16 @@ import { signToken } from '@/lib/auth';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { phone, pin } = body;
+    const { username, pin } = body;
 
-    if (!phone || !pin) {
-      return NextResponse.json({ error: 'Phone and PIN are required' }, { status: 400 });
+    if (!username || !pin) {
+      return NextResponse.json({ error: 'Username and PIN are required' }, { status: 400 });
     }
 
     const { data: rider, error } = await supabase
       .from('riders')
       .select('*')
-      .eq('phone', phone)
+      .eq('username', username.toLowerCase().trim())
       .eq('pin', pin)
       .eq('is_active', true)
       .single();

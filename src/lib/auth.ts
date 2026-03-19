@@ -4,7 +4,7 @@ const JWT_SECRET = process.env.JWT_SECRET || 'blackbox-logistics-secret-key-chan
 
 export interface TokenPayload {
   id: number;
-  role: 'admin' | 'rider';
+  role: 'admin' | 'rider' | 'customer';
   name: string;
 }
 

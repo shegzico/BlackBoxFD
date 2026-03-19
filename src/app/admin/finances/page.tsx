@@ -21,9 +21,8 @@ const DATE_FILTERS: { label: string; value: DateFilter }[] = [
 ];
 
 const PAYMENT_METHOD_COLORS: Record<PaymentMethod, string> = {
-  transfer: 'bg-blue-500',
-  cash_sender: 'bg-amber-500',
-  cod: 'bg-green-500',
+  sender_pays: 'bg-blue-500',
+  receiver_pays: 'bg-amber-500',
 };
 
 function formatNaira(amount: number): string {

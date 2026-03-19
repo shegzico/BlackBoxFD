@@ -8,11 +8,20 @@ export async function GET(request: NextRequest) {
     const status = searchParams.get('status');
     const search = searchParams.get('search');
     const rider_id = searchParams.get('rider_id');
+    const sort = searchParams.get('sort');
 
     let query = supabase
       .from('deliveries')
-      .select('*, rider:riders(id, name, phone)')
-      .order('created_at', { ascending: false });
+      .select('*, rider:riders(id, name, phone)');
+
+    if (sort === 'priority') {
+      // Urgent pickups first: pickup_date ASC (nulls last), then created_at DESC
+      query = query
+        .order('pickup_date', { ascending: true, nullsFirst: false })
+        .order('created_at', { ascending: false });
+    } else {
+      query = query.order('created_at', { ascending: false });
+    }
 
     if (status) {
       const statuses = status.split(',').map(s => s.trim());
@@ -52,6 +61,7 @@ export async function POST(request: NextRequest) {
     const {
       sender_name,
       sender_phone,
+      sender_email,
       pickup_area,
       pickup_address,
       recipient_name,
@@ -96,6 +106,7 @@ export async function POST(request: NextRequest) {
         id: tracking_id,
         sender_name,
         sender_phone,
+        sender_email: sender_email || null,
         pickup_area,
         pickup_address,
         recipient_name,

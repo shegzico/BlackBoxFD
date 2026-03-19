@@ -144,8 +144,15 @@ export default function TrackDetailPage({ params }: { params: Promise<{ id: stri
         if ((err as Error).name !== 'AbortError') {
           setNotFound(true);
         }
+        // If aborted (React Strict Mode double-invoke), don't flip loading off —
+        // the second effect invocation will do a fresh fetch and manage state itself.
+        if ((err as Error).name === 'AbortError') return;
       } finally {
-        setLoading(false);
+        // Only update loading state if the request wasn't aborted mid-flight.
+        // Checking the signal here avoids a flash of "not found" in Strict Mode.
+        if (!controller.signal.aborted) {
+          setLoading(false);
+        }
       }
     }
 

@@ -1,0 +1,48 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { supabase } from '@/lib/supabase';
+import { verifyToken } from '@/lib/auth';
+
+export async function GET(request: NextRequest) {
+  try {
+    const authHeader = request.headers.get('Authorization');
+    if (!authHeader?.startsWith('Bearer ')) {
+      return NextResponse.json({ error: 'Missing authorization token' }, { status: 401 });
+    }
+
+    const token = authHeader.split(' ')[1];
+    const payload = verifyToken(token);
+    if (!payload || payload.role !== 'customer') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const { data: deliveries, error } = await supabase
+      .from('deliveries')
+      .select('status')
+      .eq('customer_id', payload.id);
+
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
+    const stats = {
+      total: deliveries.length,
+      pending: 0,
+      assigned: 0,
+      picked_up: 0,
+      in_transit: 0,
+      delivered: 0,
+      confirmed: 0,
+    };
+
+    for (const delivery of deliveries) {
+      const status = delivery.status as keyof typeof stats;
+      if (status in stats && status !== 'total') {
+        stats[status]++;
+      }
+    }
+
+    return NextResponse.json(stats);
+  } catch (err) {
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+}

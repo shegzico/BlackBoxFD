@@ -2,21 +2,21 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import Navbar from '@/components/Navbar';
+import Link from 'next/link';
 import Logo from '@/components/Logo';
 
-export default function RiderLoginPage() {
+export default function CustomerLoginPage() {
   const router = useRouter();
-  const [username, setUsername] = useState('');
-  const [pin, setPin] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const token = localStorage.getItem('rider_token');
+      const token = localStorage.getItem('customer_token');
       if (token) {
-        router.replace('/rider/dashboard');
+        router.replace('/customer/dashboard');
       }
     }
   }, [router]);
@@ -27,10 +27,10 @@ export default function RiderLoginPage() {
     setLoading(true);
 
     try {
-      const res = await fetch('/api/auth/rider', {
+      const res = await fetch('/api/auth/customer/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, pin }),
+        body: JSON.stringify({ email, password }),
       });
 
       const data = await res.json();
@@ -41,9 +41,9 @@ export default function RiderLoginPage() {
         return;
       }
 
-      localStorage.setItem('rider_token', data.token);
-      localStorage.setItem('rider_info', JSON.stringify(data.rider));
-      router.replace('/rider/dashboard');
+      localStorage.setItem('customer_token', data.token);
+      localStorage.setItem('customer_info', JSON.stringify(data.customer));
+      router.replace('/customer/dashboard');
     } catch {
       setError('Network error. Please check your connection and try again.');
       setLoading(false);
@@ -52,19 +52,17 @@ export default function RiderLoginPage() {
 
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-[#FAFAFA] flex flex-col">
-      <Navbar showBack backHref="/" title="Rider Portal" />
-
       <main className="flex-1 flex flex-col items-center justify-center px-4 py-12">
         {/* Logo */}
         <div className="mb-8 flex flex-col items-center gap-2">
           <Logo size="large" />
-          <p className="text-[#888888] text-sm tracking-widest uppercase">Rider Portal</p>
+          <p className="text-[#888888] text-sm tracking-widest uppercase">Customer Portal</p>
         </div>
 
         {/* Card */}
         <div className="w-full max-w-sm bg-[#191314] border border-[#2A2A2A] rounded-2xl p-6 shadow-xl">
-          <h1 className="text-xl font-bold text-[#FAFAFA] mb-1">Rider Sign In</h1>
-          <p className="text-[#888888] text-sm mb-6">Enter your username and PIN to continue</p>
+          <h1 className="text-xl font-bold text-[#FAFAFA] mb-1">Sign In</h1>
+          <p className="text-[#888888] text-sm mb-6">Access your BlackBox account</p>
 
           {error && (
             <div className="mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm">
@@ -72,63 +70,56 @@ export default function RiderLoginPage() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4">
             <div className="flex flex-col gap-1.5">
-              <label htmlFor="username" className="text-[#888888] text-xs font-medium uppercase tracking-wider">
-                Username
+              <label htmlFor="email" className="text-[#888888] text-xs font-medium uppercase tracking-wider">
+                Email
               </label>
               <input
-                id="username"
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder="e.g. emeka.okafor"
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="you@example.com"
                 required
-                autoComplete="username"
-                autoCapitalize="none"
+                disabled={loading}
+                autoComplete="email"
                 className="
-                  w-full bg-[#0A0A0A] border border-[#2A2A2A] rounded-lg
-                  px-4 py-3 text-[#FAFAFA] text-sm
-                  placeholder:text-[#888888]
-                  focus:outline-none focus:border-[#F2FF66] focus:ring-1 focus:ring-[#F2FF66]/30
-                  transition-colors
+                  w-full bg-[#232023] border border-gray-700 rounded-lg
+                  px-3 py-3 text-[#FAFAFA] text-sm
+                  placeholder-gray-600
+                  focus:outline-none focus:border-[#F2FF66] focus:ring-1 focus:ring-[#F2FF66]
+                  transition-colors disabled:opacity-50
                 "
               />
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <label htmlFor="pin" className="text-[#888888] text-xs font-medium uppercase tracking-wider">
-                4-Digit PIN
+              <label htmlFor="password" className="text-[#888888] text-xs font-medium uppercase tracking-wider">
+                Password
               </label>
               <input
-                id="pin"
+                id="password"
                 type="password"
-                value={pin}
-                onChange={(e) => {
-                  // Only allow up to 4 digits
-                  const val = e.target.value.replace(/\D/g, '').slice(0, 4);
-                  setPin(val);
-                }}
-                placeholder="••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
                 required
+                disabled={loading}
                 autoComplete="current-password"
-                inputMode="numeric"
-                maxLength={4}
-                pattern="\d{4}"
                 className="
-                  w-full bg-[#0A0A0A] border border-[#2A2A2A] rounded-lg
-                  px-4 py-3 text-[#FAFAFA] text-sm tracking-[0.5em]
-                  placeholder:text-[#888888] placeholder:tracking-normal
-                  focus:outline-none focus:border-[#F2FF66] focus:ring-1 focus:ring-[#F2FF66]/30
-                  transition-colors
+                  w-full bg-[#232023] border border-gray-700 rounded-lg
+                  px-3 py-3 text-[#FAFAFA] text-sm
+                  placeholder-gray-600
+                  focus:outline-none focus:border-[#F2FF66] focus:ring-1 focus:ring-[#F2FF66]
+                  transition-colors disabled:opacity-50
                 "
               />
-              <p className="text-[#666666] text-xs">Enter your 4-digit PIN assigned by admin</p>
             </div>
 
             <button
               type="submit"
-              disabled={loading || pin.length !== 4}
+              disabled={loading}
               className="
                 mt-2 w-full bg-[#F2FF66] text-[#0A0A0A] font-bold
                 py-3 rounded-lg text-sm
@@ -151,11 +142,23 @@ export default function RiderLoginPage() {
               )}
             </button>
           </form>
+
+          <div className="mt-5 text-center">
+            <p className="text-[#888888] text-sm">
+              Don&apos;t have an account?{' '}
+              <Link href="/customer/signup" className="text-[#F2FF66] hover:underline font-medium">
+                Sign up
+              </Link>
+            </p>
+          </div>
         </div>
 
-        <p className="mt-6 text-[#888888] text-xs text-center">
-          BlackBox Logistics &mdash; Riders Only
-        </p>
+        <Link
+          href="/track"
+          className="mt-6 text-[#888888] text-xs hover:text-[#F2FF66] transition-colors text-center"
+        >
+          Track a package &rarr;
+        </Link>
       </main>
     </div>
   );

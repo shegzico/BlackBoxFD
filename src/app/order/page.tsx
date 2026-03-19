@@ -1,13 +1,15 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import Navbar from '@/components/Navbar';
-import { LAGOS_ZONES, PAYMENT_LABELS, PaymentMethod } from '@/lib/types';
+import AddressInput from '@/components/AddressInput';
+import { LAGOS_ZONES, PAYMENT_LABELS, PaymentMethod, PricingEntry, isValidNigerianPhone } from '@/lib/types';
 
 interface FormData {
   sender_name: string;
   sender_phone: string;
+  sender_email: string;
   pickup_area: string;
   pickup_address: string;
   recipient_name: string;
@@ -22,6 +24,7 @@ interface FormData {
 const initialForm: FormData = {
   sender_name: '',
   sender_phone: '',
+  sender_email: '',
   pickup_area: '',
   pickup_address: '',
   recipient_name: '',
@@ -85,17 +88,56 @@ function Field({
   label,
   htmlFor,
   children,
+  optional,
 }: {
   label: string;
   htmlFor: string;
   children: React.ReactNode;
+  optional?: boolean;
 }) {
   return (
     <div className="flex flex-col gap-1.5">
       <label htmlFor={htmlFor} className="text-gray-400 text-xs font-medium">
-        {label}
+        {label}{optional && <span className="text-gray-600 ml-1">(optional)</span>}
       </label>
       {children}
+    </div>
+  );
+}
+
+function PhoneInput({
+  id,
+  name,
+  value,
+  onChange,
+  placeholder,
+  required,
+  error,
+}: {
+  id: string;
+  name: string;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  placeholder: string;
+  required?: boolean;
+  error?: string;
+}) {
+  const inputClass =
+    'w-full rounded-lg bg-[#232023] border text-[#FAFAFA] px-3 py-3 text-sm placeholder-gray-600 focus:outline-none focus:ring-1 transition-colors';
+
+  return (
+    <div>
+      <input
+        id={id}
+        name={name}
+        type="tel"
+        required={required}
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        className={`${inputClass} ${error ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : 'border-gray-700 focus:border-[#F2FF66] focus:ring-[#F2FF66]'}`}
+      />
+      {error && <p className="text-red-400 text-xs mt-1">{error}</p>}
     </div>
   );
 }
@@ -105,6 +147,38 @@ export default function OrderPage() {
   const [form, setForm] = useState<FormData>(initialForm);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [phoneErrors, setPhoneErrors] = useState<{ sender?: string; recipient?: string }>({});
+  const [pricing, setPricing] = useState<PricingEntry[]>([]);
+  const [pricingLoaded, setPricingLoaded] = useState(false);
+
+  // Fetch pricing on mount
+  useEffect(() => {
+    fetch('/api/pricing?active=true')
+      .then((r) => r.json())
+      .then((data) => {
+        setPricing(data.pricing || []);
+        setPricingLoaded(true);
+      })
+      .catch(() => setPricingLoaded(true));
+  }, []);
+
+  // Build price lookup
+  const priceMap = useMemo(() => {
+    const map: Record<string, number> = {};
+    pricing.forEach((p) => { map[p.location] = p.price; });
+    return map;
+  }, [pricing]);
+
+  // Calculate delivery fee
+  const deliveryFee = useMemo(() => {
+    if (!form.pickup_area || !form.dropoff_area) return null;
+    const pickupPrice = priceMap[form.pickup_area];
+    const dropoffPrice = priceMap[form.dropoff_area];
+    if (pickupPrice === undefined && dropoffPrice === undefined) return null;
+    // Use the higher of the two prices (longest distance determines fee)
+    const baseFee = Math.max(pickupPrice ?? 0, dropoffPrice ?? 0);
+    return form.is_express ? Math.round(baseFee * 1.5) : baseFee;
+  }, [form.pickup_area, form.dropoff_area, form.is_express, priceMap]);
 
   function handleChange(
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
@@ -118,6 +192,22 @@ export default function OrderPage() {
     } else {
       setForm((prev) => ({ ...prev, [name]: value }));
     }
+
+    // Clear phone errors on change
+    if (name === 'sender_phone') setPhoneErrors((p) => ({ ...p, sender: undefined }));
+    if (name === 'recipient_phone') setPhoneErrors((p) => ({ ...p, recipient: undefined }));
+  }
+
+  function validatePhones(): boolean {
+    const errors: { sender?: string; recipient?: string } = {};
+    if (form.sender_phone && !isValidNigerianPhone(form.sender_phone)) {
+      errors.sender = 'Enter a valid Nigerian phone (e.g. 08012345678)';
+    }
+    if (form.recipient_phone && !isValidNigerianPhone(form.recipient_phone)) {
+      errors.recipient = 'Enter a valid Nigerian phone (e.g. 08012345678)';
+    }
+    setPhoneErrors(errors);
+    return !errors.sender && !errors.recipient;
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -126,6 +216,10 @@ export default function OrderPage() {
 
     if (!form.payment_method) {
       setError('Please select a payment method.');
+      return;
+    }
+
+    if (!validatePhones()) {
       return;
     }
 
@@ -138,6 +232,7 @@ export default function OrderPage() {
         body: JSON.stringify({
           sender_name: form.sender_name,
           sender_phone: form.sender_phone,
+          sender_email: form.sender_email || undefined,
           pickup_area: form.pickup_area,
           pickup_address: form.pickup_address,
           recipient_name: form.recipient_name,
@@ -147,6 +242,7 @@ export default function OrderPage() {
           package_description: form.package_description || undefined,
           payment_method: form.payment_method,
           is_express: form.is_express,
+          fee: deliveryFee,
           created_by: 'customer',
         }),
       });
@@ -193,14 +289,24 @@ export default function OrderPage() {
               />
             </Field>
             <Field label="Phone Number *" htmlFor="sender_phone">
-              <input
+              <PhoneInput
                 id="sender_phone"
                 name="sender_phone"
-                type="tel"
-                required
                 value={form.sender_phone}
                 onChange={handleChange}
                 placeholder="e.g. 08012345678"
+                required
+                error={phoneErrors.sender}
+              />
+            </Field>
+            <Field label="Email" htmlFor="sender_email" optional>
+              <input
+                id="sender_email"
+                name="sender_email"
+                type="email"
+                value={form.sender_email}
+                onChange={handleChange}
+                placeholder="e.g. chidi@email.com"
                 className={inputClass}
               />
             </Field>
@@ -214,13 +320,12 @@ export default function OrderPage() {
               />
             </Field>
             <Field label="Pickup Address *" htmlFor="pickup_address">
-              <input
+              <AddressInput
                 id="pickup_address"
                 name="pickup_address"
-                type="text"
                 required
                 value={form.pickup_address}
-                onChange={handleChange}
+                onChange={(val) => setForm(prev => ({ ...prev, pickup_address: val }))}
                 placeholder="Street address, landmark..."
                 className={inputClass}
               />
@@ -243,15 +348,14 @@ export default function OrderPage() {
               />
             </Field>
             <Field label="Phone Number *" htmlFor="recipient_phone">
-              <input
+              <PhoneInput
                 id="recipient_phone"
                 name="recipient_phone"
-                type="tel"
-                required
                 value={form.recipient_phone}
                 onChange={handleChange}
                 placeholder="e.g. 08098765432"
-                className={inputClass}
+                required
+                error={phoneErrors.recipient}
               />
             </Field>
             <Field label="Dropoff Area *" htmlFor="dropoff_area">
@@ -264,13 +368,12 @@ export default function OrderPage() {
               />
             </Field>
             <Field label="Dropoff Address *" htmlFor="dropoff_address">
-              <input
+              <AddressInput
                 id="dropoff_address"
                 name="dropoff_address"
-                type="text"
                 required
                 value={form.dropoff_address}
-                onChange={handleChange}
+                onChange={(val) => setForm(prev => ({ ...prev, dropoff_address: val }))}
                 placeholder="Street address, landmark..."
                 className={inputClass}
               />
@@ -280,7 +383,7 @@ export default function OrderPage() {
           {/* Package & Payment */}
           <section className="bg-[#191314] rounded-xl p-5 border border-gray-800 flex flex-col gap-4">
             <SectionHeading>Package &amp; Payment</SectionHeading>
-            <Field label="Package Description (optional)" htmlFor="package_description">
+            <Field label="Package Description" htmlFor="package_description" optional>
               <textarea
                 id="package_description"
                 name="package_description"
@@ -329,6 +432,22 @@ export default function OrderPage() {
               </div>
             </label>
           </section>
+
+          {/* Delivery Cost Display */}
+          {pricingLoaded && deliveryFee !== null && (
+            <section className="bg-[#191314] rounded-xl p-5 border border-[#F2FF66]/30 flex flex-col gap-2">
+              <div className="flex items-center justify-between">
+                <span className="text-gray-400 text-sm">Delivery Fee</span>
+                <span className="text-[#F2FF66] text-2xl font-bold">
+                  ₦{deliveryFee.toLocaleString('en-NG')}
+                </span>
+              </div>
+              <div className="flex items-center justify-between text-xs text-gray-500">
+                <span>{form.pickup_area} → {form.dropoff_area}</span>
+                {form.is_express && <span className="text-amber-400">Express +50%</span>}
+              </div>
+            </section>
+          )}
 
           {/* Error */}
           {error && (

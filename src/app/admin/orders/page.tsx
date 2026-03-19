@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import StatusBadge from '@/components/StatusBadge';
+import AddressInput from '@/components/AddressInput';
 import {
   Delivery,
   DeliveryStatus,
@@ -10,7 +11,9 @@ import {
   STATUS_LABELS,
   PaymentMethod,
   PAYMENT_LABELS,
-  ALL_ZONES,
+  LAGOS_ZONES,
+  PricingEntry,
+  isValidNigerianPhone,
 } from '@/lib/types';
 
 const FILTER_TABS: { label: string; value: DeliveryStatus | 'all' }[] = [
@@ -39,6 +42,7 @@ function formatDate(dateStr: string): string {
 const EMPTY_FORM = {
   sender_name: '',
   sender_phone: '',
+  sender_email: '',
   pickup_area: '',
   pickup_address: '',
   recipient_name: '',
@@ -46,7 +50,7 @@ const EMPTY_FORM = {
   dropoff_area: '',
   dropoff_address: '',
   package_description: '',
-  payment_method: 'transfer' as PaymentMethod,
+  payment_method: 'sender_pays' as PaymentMethod,
   is_express: false,
   fee: '',
 };
@@ -72,6 +76,8 @@ export default function AdminOrdersPage() {
   const [editLoading, setEditLoading] = useState(false);
   const [editError, setEditError] = useState('');
   const [page, setPage] = useState(1);
+  const [pricing, setPricing] = useState<PricingEntry[]>([]);
+  const [phoneErrors, setPhoneErrors] = useState<{ sender?: string; recipient?: string }>({});
   const PAGE_SIZE = 20;
 
   const getToken = useCallback(() => {
@@ -111,10 +117,19 @@ export default function AdminOrdersPage() {
     }
   }, [getToken]);
 
+  const fetchPricing = useCallback(async () => {
+    try {
+      const res = await fetch('/api/pricing?active=true');
+      const data = await res.json();
+      setPricing(data.pricing || []);
+    } catch { /* silent */ }
+  }, []);
+
   useEffect(() => {
     fetchOrders();
     fetchRiders();
-  }, [fetchOrders, fetchRiders]);
+    fetchPricing();
+  }, [fetchOrders, fetchRiders, fetchPricing]);
 
   const filtered = orders.filter((o) => {
     const matchesStatus = filter === 'all' || o.status === filter;
@@ -139,10 +154,20 @@ export default function AdminOrdersPage() {
     if (!riderId) return;
     setActionLoading(`assign-${orderId}`);
     try {
+      const order = orders.find((o) => o.id === orderId);
+      const body: Record<string, unknown> = {
+        rider_id: parseInt(riderId),
+        triggered_by: 'admin',
+        note: order?.rider_id ? 'Rider reassigned by admin' : undefined,
+      };
+      // Only set status to 'assigned' if currently pending
+      if (!order || order.status === 'pending') {
+        body.status = 'assigned';
+      }
       await fetch(`/api/deliveries/${orderId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ rider_id: parseInt(riderId), triggered_by: 'admin', status: 'assigned' }),
+        body: JSON.stringify(body),
       });
       await fetchOrders();
     } finally {
@@ -161,6 +186,23 @@ export default function AdminOrdersPage() {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ fee, triggered_by: 'admin' }),
+      });
+      await fetchOrders();
+    } finally {
+      setActionLoading(null);
+    }
+  }
+
+  async function handleStatusChange(orderId: string, newStatus: DeliveryStatus) {
+    if (!window.confirm(`Change status to "${STATUS_LABELS[newStatus]}"?`)) return;
+    const token = getToken();
+    if (!token) return;
+    setActionLoading(`status-${orderId}`);
+    try {
+      await fetch(`/api/deliveries/${orderId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ status: newStatus, triggered_by: 'admin', note: 'Status changed by admin' }),
       });
       await fetchOrders();
     } finally {
@@ -189,11 +231,24 @@ export default function AdminOrdersPage() {
     e.preventDefault();
     const token = getToken();
     if (!token) return;
+
+    // Validate phones
+    const pErrors: { sender?: string; recipient?: string } = {};
+    if (createForm.sender_phone && !isValidNigerianPhone(createForm.sender_phone)) {
+      pErrors.sender = 'Enter a valid Nigerian phone (e.g. 08012345678)';
+    }
+    if (createForm.recipient_phone && !isValidNigerianPhone(createForm.recipient_phone)) {
+      pErrors.recipient = 'Enter a valid Nigerian phone (e.g. 08012345678)';
+    }
+    setPhoneErrors(pErrors);
+    if (pErrors.sender || pErrors.recipient) return;
+
     setCreateLoading(true);
     setCreateError('');
     try {
       const body = {
         ...createForm,
+        sender_email: createForm.sender_email || undefined,
         fee: createForm.fee ? parseFloat(createForm.fee) : null,
         created_by: 'admin',
       };
@@ -222,6 +277,7 @@ export default function AdminOrdersPage() {
     setEditForm({
       sender_name: order.sender_name,
       sender_phone: order.sender_phone,
+      sender_email: order.sender_email ?? '',
       pickup_area: order.pickup_area,
       pickup_address: order.pickup_address,
       recipient_name: order.recipient_name,
@@ -242,11 +298,24 @@ export default function AdminOrdersPage() {
     if (!editTarget) return;
     const token = getToken();
     if (!token) return;
+
+    // Validate phones
+    const pErrors: { sender?: string; recipient?: string } = {};
+    if (editForm.sender_phone && !isValidNigerianPhone(editForm.sender_phone)) {
+      pErrors.sender = 'Enter a valid Nigerian phone (e.g. 08012345678)';
+    }
+    if (editForm.recipient_phone && !isValidNigerianPhone(editForm.recipient_phone)) {
+      pErrors.recipient = 'Enter a valid Nigerian phone (e.g. 08012345678)';
+    }
+    setPhoneErrors(pErrors);
+    if (pErrors.sender || pErrors.recipient) return;
+
     setEditLoading(true);
     setEditError('');
     try {
       const body = {
         ...editForm,
+        sender_email: editForm.sender_email || null,
         fee: editForm.fee ? parseFloat(editForm.fee) : null,
         triggered_by: 'admin',
       };
@@ -278,6 +347,32 @@ export default function AdminOrdersPage() {
   `;
   const labelCls = 'text-[#888888] text-xs font-medium uppercase tracking-wider mb-1';
 
+  // Build price lookup from pricing data
+  const priceMap: Record<string, number> = {};
+  pricing.forEach((p) => { priceMap[p.location] = p.price; });
+
+  function calcFee(pickup: string, dropoff: string, express: boolean): number | null {
+    if (!pickup || !dropoff) return null;
+    const pickupPrice = priceMap[pickup];
+    const dropoffPrice = priceMap[dropoff];
+    if (pickupPrice === undefined && dropoffPrice === undefined) return null;
+    const baseFee = Math.max(pickupPrice ?? 0, dropoffPrice ?? 0);
+    return express ? Math.round(baseFee * 1.5) : baseFee;
+  }
+
+  function ZoneSelectAdmin({ value, onChange, required }: { value: string; onChange: (v: string) => void; required?: boolean }) {
+    return (
+      <select className={inputCls} value={value} onChange={(e) => onChange(e.target.value)} required={required}>
+        <option value="">Select area</option>
+        {(Object.entries(LAGOS_ZONES) as [string, readonly string[]][]).map(([category, zones]) => (
+          <optgroup key={category} label={category}>
+            {zones.map((z) => <option key={z} value={z}>{z}</option>)}
+          </optgroup>
+        ))}
+      </select>
+    );
+  }
+
   function OrderForm({
     form,
     setForm,
@@ -293,8 +388,25 @@ export default function AdminOrdersPage() {
     error: string;
     submitLabel: string;
   }) {
-    const update = (k: keyof typeof EMPTY_FORM, v: string | boolean) =>
-      setForm({ ...form, [k]: v });
+    const update = (k: keyof typeof EMPTY_FORM, v: string | boolean) => {
+      const next = { ...form, [k]: v };
+      // Auto-calculate fee when pickup/dropoff/express changes
+      if (k === 'pickup_area' || k === 'dropoff_area' || k === 'is_express') {
+        const autoFee = calcFee(
+          k === 'pickup_area' ? (v as string) : next.pickup_area,
+          k === 'dropoff_area' ? (v as string) : next.dropoff_area,
+          k === 'is_express' ? (v as boolean) : next.is_express,
+        );
+        if (autoFee !== null) next.fee = autoFee.toString();
+      }
+      // Clear phone errors on change
+      if (k === 'sender_phone' || k === 'recipient_phone') {
+        setPhoneErrors((p) => ({ ...p, [k === 'sender_phone' ? 'sender' : 'recipient']: undefined }));
+      }
+      setForm(next);
+    };
+
+    const calculatedFee = calcFee(form.pickup_area, form.dropoff_area, form.is_express);
 
     return (
       <form onSubmit={onSubmit} className="space-y-3">
@@ -308,20 +420,22 @@ export default function AdminOrdersPage() {
           </div>
           <div>
             <p className={labelCls}>Sender Phone</p>
-            <input className={inputCls} value={form.sender_phone} onChange={(e) => update('sender_phone', e.target.value)} required placeholder="08012345678" />
+            <input className={inputCls} type="tel" value={form.sender_phone} onChange={(e) => update('sender_phone', e.target.value)} required placeholder="08012345678" />
+            {phoneErrors.sender && <p className="text-red-400 text-xs mt-1">{phoneErrors.sender}</p>}
           </div>
+        </div>
+        <div>
+          <p className={labelCls}>Sender Email <span className="text-[#555] normal-case">(optional)</span></p>
+          <input className={inputCls} type="email" value={form.sender_email} onChange={(e) => update('sender_email', e.target.value)} placeholder="john@email.com" />
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div>
             <p className={labelCls}>Pickup Area</p>
-            <select className={inputCls} value={form.pickup_area} onChange={(e) => update('pickup_area', e.target.value)} required>
-              <option value="">Select area</option>
-              {ALL_ZONES.map((z) => <option key={z} value={z}>{z}</option>)}
-            </select>
+            <ZoneSelectAdmin value={form.pickup_area} onChange={(v) => update('pickup_area', v)} required />
           </div>
           <div>
             <p className={labelCls}>Pickup Address</p>
-            <input className={inputCls} value={form.pickup_address} onChange={(e) => update('pickup_address', e.target.value)} required placeholder="12 Main St" />
+            <AddressInput className={inputCls} value={form.pickup_address} onChange={(val) => update('pickup_address', val)} required placeholder="12 Main St" />
           </div>
         </div>
         <div className="grid grid-cols-2 gap-3">
@@ -331,20 +445,18 @@ export default function AdminOrdersPage() {
           </div>
           <div>
             <p className={labelCls}>Recipient Phone</p>
-            <input className={inputCls} value={form.recipient_phone} onChange={(e) => update('recipient_phone', e.target.value)} required placeholder="08098765432" />
+            <input className={inputCls} type="tel" value={form.recipient_phone} onChange={(e) => update('recipient_phone', e.target.value)} required placeholder="08098765432" />
+            {phoneErrors.recipient && <p className="text-red-400 text-xs mt-1">{phoneErrors.recipient}</p>}
           </div>
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div>
             <p className={labelCls}>Dropoff Area</p>
-            <select className={inputCls} value={form.dropoff_area} onChange={(e) => update('dropoff_area', e.target.value)} required>
-              <option value="">Select area</option>
-              {ALL_ZONES.map((z) => <option key={z} value={z}>{z}</option>)}
-            </select>
+            <ZoneSelectAdmin value={form.dropoff_area} onChange={(v) => update('dropoff_area', v)} required />
           </div>
           <div>
             <p className={labelCls}>Dropoff Address</p>
-            <input className={inputCls} value={form.dropoff_address} onChange={(e) => update('dropoff_address', e.target.value)} required placeholder="45 Ocean Dr" />
+            <AddressInput className={inputCls} value={form.dropoff_address} onChange={(val) => update('dropoff_address', val)} required placeholder="45 Ocean Dr" />
           </div>
         </div>
         <div>
@@ -362,9 +474,18 @@ export default function AdminOrdersPage() {
           </div>
           <div>
             <p className={labelCls}>Fee (₦)</p>
-            <input className={inputCls} type="number" value={form.fee} onChange={(e) => update('fee', e.target.value)} placeholder="0.00" min="0" />
+            <input className={inputCls} type="number" value={form.fee} onChange={(e) => update('fee', e.target.value)} placeholder="Auto-calculated" min="0" />
           </div>
         </div>
+
+        {/* Delivery Cost Display */}
+        {calculatedFee !== null && (
+          <div className="p-3 bg-[#0A0A0A] border border-[#F2FF66]/30 rounded-lg flex items-center justify-between">
+            <span className="text-[#888888] text-sm">Estimated Fee</span>
+            <span className="text-[#F2FF66] text-lg font-bold">₦{calculatedFee.toLocaleString('en-NG')}</span>
+          </div>
+        )}
+
         <label className="flex items-center gap-2 cursor-pointer">
           <input
             type="checkbox"
@@ -372,7 +493,7 @@ export default function AdminOrdersPage() {
             onChange={(e) => update('is_express', e.target.checked)}
             className="w-4 h-4 accent-[#F2FF66]"
           />
-          <span className="text-[#888888] text-sm">Express delivery</span>
+          <span className="text-[#888888] text-sm">Express delivery (+50%)</span>
         </label>
         <button
           type="submit"
@@ -492,6 +613,7 @@ export default function AdminOrdersPage() {
                         <p className="text-[#888888] mb-0.5">Sender</p>
                         <p className="text-[#FAFAFA]">{order.sender_name}</p>
                         <p className="text-[#888888]">{order.sender_phone}</p>
+                        {order.sender_email && <p className="text-[#888888]">{order.sender_email}</p>}
                       </div>
                       <div>
                         <p className="text-[#888888] mb-0.5">Recipient</p>
@@ -533,26 +655,58 @@ export default function AdminOrdersPage() {
                       </div>
                     )}
 
-                    {/* Assign Rider (pending/unassigned) */}
-                    {(order.status === 'pending' || !order.rider_id) && (
-                      <div className="flex gap-2 pt-1">
+                    {/* Change Status */}
+                    <div className="pt-1">
+                      <p className="text-[#888888] text-[10px] uppercase tracking-wider mb-1.5 font-medium">Change Status</p>
+                      <div className="flex gap-2">
                         <select
                           className="flex-1 bg-[#0A0A0A] border border-[#2A2A2A] rounded-lg px-3 py-2 text-sm text-[#FAFAFA] focus:outline-none focus:border-[#F2FF66]"
-                          value={assignMap[order.id] ?? ''}
-                          onChange={(e) => setAssignMap((m) => ({ ...m, [order.id]: e.target.value }))}
+                          defaultValue=""
+                          onChange={(e) => {
+                            if (e.target.value) {
+                              handleStatusChange(order.id, e.target.value as DeliveryStatus);
+                              e.target.value = '';
+                            }
+                          }}
                         >
-                          <option value="">Assign rider...</option>
-                          {riders.map((r) => (
-                            <option key={r.id} value={r.id}>{r.name} — {r.phone}</option>
-                          ))}
+                          <option value="">Change status to…</option>
+                          {(['pending', 'assigned', 'picked_up', 'in_transit', 'delivered', 'confirmed'] as DeliveryStatus[])
+                            .filter((s) => s !== order.status)
+                            .map((s) => (
+                              <option key={s} value={s}>{STATUS_LABELS[s]}</option>
+                            ))}
                         </select>
-                        <button
-                          onClick={() => handleAssign(order.id)}
-                          disabled={!assignMap[order.id] || actionLoading === `assign-${order.id}`}
-                          className="bg-blue-500 text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-blue-600 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                          {actionLoading === `assign-${order.id}` ? '...' : 'Assign'}
-                        </button>
+                        {actionLoading === `status-${order.id}` && (
+                          <span className="text-[#888888] text-sm self-center px-2">…</span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Assign / Reassign Rider — hidden for delivered/confirmed */}
+                    {!['delivered', 'confirmed'].includes(order.status) && (
+                      <div className="pt-1">
+                        <p className="text-[#888888] text-[10px] uppercase tracking-wider mb-1.5 font-medium">
+                          {order.rider_id ? 'Reassign Rider' : 'Assign Rider'}
+                        </p>
+                        <div className="flex gap-2">
+                          <select
+                            className="flex-1 bg-[#0A0A0A] border border-[#2A2A2A] rounded-lg px-3 py-2 text-sm text-[#FAFAFA] focus:outline-none focus:border-[#F2FF66]"
+                            value={assignMap[order.id] ?? ''}
+                            onChange={(e) => setAssignMap((m) => ({ ...m, [order.id]: e.target.value }))}
+                          >
+                            <option value="">{order.rider_id ? 'Change rider...' : 'Assign rider...'}</option>
+                            {riders.filter((r) => r.id !== order.rider_id).map((r) => (
+                              <option key={r.id} value={r.id}>{r.name} — {r.phone}</option>
+                            ))}
+                          </select>
+                          <button
+                            onClick={() => handleAssign(order.id)}
+                            disabled={!assignMap[order.id] || actionLoading === `assign-${order.id}`}
+                            className="bg-blue-500 text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-blue-600 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            {actionLoading === `assign-${order.id}` ? '...' : order.rider_id ? 'Reassign' : 'Assign'}
+                          </button>
+                        </div>
                       </div>
                     )}
 

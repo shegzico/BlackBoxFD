@@ -53,7 +53,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, phone, pin } = body;
+    const { name, phone, pin, bike_plate, bike_model, bike_color, image_url } = body;
 
     if (!name || !phone || !pin) {
       return NextResponse.json({ error: 'Name, phone, and PIN are required' }, { status: 400 });
@@ -61,7 +61,16 @@ export async function POST(request: NextRequest) {
 
     const { data: rider, error } = await supabase
       .from('riders')
-      .insert({ name, phone, pin, is_active: true })
+      .insert({
+        name,
+        phone,
+        pin,
+        is_active: true,
+        bike_plate: bike_plate || null,
+        bike_model: bike_model || null,
+        bike_color: bike_color || null,
+        image_url: image_url || null,
+      })
       .select()
       .single();
 
