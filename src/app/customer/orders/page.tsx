@@ -2,9 +2,23 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import StatusBadge from '@/components/StatusBadge';
 import DeliveryOverlay from '@/components/DeliveryOverlay';
 import { Delivery, DeliveryStatus, STATUS_LABELS } from '@/lib/types';
+
+/* ---- Draft order type (from /api/orders) ---- */
+interface DraftOrder {
+  id: number;
+  order_number: string;
+  pickup_area: string;
+  pickup_address: string;
+  pickup_date: string | null;
+  delivery_count: number;
+  total_fee: number | null;
+  created_at: string;
+  updated_at: string;
+}
 
 const STATUS_FILTERS: (DeliveryStatus | 'all')[] = ['all', 'pending', 'assigned', 'in_transit', 'delivered', 'confirmed'];
 
@@ -52,28 +66,39 @@ function sortOrders(orders: Delivery[]): Delivery[] {
 }
 
 export default function CustomerOrders() {
+  const router = useRouter();
   const [allOrders, setAllOrders] = useState<Delivery[]>([]);
   const [orders, setOrders] = useState<Delivery[]>([]);
+  const [drafts, setDrafts] = useState<DraftOrder[]>([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState<DeliveryStatus | 'all'>('all');
   const [search, setSearch] = useState('');
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
   const [overlayTrackingId, setOverlayTrackingId] = useState<string | null>(null);
+  const [deletingDraft, setDeletingDraft] = useState<string | null>(null);
 
   const fetchOrders = useCallback(async () => {
     const token = localStorage.getItem('customer_token');
     if (!token) return;
 
     try {
-      const res = await fetch('/api/customer/deliveries', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      // Fetch deliveries for the orders list
+      const [deliveriesRes, ordersRes] = await Promise.all([
+        fetch('/api/customer/deliveries', { headers: { Authorization: `Bearer ${token}` } }),
+        fetch('/api/orders', { headers: { Authorization: `Bearer ${token}` } }),
+      ]);
 
-      if (res.ok) {
-        const data = await res.json();
+      if (deliveriesRes.ok) {
+        const data = await deliveriesRes.json();
         const list = Array.isArray(data) ? data : data.deliveries || [];
         setAllOrders(list);
+      }
+
+      if (ordersRes.ok) {
+        const data = await ordersRes.json();
+        const allOrdersList: DraftOrder[] = Array.isArray(data) ? data : data.orders || [];
+        setDrafts(allOrdersList.filter((o) => o.id && (o as unknown as { is_draft: boolean }).is_draft));
       }
     } catch (err) {
       console.error('Failed to fetch orders:', err);
@@ -197,6 +222,79 @@ export default function CustomerOrders() {
           )}
         </div>
       </div>
+
+      {/* Drafts Section */}
+      {drafts.length > 0 && (
+        <div className="space-y-2">
+          <div className="flex items-center gap-2">
+            <h2 className="text-sm font-semibold text-[#888888] uppercase tracking-wider">Drafts</h2>
+            <span className="text-xs bg-amber-500/20 text-amber-400 border border-amber-500/30 px-2 py-0.5 rounded-full font-medium">
+              {drafts.length}
+            </span>
+          </div>
+          <div className="space-y-2">
+            {drafts.map((draft) => (
+              <div
+                key={draft.order_number}
+                className="bg-[#191314] border border-amber-500/20 rounded-xl p-4 flex items-center gap-3"
+              >
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-0.5">
+                    <span className="font-mono text-xs text-[#F2FF66]">{draft.order_number}</span>
+                    <span className="text-[10px] bg-amber-500/20 text-amber-400 border border-amber-500/30 px-1.5 py-0.5 rounded-full font-medium">
+                      Draft
+                    </span>
+                  </div>
+                  <p className="text-sm text-[#FAFAFA] truncate">
+                    {draft.pickup_area} · {draft.delivery_count} deliver{draft.delivery_count === 1 ? 'y' : 'ies'}
+                  </p>
+                  <p className="text-xs text-[#888888] mt-0.5">
+                    {draft.pickup_date
+                      ? new Date(draft.pickup_date).toLocaleDateString('en-NG', { day: 'numeric', month: 'short' })
+                      : `Saved ${new Date(draft.updated_at || draft.created_at).toLocaleDateString('en-NG', { day: 'numeric', month: 'short' })}`}
+                    {draft.total_fee != null && ` · ₦${draft.total_fee.toLocaleString()}`}
+                  </p>
+                </div>
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <button
+                    onClick={() => router.push(`/customer/orders/create?draft=${draft.order_number}`)}
+                    className="flex items-center gap-1.5 bg-[#F2FF66] text-[#0A0A0A] text-xs font-semibold px-3 py-1.5 rounded-lg hover:bg-[#e8f55c] transition-colors active:scale-95"
+                  >
+                    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                    Edit
+                  </button>
+                  <button
+                    onClick={async () => {
+                      if (!window.confirm('Delete this draft?')) return;
+                      setDeletingDraft(draft.order_number);
+                      const token = localStorage.getItem('customer_token');
+                      try {
+                        await fetch(`/api/orders/${draft.order_number}`, {
+                          method: 'DELETE',
+                          headers: { Authorization: `Bearer ${token || ''}` },
+                        });
+                        setDrafts((prev) => prev.filter((d) => d.order_number !== draft.order_number));
+                      } finally {
+                        setDeletingDraft(null);
+                      }
+                    }}
+                    disabled={deletingDraft === draft.order_number}
+                    className="text-[#888888] hover:text-red-400 p-1.5 rounded-lg hover:bg-red-500/10 transition-colors disabled:opacity-50"
+                    title="Delete draft"
+                  >
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="border-t border-[#2A2A2A] pt-2" />
+        </div>
+      )}
 
       {/* Status Filter Tabs */}
       <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0">

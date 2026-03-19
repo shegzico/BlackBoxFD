@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import AddressInput from '@/components/AddressInput';
 import {
@@ -203,6 +203,7 @@ interface EstimateSummaryProps {
   onSaveDraft: () => void;
   placing: boolean;
   savingDraft: boolean;
+  draftOrderNumber?: string | null;
 }
 
 function EstimateSummary({
@@ -214,11 +215,15 @@ function EstimateSummary({
   onSaveDraft,
   placing,
   savingDraft,
+  draftOrderNumber,
 }: EstimateSummaryProps) {
   const displayDeliveries = isMulti ? deliveries : [deliveries[0]];
+  const subtotal = estimates.total;
+  const vat = subtotal * 0.075;
+  const total = subtotal + vat;
 
   return (
-    <div className="rounded-xl border border-[#2A2A2A] bg-[#191314] p-5 flex flex-col gap-5">
+    <div className="rounded-xl border border-[#2A2A2A] bg-[#191314] p-5 flex flex-col gap-4 max-h-[calc(100vh-6rem)] overflow-y-auto sticky top-6">
       <h3 className="text-[#FAFAFA] font-semibold text-base">Estimate Summary</h3>
 
       {/* Pickup Details */}
@@ -230,31 +235,28 @@ function EstimateSummary({
 
       <div className="border-t border-[#2A2A2A]" />
 
-      {/* Delivery groups */}
+      {/* Delivery entries */}
       {displayDeliveries.map((d, idx) => {
         const fee = estimates.estimates[idx]?.fee ?? 0;
         return (
-          <div key={d._id} className="flex flex-col gap-1.5">
-            {isMulti && (
-              <p className="text-[#F2FF66] text-xs font-semibold uppercase tracking-wider mb-1">
-                Delivery {idx + 1}
+          <div key={d._id} className="flex flex-col gap-1">
+            {/* Label + price on same line */}
+            <div className="flex items-center justify-between">
+              <p className="text-[#F2FF66] text-xs font-semibold uppercase tracking-wider">
+                {isMulti ? `Delivery ${idx + 1}` : 'Delivery Details'}
               </p>
-            )}
-            {!isMulti && (
-              <p className="text-[#F2FF66] text-xs font-semibold uppercase tracking-wider mb-1">
-                Delivery Details
-              </p>
-            )}
+              <p className="text-[#F2FF66] font-bold text-sm">{formatCurrency(fee)}</p>
+            </div>
             <p className="text-[#FAFAFA] font-bold text-sm">{d.recipient_name || '—'}</p>
-            <p className="text-gray-400 text-xs">{d.dropoff_address || d.dropoff_area}</p>
-            <p className="text-gray-400 text-xs">{d.recipient_phone}</p>
-            {d.package_weight && (
-              <p className="text-gray-400 text-xs">{d.package_weight} kg</p>
-            )}
+            <p className="text-gray-400 text-xs">
+              {d.dropoff_address || '—'}{d.dropoff_area ? ` · ${d.dropoff_area}` : ''}
+            </p>
+            <p className="text-gray-400 text-xs">
+              {d.recipient_phone || '—'}{d.package_weight ? ` · ${d.package_weight}kg` : ''}
+            </p>
             {d.package_description && (
-              <p className="text-gray-400 text-xs truncate max-w-xs">{d.package_description}</p>
+              <p className="text-gray-400 text-xs truncate">{d.package_description}</p>
             )}
-            <p className="text-[#F2FF66] font-bold text-lg mt-1">{formatCurrency(fee)}</p>
             {idx < displayDeliveries.length - 1 && (
               <div className="border-t border-[#2A2A2A] mt-2" />
             )}
@@ -262,36 +264,53 @@ function EstimateSummary({
         );
       })}
 
-      {/* Grand total for multi */}
-      {isMulti && displayDeliveries.length > 1 && (
-        <>
-          <div className="border-t border-[#2A2A2A]" />
-          <div className="flex items-center justify-between">
-            <p className="text-gray-400 text-sm">Grand Total</p>
-            <p className="text-[#F2FF66] font-bold text-xl">{formatCurrency(estimates.total)}</p>
-          </div>
-        </>
-      )}
-
+      {/* VAT + totals */}
       <div className="border-t border-[#2A2A2A]" />
+      <div className="flex flex-col gap-2">
+        <div className="flex items-center justify-between">
+          <p className="text-gray-400 text-sm">Subtotal</p>
+          <p className="text-[#FAFAFA] text-sm">{formatCurrency(subtotal)}</p>
+        </div>
+        <div className="flex items-center justify-between">
+          <p className="text-gray-500 text-xs">VAT included</p>
+          <p className="text-[#F2FF66] text-xs font-medium">+ 7.5%</p>
+        </div>
+      </div>
+      <div className="border-t border-[#2A2A2A]" />
+      <div className="flex items-center justify-between">
+        <p className="text-[#FAFAFA] font-bold text-base">Total</p>
+        <p className="text-[#F2FF66] font-bold text-xl">{formatCurrency(total)}</p>
+      </div>
 
-      {/* Action buttons */}
-      <div className="flex flex-col gap-3">
-        <button
-          type="button"
-          onClick={onPlaceOrder}
-          disabled={placing || savingDraft}
-          className="w-full py-3.5 rounded-xl font-bold text-sm bg-[#F2FF66] text-[#0A0A0A] hover:bg-[#e8f550] transition-colors disabled:opacity-60"
-        >
-          {placing ? 'Placing Order…' : 'Place Order'}
-        </button>
+      {/* Disclaimer */}
+      <p className="text-gray-600 text-xs leading-relaxed">
+        Disclaimer: The price is subject to adjustment based on the item&apos;s final weight.
+        <br /><br />
+        By clicking &quot;Place Order&quot;, you agree to our{' '}
+        <span className="text-[#F2FF66] cursor-pointer">Terms and Conditions</span>.
+      </p>
+
+      {/* Action buttons side by side */}
+      <div className="flex gap-3">
         <button
           type="button"
           onClick={onSaveDraft}
           disabled={placing || savingDraft}
-          className="w-full py-3 rounded-xl font-semibold text-sm border border-[#2A2A2A] text-[#FAFAFA] hover:border-[#888888] transition-colors disabled:opacity-60"
+          className="flex-1 py-3 rounded-xl font-semibold text-sm border border-[#2A2A2A] text-[#888888] hover:border-[#F2FF66] transition-colors disabled:opacity-60"
         >
           {savingDraft ? 'Saving…' : 'Save as Draft'}
+        </button>
+        <button
+          type="button"
+          onClick={onPlaceOrder}
+          disabled={placing || savingDraft}
+          className="flex-1 py-3 rounded-xl font-bold text-sm bg-[#F2FF66] text-[#0A0A0A] hover:bg-[#e8f550] transition-colors disabled:opacity-60"
+        >
+          {placing
+            ? 'Placing…'
+            : draftOrderNumber
+            ? 'Confirm Order'
+            : 'Place Order'}
         </button>
       </div>
     </div>
@@ -328,127 +347,370 @@ function EstimatePlaceholder() {
 }
 
 /* ------------------------------------------------------------------ */
-/*  CSV Bulk Upload Preview                                             */
+/*  Compact Delivery Card                                               */
 /* ------------------------------------------------------------------ */
 
-interface CsvPreviewTableProps {
+interface CompactDeliveryCardProps {
+  delivery: DeliveryItem;
+  index: number;
+  total: number;
+  isEditing: boolean;
+  onEdit: () => void;
+  onRemove: () => void;
+  onChange: (field: keyof DeliveryItem, value: string) => void;
+}
+
+function CompactDeliveryCard({
+  delivery,
+  index,
+  total,
+  isEditing,
+  onEdit,
+  onRemove,
+  onChange,
+}: CompactDeliveryCardProps) {
+  if (isEditing) {
+    return (
+      <div className="rounded-xl border border-[#F2FF66]/40 bg-[#191314] p-5 flex flex-col gap-4">
+        <div className="flex items-center justify-between">
+          <SectionHeading>Delivery {index + 1}</SectionHeading>
+          <button
+            type="button"
+            onClick={onEdit}
+            className="px-3 py-1.5 rounded-lg text-xs border border-[#2A2A2A] text-gray-400 hover:text-[#F2FF66] hover:border-[#F2FF66] transition-colors"
+          >
+            Done
+          </button>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <Field label="Recipient Name" htmlFor={`r_name_${delivery._id}`}>
+            <input
+              id={`r_name_${delivery._id}`}
+              type="text"
+              value={delivery.recipient_name}
+              onChange={(e) => onChange('recipient_name', e.target.value)}
+              className={inputClass}
+              placeholder="Full name"
+            />
+          </Field>
+
+          <Field label="Recipient Phone" htmlFor={`r_phone_${delivery._id}`}>
+            <input
+              id={`r_phone_${delivery._id}`}
+              type="tel"
+              value={delivery.recipient_phone}
+              onChange={(e) => onChange('recipient_phone', e.target.value)}
+              className={inputClass}
+              placeholder="08012345678"
+            />
+          </Field>
+
+          <Field label="Recipient Email" htmlFor={`r_email_${delivery._id}`} optional>
+            <input
+              id={`r_email_${delivery._id}`}
+              type="email"
+              value={delivery.recipient_email}
+              onChange={(e) => onChange('recipient_email', e.target.value)}
+              className={inputClass}
+              placeholder="email@example.com"
+            />
+          </Field>
+
+          <Field label="Dropoff Area" htmlFor={`r_area_${delivery._id}`}>
+            <ZoneSelect
+              id={`r_area_${delivery._id}`}
+              value={delivery.dropoff_area}
+              onChange={(v) => onChange('dropoff_area', v)}
+            />
+          </Field>
+
+          <Field label="Dropoff Address" htmlFor={`r_addr_${delivery._id}`}>
+            <AddressInput
+              id={`r_addr_${delivery._id}`}
+              value={delivery.dropoff_address}
+              onChange={(v) => onChange('dropoff_address', v)}
+              placeholder="Street address or landmark"
+            />
+          </Field>
+
+          <Field label="Package Weight (kg)" htmlFor={`r_weight_${delivery._id}`}>
+            <input
+              id={`r_weight_${delivery._id}`}
+              type="number"
+              min="0.1"
+              step="0.1"
+              value={delivery.package_weight}
+              onChange={(e) => onChange('package_weight', e.target.value)}
+              className={inputClass}
+              placeholder="e.g. 1.5"
+            />
+          </Field>
+
+          <div className="sm:col-span-2">
+            <Field label="Package Description" htmlFor={`r_desc_${delivery._id}`}>
+              <input
+                id={`r_desc_${delivery._id}`}
+                type="text"
+                value={delivery.package_description}
+                onChange={(e) => onChange('package_description', e.target.value)}
+                className={inputClass}
+                placeholder="₦25,000 – Sneakers – Yes Insurance – Apt 2B"
+              />
+              <p className="text-gray-600 text-xs mt-1">
+                Format: Item value, description, insurance request, delivery instructions
+              </p>
+            </Field>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="rounded-xl border border-[#2A2A2A] bg-[#191314] px-4 py-3 flex items-center justify-between gap-3">
+      <div className="flex flex-col gap-0.5 min-w-0">
+        <p className="text-[#FAFAFA] font-bold text-sm truncate">
+          {delivery.recipient_name || <span className="text-gray-600">Unnamed Recipient</span>}
+        </p>
+        <p className="text-gray-500 text-xs truncate">
+          {delivery.dropoff_area || '—'} → {delivery.dropoff_address || '—'}
+        </p>
+        <p className="text-gray-500 text-xs">
+          {delivery.recipient_phone || '—'}
+          {delivery.package_weight ? ` · ${delivery.package_weight}kg` : ''}
+        </p>
+      </div>
+      <div className="flex items-center gap-2 flex-shrink-0">
+        {/* Edit button */}
+        <button
+          type="button"
+          onClick={onEdit}
+          title="Edit"
+          className="p-1.5 rounded-lg text-gray-500 hover:text-[#F2FF66] hover:bg-[#F2FF66]/10 transition-colors"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536M9 13l6.586-6.586a2 2 0 112.828 2.828L11.828 15.828a2 2 0 01-1.414.586H9v-2a2 2 0 01.586-1.414z" />
+          </svg>
+        </button>
+        {/* Remove button */}
+        {total > 1 && (
+          <button
+            type="button"
+            onClick={onRemove}
+            title="Remove"
+            className="p-1.5 rounded-lg text-gray-500 hover:text-red-400 hover:bg-red-400/10 transition-colors"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Drag & Drop Bulk Upload Zone                                        */
+/* ------------------------------------------------------------------ */
+
+interface BulkUploadZoneProps {
+  onFile: (file: File) => void;
+  onDownloadTemplate: () => void;
+}
+
+function BulkUploadZone({ onFile, onDownloadTemplate }: BulkUploadZoneProps) {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
+
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = () => {
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) onFile(file);
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) onFile(file);
+    e.target.value = '';
+  };
+
+  return (
+    <div className="flex flex-col gap-3">
+      <div
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+        onClick={() => fileInputRef.current?.click()}
+        className={`rounded-xl border-2 border-dashed cursor-pointer transition-colors flex flex-col items-center justify-center gap-2 py-10 px-6 text-center ${
+          isDragging
+            ? 'border-[#F2FF66] bg-[#F2FF66]/5'
+            : 'border-[#2A2A2A] bg-[#191314] hover:border-gray-600'
+        }`}
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" className={`w-8 h-8 ${isDragging ? 'text-[#F2FF66]' : 'text-gray-600'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+        </svg>
+        <p className="text-gray-400 text-sm">Drag &amp; drop your CSV or XLS file here</p>
+        <p className="text-[#F2FF66] text-xs font-medium">or browse files</p>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept=".csv,.xlsx,.xls"
+          className="hidden"
+          onChange={handleChange}
+        />
+      </div>
+      <button
+        type="button"
+        onClick={onDownloadTemplate}
+        className="self-start px-4 py-2 rounded-lg border border-[#2A2A2A] text-xs text-gray-400 hover:text-[#F2FF66] hover:border-[#F2FF66] transition-colors"
+      >
+        Download CSV Template
+      </button>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Bulk Preview Cards (after parse)                                   */
+/* ------------------------------------------------------------------ */
+
+interface BulkPreviewCardsProps {
   rows: CsvPreviewRow[];
+  editingId: string | null;
+  onSetEditing: (id: string | null) => void;
   onUpdateRow: (id: string, field: keyof CsvPreviewRow, value: string) => void;
   onDeleteRow: (id: string) => void;
   onConfirm: () => void;
   onCancel: () => void;
 }
 
-function CsvPreviewTable({
+function BulkPreviewCards({
   rows,
+  editingId,
+  onSetEditing,
   onUpdateRow,
   onDeleteRow,
   onConfirm,
   onCancel,
-}: CsvPreviewTableProps) {
+}: BulkPreviewCardsProps) {
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-3">
       <div className="flex items-center justify-between">
         <p className="text-[#FAFAFA] font-semibold text-sm">
-          CSV Preview — {rows.length} row{rows.length !== 1 ? 's' : ''}
+          Preview — {rows.length} row{rows.length !== 1 ? 's' : ''}
         </p>
-        <div className="flex gap-2">
-          <button
-            type="button"
-            onClick={onCancel}
-            className="px-3 py-1.5 rounded-lg text-xs border border-[#2A2A2A] text-gray-400 hover:text-[#FAFAFA] transition-colors"
-          >
-            Cancel
-          </button>
-          <button
-            type="button"
-            onClick={onConfirm}
-            className="px-3 py-1.5 rounded-lg text-xs bg-[#F2FF66] text-[#0A0A0A] font-semibold hover:bg-[#e8f550] transition-colors"
-          >
-            Confirm Import
-          </button>
-        </div>
+        <button
+          type="button"
+          onClick={onCancel}
+          className="px-3 py-1.5 rounded-lg text-xs border border-[#2A2A2A] text-gray-400 hover:text-[#FAFAFA] transition-colors"
+        >
+          Cancel
+        </button>
       </div>
 
-      <div className="overflow-x-auto rounded-lg border border-[#2A2A2A]">
-        <table className="w-full text-xs">
-          <thead>
-            <tr className="border-b border-[#2A2A2A] bg-[#111]">
-              {['Recipient Name', 'Phone', 'Area', 'Address', 'Description', 'Weight (kg)', ''].map(
-                (h) => (
-                  <th key={h} className="px-3 py-2 text-left text-gray-500 font-medium whitespace-nowrap">
-                    {h}
-                  </th>
-                )
-              )}
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((row) => (
-              <tr key={row._id} className="border-b border-[#1a1a1a] hover:bg-[#1a1a1a]">
-                <td className="px-2 py-1.5">
-                  <input
-                    type="text"
-                    value={row.recipient_name}
-                    onChange={(e) => onUpdateRow(row._id, 'recipient_name', e.target.value)}
-                    className="w-32 bg-transparent border-b border-gray-700 text-[#FAFAFA] text-xs py-0.5 focus:outline-none focus:border-[#F2FF66]"
-                  />
-                </td>
-                <td className="px-2 py-1.5">
-                  <input
-                    type="text"
-                    value={row.recipient_phone}
-                    onChange={(e) => onUpdateRow(row._id, 'recipient_phone', e.target.value)}
-                    className="w-28 bg-transparent border-b border-gray-700 text-[#FAFAFA] text-xs py-0.5 focus:outline-none focus:border-[#F2FF66]"
-                  />
-                </td>
-                <td className="px-2 py-1.5">
-                  <input
-                    type="text"
-                    value={row.dropoff_area}
-                    onChange={(e) => onUpdateRow(row._id, 'dropoff_area', e.target.value)}
-                    className="w-28 bg-transparent border-b border-gray-700 text-[#FAFAFA] text-xs py-0.5 focus:outline-none focus:border-[#F2FF66]"
-                  />
-                </td>
-                <td className="px-2 py-1.5">
-                  <input
-                    type="text"
-                    value={row.dropoff_address}
-                    onChange={(e) => onUpdateRow(row._id, 'dropoff_address', e.target.value)}
-                    className="w-40 bg-transparent border-b border-gray-700 text-[#FAFAFA] text-xs py-0.5 focus:outline-none focus:border-[#F2FF66]"
-                  />
-                </td>
-                <td className="px-2 py-1.5">
-                  <input
-                    type="text"
-                    value={row.package_description}
-                    onChange={(e) => onUpdateRow(row._id, 'package_description', e.target.value)}
-                    className="w-40 bg-transparent border-b border-gray-700 text-[#FAFAFA] text-xs py-0.5 focus:outline-none focus:border-[#F2FF66]"
-                  />
-                </td>
-                <td className="px-2 py-1.5">
-                  <input
-                    type="text"
-                    value={row.package_weight}
-                    onChange={(e) => onUpdateRow(row._id, 'package_weight', e.target.value)}
-                    className="w-16 bg-transparent border-b border-gray-700 text-[#FAFAFA] text-xs py-0.5 focus:outline-none focus:border-[#F2FF66]"
-                  />
-                </td>
-                <td className="px-2 py-1.5">
+      <div className="flex flex-col gap-2">
+        {rows.map((row, idx) => {
+          if (editingId === row._id) {
+            return (
+              <div key={row._id} className="rounded-xl border border-[#F2FF66]/40 bg-[#191314] p-4 flex flex-col gap-3">
+                <div className="flex items-center justify-between mb-1">
+                  <p className="text-[#F2FF66] text-xs font-semibold uppercase tracking-wider">Row {idx + 1}</p>
                   <button
                     type="button"
-                    onClick={() => onDeleteRow(row._id)}
-                    className="text-gray-600 hover:text-red-400 transition-colors"
-                    title="Remove row"
+                    onClick={() => onSetEditing(null)}
+                    className="px-3 py-1 rounded-lg text-xs border border-[#2A2A2A] text-gray-400 hover:text-[#F2FF66] hover:border-[#F2FF66] transition-colors"
                   >
-                    ✕
+                    Done
                   </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {(
+                    [
+                      ['recipient_name', 'Recipient Name', 'text'],
+                      ['recipient_phone', 'Phone', 'tel'],
+                      ['recipient_email', 'Email (optional)', 'email'],
+                      ['dropoff_area', 'Dropoff Area', 'text'],
+                      ['dropoff_address', 'Dropoff Address', 'text'],
+                      ['package_weight', 'Weight (kg)', 'number'],
+                      ['package_description', 'Description', 'text'],
+                    ] as [keyof CsvPreviewRow, string, string][]
+                  ).map(([field, label, type]) => (
+                    <Field key={field} label={label} htmlFor={`bulk_${row._id}_${field}`}>
+                      <input
+                        id={`bulk_${row._id}_${field}`}
+                        type={type}
+                        value={row[field] as string}
+                        onChange={(e) => onUpdateRow(row._id, field, e.target.value)}
+                        className={inputClass}
+                      />
+                    </Field>
+                  ))}
+                </div>
+              </div>
+            );
+          }
+
+          return (
+            <div key={row._id} className="rounded-xl border border-[#2A2A2A] bg-[#191314] px-4 py-3 flex items-center justify-between gap-3">
+              <div className="flex flex-col gap-0.5 min-w-0">
+                <p className="text-[#FAFAFA] font-bold text-sm truncate">
+                  {row.recipient_name || <span className="text-gray-600">Unnamed</span>}
+                </p>
+                <p className="text-gray-500 text-xs truncate">
+                  {row.dropoff_area || '—'} → {row.dropoff_address || '—'}
+                </p>
+                <p className="text-gray-500 text-xs">
+                  {row.recipient_phone || '—'}
+                  {row.package_weight ? ` · ${row.package_weight}kg` : ''}
+                </p>
+              </div>
+              <div className="flex items-center gap-2 flex-shrink-0">
+                <button
+                  type="button"
+                  onClick={() => onSetEditing(row._id)}
+                  title="Edit"
+                  className="p-1.5 rounded-lg text-gray-500 hover:text-[#F2FF66] hover:bg-[#F2FF66]/10 transition-colors"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536M9 13l6.586-6.586a2 2 0 112.828 2.828L11.828 15.828a2 2 0 01-1.414.586H9v-2a2 2 0 01.586-1.414z" />
+                  </svg>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onDeleteRow(row._id)}
+                  title="Remove"
+                  className="p-1.5 rounded-lg text-gray-500 hover:text-red-400 hover:bg-red-400/10 transition-colors"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          );
+        })}
       </div>
+
+      <button
+        type="button"
+        onClick={onConfirm}
+        className="w-full py-3 rounded-xl bg-[#F2FF66] text-[#0A0A0A] font-semibold text-sm hover:bg-[#e8f550] transition-colors"
+      >
+        Confirm Import ({rows.length} deliveries)
+      </button>
     </div>
   );
 }
@@ -663,145 +925,13 @@ function SingleDeliveryForm({ delivery, onChange }: SingleDeliveryFormProps) {
 }
 
 /* ------------------------------------------------------------------ */
-/*  Multi Delivery Block                                                */
-/* ------------------------------------------------------------------ */
-
-interface MultiDeliveryBlockProps {
-  delivery: DeliveryItem;
-  index: number;
-  total: number;
-  onChange: (field: keyof DeliveryItem, value: string) => void;
-  onRemove: () => void;
-  onDuplicate: () => void;
-}
-
-function MultiDeliveryBlock({
-  delivery,
-  index,
-  total,
-  onChange,
-  onRemove,
-  onDuplicate,
-}: MultiDeliveryBlockProps) {
-  return (
-    <div className="rounded-xl border border-[#2A2A2A] bg-[#191314] p-5 flex flex-col gap-4">
-      <div className="flex items-center justify-between">
-        <SectionHeading>Delivery {index + 1}</SectionHeading>
-        <div className="flex gap-2">
-          <button
-            type="button"
-            onClick={onDuplicate}
-            className="px-3 py-1.5 rounded-lg text-xs border border-[#2A2A2A] text-gray-400 hover:text-[#F2FF66] hover:border-[#F2FF66] transition-colors"
-          >
-            Duplicate
-          </button>
-          {total > 1 && (
-            <button
-              type="button"
-              onClick={onRemove}
-              className="px-3 py-1.5 rounded-lg text-xs border border-red-900 text-red-400 hover:bg-red-900/20 transition-colors"
-            >
-              Remove
-            </button>
-          )}
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <Field label="Recipient Name" htmlFor={`r_name_${delivery._id}`}>
-          <input
-            id={`r_name_${delivery._id}`}
-            type="text"
-            value={delivery.recipient_name}
-            onChange={(e) => onChange('recipient_name', e.target.value)}
-            className={inputClass}
-            placeholder="Full name"
-            required
-          />
-        </Field>
-
-        <Field label="Recipient Phone" htmlFor={`r_phone_${delivery._id}`}>
-          <input
-            id={`r_phone_${delivery._id}`}
-            type="tel"
-            value={delivery.recipient_phone}
-            onChange={(e) => onChange('recipient_phone', e.target.value)}
-            className={inputClass}
-            placeholder="08012345678"
-            required
-          />
-        </Field>
-
-        <Field label="Recipient Email" htmlFor={`r_email_${delivery._id}`} optional>
-          <input
-            id={`r_email_${delivery._id}`}
-            type="email"
-            value={delivery.recipient_email}
-            onChange={(e) => onChange('recipient_email', e.target.value)}
-            className={inputClass}
-            placeholder="email@example.com"
-          />
-        </Field>
-
-        <Field label="Dropoff Area" htmlFor={`r_area_${delivery._id}`}>
-          <ZoneSelect
-            id={`r_area_${delivery._id}`}
-            value={delivery.dropoff_area}
-            onChange={(v) => onChange('dropoff_area', v)}
-          />
-        </Field>
-
-        <Field label="Dropoff Address" htmlFor={`r_addr_${delivery._id}`}>
-          <AddressInput
-            id={`r_addr_${delivery._id}`}
-            value={delivery.dropoff_address}
-            onChange={(v) => onChange('dropoff_address', v)}
-            placeholder="Street address or landmark"
-          />
-        </Field>
-
-        <Field label="Package Weight (kg)" htmlFor={`r_weight_${delivery._id}`}>
-          <input
-            id={`r_weight_${delivery._id}`}
-            type="number"
-            min="0.1"
-            step="0.1"
-            value={delivery.package_weight}
-            onChange={(e) => onChange('package_weight', e.target.value)}
-            className={inputClass}
-            placeholder="e.g. 1.5"
-            required
-          />
-        </Field>
-
-        <div className="sm:col-span-2">
-          <Field label="Package Description" htmlFor={`r_desc_${delivery._id}`}>
-            <input
-              id={`r_desc_${delivery._id}`}
-              type="text"
-              value={delivery.package_description}
-              onChange={(e) => onChange('package_description', e.target.value)}
-              className={inputClass}
-              placeholder="₦25,000 – Sneakers – Yes Insurance – Apt 2B"
-            />
-            <p className="text-gray-600 text-xs mt-1">
-              Format: Item value, description, insurance request, delivery instructions
-              <br />
-              Example: ₦25,000 – Sneakers – Yes Insurance – Apt 2B
-            </p>
-          </Field>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/* ------------------------------------------------------------------ */
 /*  Main Page                                                           */
 /* ------------------------------------------------------------------ */
 
 export default function CreateOrderPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const draftParam = searchParams.get('draft');
 
   // --- Global shared state ---
   const [activeTab, setActiveTab] = useState<'single' | 'multi'>('single');
@@ -820,13 +950,24 @@ export default function CreateOrderPage() {
   const [placing, setPlacing] = useState(false);
   const [savingDraft, setSavingDraft] = useState(false);
 
+  // Draft order state
+  const [draftOrderId, setDraftOrderId] = useState<number | null>(null);
+  const [draftOrderNumber, setDraftOrderNumber] = useState<string | null>(null);
+  const [loadingDraft, setLoadingDraft] = useState(false);
+
   // Error / status
   const [error, setError] = useState('');
   const [estimating, setEstimating] = useState(false);
 
-  // CSV upload state
+  // Multi-input mode toggle
+  const [multiInputMode, setMultiInputMode] = useState<'manual' | 'bulk'>('manual');
+
+  // Per-item editing state
+  const [editingId, setEditingId] = useState<string | null>(null);
+
+  // CSV bulk preview state
   const [csvPreview, setCsvPreview] = useState<CsvPreviewRow[] | null>(null);
-  const csvInputRef = useRef<HTMLInputElement>(null);
+  const [bulkEditingId, setBulkEditingId] = useState<string | null>(null);
 
   /* ---- Auto-fill from profile ---- */
   useEffect(() => {
@@ -848,6 +989,64 @@ export default function CreateOrderPage() {
       }
     })();
   }, []);
+
+  /* ---- Load draft order if ?draft=ORD-XXXXXX ---- */
+  useEffect(() => {
+    if (!draftParam) return;
+    setLoadingDraft(true);
+    (async () => {
+      try {
+        const res = await fetch(`/api/orders/${encodeURIComponent(draftParam)}`, {
+          headers: authHeaders(),
+        });
+        if (!res.ok) {
+          setError('Could not load draft order.');
+          return;
+        }
+        const data = await res.json();
+        const order = data.order;
+        if (!order) return;
+
+        setDraftOrderId(order.id);
+        setDraftOrderNumber(order.order_number);
+
+        // Pre-fill pickup
+        setPickup({
+          sender_name: order.sender_name ?? '',
+          sender_phone: order.sender_phone ?? '',
+          pickup_area: order.pickup_area ?? '',
+          pickup_address: order.pickup_address ?? '',
+          pickup_date: order.pickup_date ?? todayString(),
+          payment_method: (order.payment_method as PaymentMethod) ?? 'sender_pays',
+          is_express: order.is_express ?? false,
+        });
+
+        // Pre-fill deliveries
+        const draftDeliveries: DeliveryItem[] = (order.deliveries ?? []).map(
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (d: any) => ({
+            _id: generateId(),
+            recipient_name: d.recipient_name ?? '',
+            recipient_phone: d.recipient_phone ?? '',
+            recipient_email: d.recipient_email ?? '',
+            dropoff_area: d.dropoff_area ?? '',
+            dropoff_address: d.dropoff_address ?? '',
+            package_description: d.package_description ?? '',
+            package_weight: d.package_weight?.toString() ?? '',
+          })
+        );
+        if (draftDeliveries.length > 0) {
+          setDeliveries(draftDeliveries);
+          if (draftDeliveries.length > 1) setActiveTab('multi');
+        }
+      } catch {
+        setError('Failed to load draft order.');
+      } finally {
+        setLoadingDraft(false);
+      }
+    })();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [draftParam]);
 
   /* ---- Pickup field handler ---- */
   const handlePickupChange = useCallback(
@@ -871,7 +1070,9 @@ export default function CreateOrderPage() {
 
   /* ---- Add delivery ---- */
   const addDelivery = useCallback(() => {
-    setDeliveries((ds) => [...ds, emptyDelivery()]);
+    const newItem = emptyDelivery();
+    setDeliveries((ds) => [...ds, newItem]);
+    setEditingId(newItem._id);
     setHasEstimated(false);
   }, []);
 
@@ -881,21 +1082,9 @@ export default function CreateOrderPage() {
     setHasEstimated(false);
   }, []);
 
-  /* ---- Duplicate delivery ---- */
-  const duplicateDelivery = useCallback((idx: number) => {
-    setDeliveries((ds) => {
-      const copy = { ...ds[idx], _id: generateId() };
-      const next = [...ds];
-      next.splice(idx + 1, 0, copy);
-      return next;
-    });
-    setHasEstimated(false);
-  }, []);
-
   /* ---- Tab switch (never resets deliveries) ---- */
   const handleTabSwitch = useCallback((tab: 'single' | 'multi') => {
     setActiveTab(tab);
-    // ensure at least 1 delivery exists
     setDeliveries((ds) => (ds.length === 0 ? [emptyDelivery()] : ds));
   }, []);
 
@@ -974,16 +1163,34 @@ export default function CreateOrderPage() {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const deliveryPayload = items.map(({ _id: _removed, ...rest }) => rest);
 
-        const res = await fetch('/api/orders', {
-          method: 'POST',
-          headers: authHeaders(),
-          body: JSON.stringify({
-            pickup: { ...pickup },
-            deliveries: deliveryPayload,
-            is_draft: isDraft,
-            total_fee: estimates.total,
-          }),
-        });
+        let res: Response;
+
+        if (draftOrderId) {
+          // PATCH existing draft order
+          res = await fetch(`/api/orders/${draftOrderId}`, {
+            method: 'PATCH',
+            headers: authHeaders(),
+            body: JSON.stringify({
+              is_draft: isDraft,
+              status: isDraft ? 'draft' : 'pending',
+              pickup: { ...pickup },
+              deliveries: deliveryPayload,
+              total_fee: estimates.total,
+            }),
+          });
+        } else {
+          // POST new order
+          res = await fetch('/api/orders', {
+            method: 'POST',
+            headers: authHeaders(),
+            body: JSON.stringify({
+              pickup: { ...pickup },
+              deliveries: deliveryPayload,
+              is_draft: isDraft,
+              total_fee: estimates.total,
+            }),
+          });
+        }
 
         if (!res.ok) {
           const body = await res.json().catch(() => ({}));
@@ -992,7 +1199,8 @@ export default function CreateOrderPage() {
         }
 
         const data = await res.json();
-        const orderNumber: string = data.order_number ?? data.id ?? '';
+        const orderNumber: string =
+          data.order?.order_number ?? data.order_number ?? data.id ?? '';
         const count = items.length;
 
         if (isDraft) {
@@ -1009,17 +1217,17 @@ export default function CreateOrderPage() {
         setSavingDraft(false);
       }
     },
-    [estimates, pickup, deliveries, activeTab, router]
+    [estimates, pickup, deliveries, activeTab, router, draftOrderId]
   );
 
-  /* ---- CSV parse & preview ---- */
-  const handleCsvFile = useCallback((file: File) => {
+  /* ---- CSV / bulk parse ---- */
+  const handleBulkFile = useCallback((file: File) => {
     const reader = new FileReader();
     reader.onload = (e) => {
       const text = e.target?.result as string;
       const lines = text.split(/\r?\n/).filter((l) => l.trim());
       if (lines.length < 2) {
-        setError('CSV must have a header row and at least one data row.');
+        setError('File must have a header row and at least one data row.');
         return;
       }
       const headers = lines[0].split(',').map((h) => h.trim().toLowerCase());
@@ -1042,22 +1250,20 @@ export default function CreateOrderPage() {
     reader.readAsText(file);
   }, []);
 
-  const handleCsvUpdateRow = useCallback(
+  const handleBulkUpdateRow = useCallback(
     (id: string, field: keyof CsvPreviewRow, value: string) => {
       setCsvPreview((rows) =>
-        rows
-          ? rows.map((r) => (r._id === id ? { ...r, [field]: value } : r))
-          : rows
+        rows ? rows.map((r) => (r._id === id ? { ...r, [field]: value } : r)) : rows
       );
     },
     []
   );
 
-  const handleCsvDeleteRow = useCallback((id: string) => {
+  const handleBulkDeleteRow = useCallback((id: string) => {
     setCsvPreview((rows) => (rows ? rows.filter((r) => r._id !== id) : rows));
   }, []);
 
-  const handleCsvConfirm = useCallback(() => {
+  const handleBulkConfirm = useCallback(() => {
     if (!csvPreview) return;
     const newDeliveries: DeliveryItem[] = csvPreview.map((r) => ({
       _id: generateId(),
@@ -1077,9 +1283,28 @@ export default function CreateOrderPage() {
       return [...base, ...newDeliveries];
     });
     setCsvPreview(null);
+    setMultiInputMode('manual');
     setActiveTab('multi');
     setHasEstimated(false);
   }, [csvPreview]);
+
+  const handleDownloadTemplate = useCallback(async () => {
+    try {
+      const res = await fetch('/api/customer/deliveries/bulk-template', {
+        headers: authHeaders(),
+      });
+      if (!res.ok) return;
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'bulk-delivery-template.csv';
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      // silently ignore
+    }
+  }, []);
 
   /* ---- Derived values ---- */
   const isMulti = activeTab === 'multi';
@@ -1102,6 +1327,25 @@ export default function CreateOrderPage() {
       </header>
 
       <main className="max-w-6xl mx-auto px-4 py-8">
+        {/* Draft order banner */}
+        {draftOrderNumber && (
+          <div className="mb-6 rounded-xl border border-amber-600/40 bg-amber-900/20 px-4 py-3 flex items-center gap-3">
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-amber-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <p className="text-amber-300 text-sm">
+              Editing draft order <span className="font-bold">{draftOrderNumber}</span>
+            </p>
+          </div>
+        )}
+
+        {/* Loading draft spinner */}
+        {loadingDraft && (
+          <div className="mb-6 rounded-xl border border-[#2A2A2A] bg-[#191314] px-4 py-3 text-gray-400 text-sm">
+            Loading draft order…
+          </div>
+        )}
+
         {/* Tab switcher */}
         <div className="flex gap-1 p-1 bg-[#191314] border border-[#2A2A2A] rounded-xl w-fit mb-8">
           <button
@@ -1135,51 +1379,35 @@ export default function CreateOrderPage() {
             {/* Pickup section */}
             <PickupSection pickup={pickup} onChange={handlePickupChange} />
 
-            {/* CSV Bulk Upload (multi mode only) */}
-            {isMulti && !csvPreview && (
-              <div className="rounded-xl border border-dashed border-[#2A2A2A] bg-[#191314] p-5 flex flex-col gap-3">
-                <p className="text-gray-400 text-sm font-medium">Bulk Upload via CSV</p>
-                <p className="text-gray-600 text-xs">
-                  Columns: recipient_name, recipient_phone, recipient_email, dropoff_area,
-                  dropoff_address, package_description, package_weight
-                </p>
-                <div className="flex items-center gap-3">
-                  <input
-                    ref={csvInputRef}
-                    type="file"
-                    accept=".csv"
-                    className="hidden"
-                    onChange={(e) => {
-                      const f = e.target.files?.[0];
-                      if (f) handleCsvFile(f);
-                      e.target.value = '';
-                    }}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => csvInputRef.current?.click()}
-                    className="px-4 py-2 rounded-lg border border-[#2A2A2A] text-sm text-gray-400 hover:text-[#F2FF66] hover:border-[#F2FF66] transition-colors"
-                  >
-                    Upload CSV
-                  </button>
-                </div>
+            {/* Multi-delivery input mode toggle */}
+            {isMulti && (
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => setMultiInputMode('manual')}
+                  className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                    multiInputMode === 'manual'
+                      ? 'bg-[#F2FF66] text-[#0A0A0A]'
+                      : 'border border-[#2A2A2A] text-[#888888] hover:border-gray-500'
+                  }`}
+                >
+                  Enter Manually
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setMultiInputMode('bulk')}
+                  className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                    multiInputMode === 'bulk'
+                      ? 'bg-[#F2FF66] text-[#0A0A0A]'
+                      : 'border border-[#2A2A2A] text-[#888888] hover:border-gray-500'
+                  }`}
+                >
+                  Bulk Upload
+                </button>
               </div>
             )}
 
-            {/* CSV Preview Table */}
-            {isMulti && csvPreview && (
-              <div className="rounded-xl border border-[#2A2A2A] bg-[#191314] p-5">
-                <CsvPreviewTable
-                  rows={csvPreview}
-                  onUpdateRow={handleCsvUpdateRow}
-                  onDeleteRow={handleCsvDeleteRow}
-                  onConfirm={handleCsvConfirm}
-                  onCancel={() => setCsvPreview(null)}
-                />
-              </div>
-            )}
-
-            {/* Delivery forms */}
+            {/* Single delivery form */}
             {!isMulti && (
               <SingleDeliveryForm
                 delivery={deliveries[0]}
@@ -1187,17 +1415,19 @@ export default function CreateOrderPage() {
               />
             )}
 
-            {isMulti && (
-              <div className="flex flex-col gap-4">
+            {/* Multi mode: manual list */}
+            {isMulti && multiInputMode === 'manual' && (
+              <div className="flex flex-col gap-3">
                 {deliveries.map((d, idx) => (
-                  <MultiDeliveryBlock
+                  <CompactDeliveryCard
                     key={d._id}
                     delivery={d}
                     index={idx}
                     total={deliveries.length}
-                    onChange={(field, value) => handleDeliveryChange(idx, field, value)}
+                    isEditing={editingId === d._id}
+                    onEdit={() => setEditingId(editingId === d._id ? null : d._id)}
                     onRemove={() => removeDelivery(idx)}
-                    onDuplicate={() => duplicateDelivery(idx)}
+                    onChange={(field, value) => handleDeliveryChange(idx, field, value)}
                   />
                 ))}
 
@@ -1208,6 +1438,30 @@ export default function CreateOrderPage() {
                 >
                   + Add Another Delivery
                 </button>
+              </div>
+            )}
+
+            {/* Multi mode: bulk upload */}
+            {isMulti && multiInputMode === 'bulk' && (
+              <div className="rounded-xl border border-[#2A2A2A] bg-[#191314] p-5 flex flex-col gap-4">
+                <SectionHeading>Bulk Upload</SectionHeading>
+
+                {csvPreview ? (
+                  <BulkPreviewCards
+                    rows={csvPreview}
+                    editingId={bulkEditingId}
+                    onSetEditing={setBulkEditingId}
+                    onUpdateRow={handleBulkUpdateRow}
+                    onDeleteRow={handleBulkDeleteRow}
+                    onConfirm={handleBulkConfirm}
+                    onCancel={() => setCsvPreview(null)}
+                  />
+                ) : (
+                  <BulkUploadZone
+                    onFile={handleBulkFile}
+                    onDownloadTemplate={handleDownloadTemplate}
+                  />
+                )}
               </div>
             )}
 
@@ -1240,6 +1494,7 @@ export default function CreateOrderPage() {
                   onSaveDraft={() => submitOrder(true)}
                   placing={placing}
                   savingDraft={savingDraft}
+                  draftOrderNumber={draftOrderNumber}
                 />
               </div>
             )}
@@ -1258,6 +1513,7 @@ export default function CreateOrderPage() {
                   onSaveDraft={() => submitOrder(true)}
                   placing={placing}
                   savingDraft={savingDraft}
+                  draftOrderNumber={draftOrderNumber}
                 />
               ) : (
                 <EstimatePlaceholder />
