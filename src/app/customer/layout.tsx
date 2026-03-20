@@ -39,9 +39,9 @@ function CustomerShell({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="min-h-screen bg-[#0A0A0A] text-[#FAFAFA] flex flex-col md:flex-row">
+    <div className="h-screen bg-[#0A0A0A] text-[#FAFAFA] flex flex-col md:flex-row overflow-hidden">
       {/* Desktop Sidebar */}
-      <aside className="hidden md:flex flex-col w-56 bg-[#191314] border-r border-[#2A2A2A] min-h-screen sticky top-0">
+      <aside className="hidden md:flex flex-col w-56 bg-[#191314] border-r border-[#2A2A2A] h-screen flex-shrink-0">
         {/* Sidebar Header */}
         <div className="px-5 py-5 border-b border-[#2A2A2A]">
           <Logo size="default" />
@@ -92,7 +92,7 @@ function CustomerShell({ children }: { children: React.ReactNode }) {
       </aside>
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
         {/* Mobile Top Bar */}
         <header className="md:hidden flex items-center justify-between px-4 py-3 bg-[#191314] border-b border-[#2A2A2A] sticky top-0 z-40">
           <Logo size="default" />
@@ -123,7 +123,7 @@ function CustomerShell({ children }: { children: React.ReactNode }) {
         </header>
 
         {/* Page Content */}
-        <main className="flex-1 pb-24 md:pb-6">
+        <main className="flex-1 overflow-y-auto pb-24 md:pb-6">
           {children}
         </main>
       </div>

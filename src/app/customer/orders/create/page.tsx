@@ -223,75 +223,82 @@ function EstimateSummary({
   const total = subtotal + vat;
 
   return (
-    <div className="rounded-xl border border-[#2A2A2A] bg-[#191314] p-5 flex flex-col gap-4">
-      <h3 className="text-[#FAFAFA] font-semibold text-base">Estimate Summary</h3>
-
-      {/* Pickup Details */}
-      <div className="flex flex-col gap-1.5">
-        <p className="text-[#FAFAFA] font-bold text-sm">{pickup.sender_name || '—'}</p>
-        <p className="text-gray-400 text-xs">{pickup.pickup_address || pickup.pickup_area}</p>
-        <p className="text-gray-400 text-xs">{formatDate(pickup.pickup_date)}</p>
+    <div className="rounded-xl border border-[#2A2A2A] bg-[#191314] flex flex-col h-full">
+      {/* Fixed header */}
+      <div className="px-5 pt-5 pb-3 border-b border-[#2A2A2A] flex-shrink-0">
+        <h3 className="text-[#FAFAFA] font-semibold text-base">Estimate Summary</h3>
       </div>
 
-      <div className="border-t border-[#2A2A2A]" />
+      {/* Scrollable content */}
+      <div className="flex-1 overflow-y-auto px-5 py-4 flex flex-col gap-4">
+        {/* Pickup Details */}
+        <div className="flex flex-col gap-1.5">
+          <p className="text-[#888888] text-[10px] font-semibold uppercase tracking-wider mb-0.5">Pickup</p>
+          <p className="text-[#FAFAFA] font-bold text-sm">{pickup.sender_name || '—'}</p>
+          <p className="text-gray-400 text-xs">{pickup.pickup_address || pickup.pickup_area}</p>
+          <p className="text-gray-400 text-xs">{formatDate(pickup.pickup_date)}</p>
+        </div>
 
-      {/* Delivery entries */}
-      {displayDeliveries.map((d, idx) => {
-        const fee = estimates.estimates[idx]?.fee ?? 0;
-        return (
-          <div key={d._id} className="flex flex-col gap-1">
-            {/* Label + price on same line */}
-            <div className="flex items-center justify-between">
-              <p className="text-[#F2FF66] text-xs font-semibold uppercase tracking-wider">
-                {isMulti ? `Delivery ${idx + 1}` : 'Delivery Details'}
+        <div className="border-t border-[#2A2A2A]" />
+
+        {/* Delivery entries */}
+        {displayDeliveries.map((d, idx) => {
+          const fee = estimates.estimates[idx]?.fee ?? 0;
+          return (
+            <div key={d._id} className="flex flex-col gap-1">
+              <div className="flex items-center justify-between">
+                <p className="text-[#F2FF66] text-xs font-semibold uppercase tracking-wider">
+                  {isMulti ? `Delivery ${idx + 1}` : 'Delivery'}
+                </p>
+                <p className="text-[#F2FF66] font-bold text-sm">{formatCurrency(fee)}</p>
+              </div>
+              <p className="text-[#FAFAFA] font-bold text-sm">{d.recipient_name || '—'}</p>
+              <p className="text-gray-400 text-xs">
+                {d.dropoff_address || '—'}{d.dropoff_area ? ` · ${d.dropoff_area}` : ''}
               </p>
-              <p className="text-[#F2FF66] font-bold text-sm">{formatCurrency(fee)}</p>
+              <p className="text-gray-400 text-xs">
+                {d.recipient_phone || '—'}{d.package_weight ? ` · ${d.package_weight}kg` : ''}
+              </p>
+              {d.package_description && (
+                <p className="text-gray-500 text-xs line-clamp-2">{d.package_description}</p>
+              )}
+              {idx < displayDeliveries.length - 1 && (
+                <div className="border-t border-[#2A2A2A] mt-2" />
+              )}
             </div>
-            <p className="text-[#FAFAFA] font-bold text-sm">{d.recipient_name || '—'}</p>
-            <p className="text-gray-400 text-xs">
-              {d.dropoff_address || '—'}{d.dropoff_area ? ` · ${d.dropoff_area}` : ''}
-            </p>
-            <p className="text-gray-400 text-xs">
-              {d.recipient_phone || '—'}{d.package_weight ? ` · ${d.package_weight}kg` : ''}
-            </p>
-            {d.package_description && (
-              <p className="text-gray-400 text-xs truncate">{d.package_description}</p>
-            )}
-            {idx < displayDeliveries.length - 1 && (
-              <div className="border-t border-[#2A2A2A] mt-2" />
-            )}
+          );
+        })}
+
+        <div className="border-t border-[#2A2A2A]" />
+
+        {/* VAT + totals */}
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center justify-between">
+            <p className="text-gray-400 text-sm">Subtotal</p>
+            <p className="text-[#FAFAFA] text-sm">{formatCurrency(subtotal)}</p>
           </div>
-        );
-      })}
-
-      {/* VAT + totals */}
-      <div className="border-t border-[#2A2A2A]" />
-      <div className="flex flex-col gap-2">
-        <div className="flex items-center justify-between">
-          <p className="text-gray-400 text-sm">Subtotal</p>
-          <p className="text-[#FAFAFA] text-sm">{formatCurrency(subtotal)}</p>
+          <div className="flex items-center justify-between">
+            <p className="text-gray-500 text-xs">VAT included</p>
+            <p className="text-[#F2FF66] text-xs font-medium">+ 7.5%</p>
+          </div>
         </div>
+        <div className="border-t border-[#2A2A2A]" />
         <div className="flex items-center justify-between">
-          <p className="text-gray-500 text-xs">VAT included</p>
-          <p className="text-[#F2FF66] text-xs font-medium">+ 7.5%</p>
+          <p className="text-[#FAFAFA] font-bold text-base">Total</p>
+          <p className="text-[#F2FF66] font-bold text-xl">{formatCurrency(total)}</p>
         </div>
-      </div>
-      <div className="border-t border-[#2A2A2A]" />
-      <div className="flex items-center justify-between">
-        <p className="text-[#FAFAFA] font-bold text-base">Total</p>
-        <p className="text-[#F2FF66] font-bold text-xl">{formatCurrency(total)}</p>
+
+        {/* Disclaimer */}
+        <p className="text-gray-600 text-xs leading-relaxed">
+          Disclaimer: The price is subject to adjustment based on the item&apos;s final weight.
+          <br /><br />
+          By clicking &quot;Place Order&quot;, you agree to our{' '}
+          <span className="text-[#F2FF66] cursor-pointer">Terms and Conditions</span>.
+        </p>
       </div>
 
-      {/* Disclaimer */}
-      <p className="text-gray-600 text-xs leading-relaxed">
-        Disclaimer: The price is subject to adjustment based on the item&apos;s final weight.
-        <br /><br />
-        By clicking &quot;Place Order&quot;, you agree to our{' '}
-        <span className="text-[#F2FF66] cursor-pointer">Terms and Conditions</span>.
-      </p>
-
-      {/* Action buttons side by side */}
-      <div className="flex gap-3">
+      {/* Always-visible action buttons */}
+      <div className="px-5 py-4 border-t border-[#2A2A2A] flex gap-3 flex-shrink-0">
         <button
           type="button"
           onClick={onSaveDraft}
@@ -306,11 +313,7 @@ function EstimateSummary({
           disabled={placing || savingDraft}
           className="flex-1 py-3 rounded-xl font-bold text-sm bg-[#F2FF66] text-[#0A0A0A] hover:bg-[#e8f550] transition-colors disabled:opacity-60"
         >
-          {placing
-            ? 'Placing…'
-            : draftOrderNumber
-            ? 'Confirm Order'
-            : 'Place Order'}
+          {placing ? 'Placing…' : draftOrderNumber ? 'Confirm Order' : 'Place Order'}
         </button>
       </div>
     </div>
@@ -615,13 +618,23 @@ function BulkUploadZone({ onFile, onDownloadTemplate }: BulkUploadZoneProps) {
 /*  Bulk Preview Cards (after parse)                                   */
 /* ------------------------------------------------------------------ */
 
+function revalidateRow(row: CsvPreviewRow): CsvPreviewRow {
+  const errors: string[] = [];
+  if (!row.recipient_name.trim()) errors.push('Missing name');
+  if (!row.recipient_phone.trim()) errors.push('Missing phone');
+  if (!row.dropoff_area.trim() && !row.dropoff_address.trim()) errors.push('Missing address');
+  if (!row.package_weight.trim() || isNaN(parseFloat(row.package_weight))) errors.push('Missing/invalid weight');
+  return { ...row, _error: errors.length > 0 ? errors.join(', ') : undefined };
+}
+
 interface BulkPreviewCardsProps {
   rows: CsvPreviewRow[];
   editingId: string | null;
   onSetEditing: (id: string | null) => void;
   onUpdateRow: (id: string, field: keyof CsvPreviewRow, value: string) => void;
+  onSaveRow: (id: string) => void;
   onDeleteRow: (id: string) => void;
-  onRemoveAll: (ids: string[]) => void;
+  onRemoveAll: () => void;
   onConfirm: () => void;
   onCancel: () => void;
 }
@@ -631,6 +644,7 @@ function BulkPreviewCards({
   editingId,
   onSetEditing,
   onUpdateRow,
+  onSaveRow,
   onDeleteRow,
   onRemoveAll,
   onConfirm,
@@ -674,18 +688,16 @@ function BulkPreviewCards({
             </button>
           ))}
         </div>
-        {invalidRows.length > 0 && activeTab === 'invalid' && (
-          <button
-            type="button"
-            onClick={() => onRemoveAll(invalidRows.map((r) => r._id))}
-            className="flex items-center gap-1.5 text-xs text-red-400 hover:text-red-300 border border-red-800/40 hover:border-red-600/40 px-3 py-1.5 rounded-lg transition-colors"
-          >
-            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-            </svg>
-            Remove all
-          </button>
-        )}
+        <button
+          type="button"
+          onClick={onRemoveAll}
+          className="flex items-center gap-1.5 text-xs text-red-400 hover:text-red-300 border border-red-800/40 hover:border-red-600/40 px-3 py-1.5 rounded-lg transition-colors"
+        >
+          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+          </svg>
+          Remove all
+        </button>
       </div>
 
       {/* Table */}
@@ -757,14 +769,7 @@ function BulkPreviewCards({
       </div>
 
       {/* Bottom actions */}
-      <div className="flex items-center justify-between gap-3">
-        <button
-          type="button"
-          onClick={onCancel}
-          className="px-4 py-2 rounded-lg text-xs border border-[#2A2A2A] text-gray-400 hover:text-[#FAFAFA] transition-colors"
-        >
-          Cancel
-        </button>
+      <div className="flex items-center justify-end gap-3">
         <button
           type="button"
           onClick={onConfirm}
@@ -835,7 +840,7 @@ function BulkPreviewCards({
               </button>
               <button
                 type="button"
-                onClick={() => onSetEditing(null)}
+                onClick={() => { onSaveRow(editingRow._id); onSetEditing(null); }}
                 className="flex-1 py-2.5 rounded-xl bg-[#F2FF66] text-[#0A0A0A] font-semibold text-sm hover:bg-[#e8f550] transition-colors"
               >
                 Save Changes
@@ -1618,8 +1623,9 @@ export default function CreateOrderPage() {
                     editingId={bulkEditingId}
                     onSetEditing={setBulkEditingId}
                     onUpdateRow={handleBulkUpdateRow}
+                    onSaveRow={(id) => setCsvPreview((rows) => rows ? rows.map((r) => r._id === id ? revalidateRow(r) : r) : rows)}
                     onDeleteRow={handleBulkDeleteRow}
-                    onRemoveAll={(ids) => setCsvPreview((rows) => rows ? rows.filter((r) => !ids.includes(r._id)) : rows)}
+                    onRemoveAll={() => setCsvPreview(null)}
                     onConfirm={handleBulkConfirm}
                     onCancel={() => setCsvPreview(null)}
                   />
