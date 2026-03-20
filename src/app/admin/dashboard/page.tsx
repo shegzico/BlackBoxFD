@@ -20,6 +20,7 @@ const STAT_COLORS: Record<DeliveryStatus, string> = {
   in_transit: 'bg-amber-600',
   delivered: 'bg-green-500',
   confirmed: 'bg-green-700',
+  cancelled: 'bg-red-600',
 };
 
 function formatNaira(amount: number | undefined | null): string {

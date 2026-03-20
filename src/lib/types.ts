@@ -1,4 +1,4 @@
-export type DeliveryStatus = 'pending' | 'assigned' | 'picked_up' | 'in_transit' | 'delivered' | 'confirmed';
+export type DeliveryStatus = 'pending' | 'assigned' | 'picked_up' | 'in_transit' | 'delivered' | 'confirmed' | 'cancelled';
 
 export const STATUS_ORDER: DeliveryStatus[] = ['pending', 'assigned', 'picked_up', 'in_transit', 'delivered', 'confirmed'];
 
@@ -9,6 +9,7 @@ export const STATUS_LABELS: Record<DeliveryStatus, string> = {
   in_transit: 'In Transit',
   delivered: 'Delivered',
   confirmed: 'Confirmed',
+  cancelled: 'Cancelled',
 };
 
 export const STATUS_COLORS: Record<DeliveryStatus, string> = {
@@ -18,6 +19,7 @@ export const STATUS_COLORS: Record<DeliveryStatus, string> = {
   in_transit: 'bg-amber-700',
   delivered: 'bg-green-500',
   confirmed: 'bg-green-700',
+  cancelled: 'bg-red-600',
 };
 
 export const STATUS_TEXT_COLORS: Record<DeliveryStatus, string> = {
@@ -27,6 +29,7 @@ export const STATUS_TEXT_COLORS: Record<DeliveryStatus, string> = {
   in_transit: 'text-amber-600',
   delivered: 'text-green-400',
   confirmed: 'text-green-600',
+  cancelled: 'text-red-400',
 };
 
 export type PaymentMethod = 'sender_pays' | 'receiver_pays';

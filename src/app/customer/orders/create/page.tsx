@@ -1684,9 +1684,9 @@ export default function CreateOrderPage() {
 
       {/* ======= MOBILE: Full-screen estimate sheet ======= */}
       {showMobileEstimate && hasEstimated && estimates && (
-        <div className="lg:hidden fixed inset-0 z-50 bg-[#0A0A0A] flex flex-col">
+        <div className="lg:hidden fixed inset-0 z-[60] bg-[#0A0A0A] flex flex-col">
           {/* Sheet header */}
-          <div className="flex items-center gap-3 px-4 py-4 border-b border-[#1A1A1A]">
+          <div className="flex items-center gap-3 px-4 py-4 border-b border-[#1A1A1A] flex-shrink-0">
             <button
               type="button"
               onClick={() => setShowMobileEstimate(false)}
@@ -1698,8 +1698,8 @@ export default function CreateOrderPage() {
               Go Back
             </button>
           </div>
-          {/* Scrollable estimate content */}
-          <div className="flex-1 overflow-y-auto p-4">
+          {/* Estimate content — fills remaining space, EstimateSummary handles internal scroll + pinned buttons */}
+          <div className="flex-1 overflow-hidden p-4">
             <EstimateSummary
               pickup={pickup}
               deliveries={activeDeliveries}

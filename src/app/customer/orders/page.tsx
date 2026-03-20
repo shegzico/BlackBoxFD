@@ -77,6 +77,7 @@ export default function CustomerOrders() {
   const [dateTo, setDateTo] = useState('');
   const [overlayTrackingId, setOverlayTrackingId] = useState<string | null>(null);
   const [deletingDraft, setDeletingDraft] = useState<string | null>(null);
+  const [cancelingOrder, setCancelingOrder] = useState<string | null>(null);
 
   const fetchOrders = useCallback(async () => {
     const token = localStorage.getItem('customer_token');
@@ -352,44 +353,70 @@ export default function CustomerOrders() {
       ) : (
         <div className="space-y-3">
           {orders.map((order) => (
-            <button
+            <div
               key={order.id}
-              onClick={() => setOverlayTrackingId(order.id)}
-              className="w-full bg-[#191314] border border-[#2A2A2A] rounded-xl p-4 text-left hover:border-[#F2FF66]/20 transition-colors"
+              className="bg-[#191314] border border-[#2A2A2A] rounded-xl p-4 hover:border-[#F2FF66]/20 transition-colors"
             >
-              <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0 flex-1">
-                  <p className="font-mono text-xs text-[#F2FF66] truncate">{order.id}</p>
-                  <p className="text-sm text-[#FAFAFA] mt-1">
-                    {order.pickup_area} {'\u2192'} {order.dropoff_area}
-                  </p>
-                  <div className="flex items-center gap-3 mt-1.5 flex-wrap">
-                    <p className="text-xs text-[#888888]">{order.recipient_name}</p>
-                    <span className="text-[#2A2A2A]">|</span>
-                    <p className="text-xs text-[#888888]">
-                      {order.pickup_date
-                        ? new Date(order.pickup_date).toLocaleDateString('en-NG', {
-                            day: 'numeric',
-                            month: 'short',
-                          })
-                        : new Date(order.created_at).toLocaleDateString('en-NG', {
-                            day: 'numeric',
-                            month: 'short',
-                          })}
+              <button
+                onClick={() => setOverlayTrackingId(order.id)}
+                className="w-full text-left"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0 flex-1">
+                    <p className="font-mono text-xs text-[#F2FF66] truncate">{order.id}</p>
+                    <p className="text-sm text-[#FAFAFA] mt-1">
+                      {order.pickup_area} {'\u2192'} {order.dropoff_area}
                     </p>
-                    {order.fee != null && (
-                      <>
-                        <span className="text-[#2A2A2A]">|</span>
-                        <p className="text-xs text-[#888888]">
-                          {'\u20A6'}{order.fee.toLocaleString()}
-                        </p>
-                      </>
-                    )}
+                    <div className="flex items-center gap-3 mt-1.5 flex-wrap">
+                      <p className="text-xs text-[#888888]">{order.recipient_name}</p>
+                      <span className="text-[#2A2A2A]">|</span>
+                      <p className="text-xs text-[#888888]">
+                        {order.pickup_date
+                          ? new Date(order.pickup_date).toLocaleDateString('en-NG', { day: 'numeric', month: 'short' })
+                          : new Date(order.created_at).toLocaleDateString('en-NG', { day: 'numeric', month: 'short' })}
+                      </p>
+                      {order.fee != null && (
+                        <>
+                          <span className="text-[#2A2A2A]">|</span>
+                          <p className="text-xs text-[#888888]">{'\u20A6'}{order.fee.toLocaleString()}</p>
+                        </>
+                      )}
+                    </div>
                   </div>
+                  <StatusBadge status={order.status} />
                 </div>
-                <StatusBadge status={order.status} />
-              </div>
-            </button>
+              </button>
+
+              {/* Cancel button — only for pending orders */}
+              {order.status === 'pending' && (
+                <div className="mt-3 pt-3 border-t border-[#2A2A2A] flex justify-end">
+                  <button
+                    onClick={async () => {
+                      if (!window.confirm('Cancel this order? This cannot be undone.')) return;
+                      setCancelingOrder(order.id);
+                      const token = localStorage.getItem('customer_token');
+                      try {
+                        const res = await fetch(`/api/deliveries/${order.id}/cancel`, {
+                          method: 'PATCH',
+                          headers: { Authorization: `Bearer ${token || ''}` },
+                        });
+                        if (res.ok) {
+                          setAllOrders((prev) =>
+                            prev.map((o) => o.id === order.id ? { ...o, status: 'cancelled' as DeliveryStatus } : o)
+                          );
+                        }
+                      } finally {
+                        setCancelingOrder(null);
+                      }
+                    }}
+                    disabled={cancelingOrder === order.id}
+                    className="flex items-center gap-1.5 text-xs text-red-400 hover:text-red-300 border border-red-800/40 hover:border-red-600/40 px-3 py-1.5 rounded-lg transition-colors disabled:opacity-50"
+                  >
+                    {cancelingOrder === order.id ? 'Canceling…' : 'Cancel Order'}
+                  </button>
+                </div>
+              )}
+            </div>
           ))}
         </div>
       )}
