@@ -6,52 +6,53 @@ import Link from 'next/link';
 import Logo from '@/components/Logo';
 
 const NAV_TABS = [
-  { href: '/customer/dashboard', icon: '\u{1F4CA}', label: 'Dashboard' },
-  { href: '/customer/orders', icon: '\u{1F4E6}', label: 'Orders' },
-  { href: '/customer/account', icon: '\u{1F464}', label: 'Account' },
+  { href: '/bb-admin/dashboard', icon: '📊', label: 'Dashboard' },
+  { href: '/bb-admin/orders', icon: '📦', label: 'Orders' },
+  { href: '/bb-admin/riders', icon: '🏍️', label: 'Riders' },
+  { href: '/bb-admin/customers', icon: '👥', label: 'Customers' },
+  { href: '/bb-admin/pricing', icon: '💲', label: 'Pricing' },
+  { href: '/bb-admin/finances', icon: '💰', label: 'Finances' },
 ];
 
-const AUTH_PATHS = ['/customer', '/customer/signup', '/customer/verify', '/signup'];
-
-function CustomerShell({ children }: { children: React.ReactNode }) {
+function AdminShell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
-  const [customerInfo, setCustomerInfo] = useState<{ name?: string; email?: string } | null>(null);
+  const [adminInfo, setAdminInfo] = useState<{ name?: string; email?: string } | null>(null);
 
   useEffect(() => {
-    const token = localStorage.getItem('customer_token');
+    const token = localStorage.getItem('admin_token');
     if (!token) {
-      router.replace('/');
+      router.replace('/bb-admin');
       return;
     }
     try {
-      const info = JSON.parse(localStorage.getItem('customer_info') || '{}');
-      setCustomerInfo(info);
+      const info = JSON.parse(localStorage.getItem('admin_info') || '{}');
+      setAdminInfo(info);
     } catch {
-      setCustomerInfo({});
+      setAdminInfo({});
     }
   }, [router]);
 
   function handleLogout() {
-    localStorage.removeItem('customer_token');
-    localStorage.removeItem('customer_info');
-    router.replace('/');
+    localStorage.removeItem('admin_token');
+    localStorage.removeItem('admin_info');
+    router.replace('/bb-admin');
   }
 
   return (
-    <div className="h-screen bg-[#0A0A0A] text-[#FAFAFA] flex flex-col md:flex-row overflow-hidden">
+    <div className="min-h-screen bg-[#0A0A0A] text-[#FAFAFA] flex flex-col md:flex-row">
       {/* Desktop Sidebar */}
-      <aside className="hidden md:flex flex-col w-56 bg-[#191314] border-r border-[#2A2A2A] h-screen flex-shrink-0">
+      <aside className="hidden md:flex flex-col w-56 bg-[#191314] border-r border-[#2A2A2A] min-h-screen sticky top-0">
         {/* Sidebar Header */}
         <div className="px-5 py-5 border-b border-[#2A2A2A]">
           <Logo size="default" />
-          <p className="text-[#888888] text-xs mt-1 tracking-widest uppercase">Customer</p>
+          <p className="text-[#888888] text-xs mt-1 tracking-widest uppercase">Admin</p>
         </div>
 
         {/* Sidebar Nav */}
         <nav className="flex-1 flex flex-col gap-1 px-3 py-4">
           {NAV_TABS.map((tab) => {
-            const isActive = pathname === tab.href || pathname.startsWith(tab.href + '/');
+            const isActive = pathname === tab.href;
             return (
               <Link
                 key={tab.href}
@@ -74,8 +75,8 @@ function CustomerShell({ children }: { children: React.ReactNode }) {
 
         {/* Sidebar Footer */}
         <div className="px-3 py-4 border-t border-[#2A2A2A]">
-          {customerInfo?.name && (
-            <p className="text-[#888888] text-xs px-3 mb-2 truncate">{customerInfo.name}</p>
+          {adminInfo?.name && (
+            <p className="text-[#888888] text-xs px-3 mb-2 truncate">{adminInfo.name}</p>
           )}
           <button
             onClick={handleLogout}
@@ -85,14 +86,14 @@ function CustomerShell({ children }: { children: React.ReactNode }) {
               transition-colors duration-150
             "
           >
-            <span>{'\u{1F6AA}'}</span>
+            <span>🚪</span>
             Logout
           </button>
         </div>
       </aside>
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
+      <div className="flex-1 flex flex-col min-w-0">
         {/* Mobile Top Bar */}
         <header className="md:hidden flex items-center justify-between px-4 py-3 bg-[#191314] border-b border-[#2A2A2A] sticky top-0 z-40">
           <Logo size="default" />
@@ -108,22 +109,22 @@ function CustomerShell({ children }: { children: React.ReactNode }) {
         <header className="hidden md:flex items-center justify-between px-6 py-3 bg-[#191314] border-b border-[#2A2A2A] sticky top-0 z-40">
           <div>
             <p className="text-[#FAFAFA] font-semibold text-sm">
-              {NAV_TABS.find((t) => pathname === t.href || pathname.startsWith(t.href + '/'))?.label ?? 'Customer Portal'}
+              {NAV_TABS.find((t) => t.href === pathname)?.label ?? 'Admin Portal'}
             </p>
-            {customerInfo?.email && (
-              <p className="text-[#888888] text-xs">{customerInfo.email}</p>
+            {adminInfo?.email && (
+              <p className="text-[#888888] text-xs">{adminInfo.email}</p>
             )}
           </div>
           <button
             onClick={handleLogout}
             className="text-[#888888] hover:text-red-400 transition-colors text-sm px-3 py-1.5 rounded-lg border border-[#2A2A2A]"
           >
-            {'\u{1F6AA}'} Logout
+            🚪 Logout
           </button>
         </header>
 
         {/* Page Content */}
-        <main className="flex-1 overflow-y-auto pb-24 md:pb-6">
+        <main className="flex-1 pb-24 md:pb-6">
           {children}
         </main>
       </div>
@@ -131,13 +132,13 @@ function CustomerShell({ children }: { children: React.ReactNode }) {
       {/* Mobile Bottom Navigation */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#191314] border-t border-[#2A2A2A] flex">
         {NAV_TABS.map((tab) => {
-          const isActive = pathname === tab.href || pathname.startsWith(tab.href + '/');
+          const isActive = pathname === tab.href;
           return (
             <Link
               key={tab.href}
               href={tab.href}
               className={`
-                flex-1 flex flex-col items-center justify-center gap-1 py-3 relative
+                flex-1 flex flex-col items-center justify-center gap-1 py-3
                 transition-colors duration-150
                 ${isActive ? 'text-[#F2FF66]' : 'text-[#888888]'}
               `}
@@ -147,7 +148,7 @@ function CustomerShell({ children }: { children: React.ReactNode }) {
                 {tab.label}
               </span>
               {isActive && (
-                <span className="absolute bottom-0 h-0.5 w-8 bg-[#F2FF66] rounded-full" />
+                <span className="absolute bottom-0 h-0.5 w-8 bg-[#F2FF66] rounded-full" style={{ bottom: 0 }} />
               )}
             </Link>
           );
@@ -157,13 +158,13 @@ function CustomerShell({ children }: { children: React.ReactNode }) {
   );
 }
 
-export default function CustomerLayout({ children }: { children: React.ReactNode }) {
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
-  // Auth pages render without the shell
-  if (AUTH_PATHS.includes(pathname)) {
+  // Login page at /admin exactly — no shell wrapping
+  if (pathname === '/bb-admin') {
     return <>{children}</>;
   }
 
-  return <CustomerShell>{children}</CustomerShell>;
+  return <AdminShell>{children}</AdminShell>;
 }

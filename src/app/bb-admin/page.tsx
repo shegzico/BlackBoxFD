@@ -2,10 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
+import Navbar from '@/components/Navbar';
 import Logo from '@/components/Logo';
 
-export default function CustomerLoginPage() {
+export default function AdminLoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -14,9 +14,9 @@ export default function CustomerLoginPage() {
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const token = localStorage.getItem('customer_token');
+      const token = localStorage.getItem('admin_token');
       if (token) {
-        router.replace('/customer/dashboard');
+        router.replace('/bb-admin/dashboard');
       }
     }
   }, [router]);
@@ -27,7 +27,7 @@ export default function CustomerLoginPage() {
     setLoading(true);
 
     try {
-      const res = await fetch('/api/auth/customer/login', {
+      const res = await fetch('/api/auth/admin', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
@@ -41,9 +41,9 @@ export default function CustomerLoginPage() {
         return;
       }
 
-      localStorage.setItem('customer_token', data.token);
-      localStorage.setItem('customer_info', JSON.stringify(data.customer));
-      router.replace('/customer/dashboard');
+      localStorage.setItem('admin_token', data.token);
+      localStorage.setItem('admin_info', JSON.stringify(data.admin));
+      router.replace('/bb-admin/dashboard');
     } catch {
       setError('Network error. Please check your connection and try again.');
       setLoading(false);
@@ -52,17 +52,19 @@ export default function CustomerLoginPage() {
 
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-[#FAFAFA] flex flex-col">
+      <Navbar showBack backHref="/" title="Admin Login" />
+
       <main className="flex-1 flex flex-col items-center justify-center px-4 py-12">
         {/* Logo */}
         <div className="mb-8 flex flex-col items-center gap-2">
           <Logo size="large" />
-          <p className="text-[#888888] text-sm tracking-widest uppercase">Customer Portal</p>
+          <p className="text-[#888888] text-sm tracking-widest uppercase">Admin Portal</p>
         </div>
 
         {/* Card */}
         <div className="w-full max-w-sm bg-[#191314] border border-[#2A2A2A] rounded-2xl p-6 shadow-xl">
           <h1 className="text-xl font-bold text-[#FAFAFA] mb-1">Sign In</h1>
-          <p className="text-[#888888] text-sm mb-6">Access your BlackBox account</p>
+          <p className="text-[#888888] text-sm mb-6">Access the BlackBox admin dashboard</p>
 
           {error && (
             <div className="mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm">
@@ -70,7 +72,7 @@ export default function CustomerLoginPage() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4">
+          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <div className="flex flex-col gap-1.5">
               <label htmlFor="email" className="text-[#888888] text-xs font-medium uppercase tracking-wider">
                 Email
@@ -80,16 +82,15 @@ export default function CustomerLoginPage() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@example.com"
+                placeholder="admin@blackbox.com"
                 required
-                disabled={loading}
                 autoComplete="email"
                 className="
-                  w-full bg-[#232023] border border-gray-700 rounded-lg
-                  px-3 py-3 text-[#FAFAFA] text-sm
-                  placeholder-gray-600
-                  focus:outline-none focus:border-[#F2FF66] focus:ring-1 focus:ring-[#F2FF66]
-                  transition-colors disabled:opacity-50
+                  w-full bg-[#0A0A0A] border border-[#2A2A2A] rounded-lg
+                  px-4 py-3 text-[#FAFAFA] text-sm
+                  placeholder:text-[#888888]
+                  focus:outline-none focus:border-[#F2FF66] focus:ring-1 focus:ring-[#F2FF66]/30
+                  transition-colors
                 "
               />
             </div>
@@ -105,14 +106,13 @@ export default function CustomerLoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
                 required
-                disabled={loading}
                 autoComplete="current-password"
                 className="
-                  w-full bg-[#232023] border border-gray-700 rounded-lg
-                  px-3 py-3 text-[#FAFAFA] text-sm
-                  placeholder-gray-600
-                  focus:outline-none focus:border-[#F2FF66] focus:ring-1 focus:ring-[#F2FF66]
-                  transition-colors disabled:opacity-50
+                  w-full bg-[#0A0A0A] border border-[#2A2A2A] rounded-lg
+                  px-4 py-3 text-[#FAFAFA] text-sm
+                  placeholder:text-[#888888]
+                  focus:outline-none focus:border-[#F2FF66] focus:ring-1 focus:ring-[#F2FF66]/30
+                  transition-colors
                 "
               />
             </div>
@@ -142,23 +142,11 @@ export default function CustomerLoginPage() {
               )}
             </button>
           </form>
-
-          <div className="mt-5 text-center">
-            <p className="text-[#888888] text-sm">
-              Don&apos;t have an account?{' '}
-              <Link href="/signup" className="text-[#F2FF66] hover:underline font-medium">
-                Sign up
-              </Link>
-            </p>
-          </div>
         </div>
 
-        <Link
-          href="/track"
-          className="mt-6 text-[#888888] text-xs hover:text-[#F2FF66] transition-colors text-center"
-        >
-          Track a package &rarr;
-        </Link>
+        <p className="mt-6 text-[#888888] text-xs text-center">
+          BlackBox Logistics &mdash; Admin Access Only
+        </p>
       </main>
     </div>
   );
