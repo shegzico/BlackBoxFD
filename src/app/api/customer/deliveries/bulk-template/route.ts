@@ -15,9 +15,9 @@ export async function GET(request: NextRequest) {
     }
 
     const csvContent = [
-      'recipient_name,recipient_phone,dropoff_area,dropoff_address,package_description,payment_method,is_express',
-      'John Doe,08012345678,Victoria Island,12 Adeola Odeku Street,Electronics,sender_pays,false',
-      'Jane Smith,08098765432,Ikeja,45 Allen Avenue,Documents,receiver_pays,true',
+      'recipient_name,recipient_phone,recipient_email,dropoff_area,dropoff_address,package_weight,package_description',
+      'John Doe,08012345678,john@example.com,Victoria Island,12 Adeola Odeku Street,2.5,₦25000 – Sneakers – No Insurance – Leave at door',
+      'Jane Smith,08098765432,,Ikeja,45 Allen Avenue,0.8,₦15000 – Laptop Bag – No Insurance – Leave with reception',
     ].join('\n');
 
     return new NextResponse(csvContent, {

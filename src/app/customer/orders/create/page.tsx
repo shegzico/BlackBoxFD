@@ -223,7 +223,7 @@ function EstimateSummary({
   const total = subtotal + vat;
 
   return (
-    <div className="rounded-xl border border-[#2A2A2A] bg-[#191314] p-5 flex flex-col gap-4 max-h-[calc(100vh-6rem)] overflow-y-auto sticky top-6">
+    <div className="rounded-xl border border-[#2A2A2A] bg-[#191314] p-5 flex flex-col gap-4">
       <h3 className="text-[#FAFAFA] font-semibold text-base">Estimate Summary</h3>
 
       {/* Pickup Details */}
@@ -355,6 +355,7 @@ interface CompactDeliveryCardProps {
   index: number;
   total: number;
   isEditing: boolean;
+  isLast: boolean;
   onEdit: () => void;
   onRemove: () => void;
   onChange: (field: keyof DeliveryItem, value: string) => void;
@@ -365,22 +366,29 @@ function CompactDeliveryCard({
   index,
   total,
   isEditing,
+  isLast,
   onEdit,
   onRemove,
   onChange,
 }: CompactDeliveryCardProps) {
-  if (isEditing) {
+  // Last card in list is always expanded
+  const expanded = isEditing || isLast;
+
+  if (expanded) {
     return (
       <div className="rounded-xl border border-[#F2FF66]/40 bg-[#191314] p-5 flex flex-col gap-4">
         <div className="flex items-center justify-between">
           <SectionHeading>Delivery {index + 1}</SectionHeading>
-          <button
-            type="button"
-            onClick={onEdit}
-            className="px-3 py-1.5 rounded-lg text-xs border border-[#2A2A2A] text-gray-400 hover:text-[#F2FF66] hover:border-[#F2FF66] transition-colors"
-          >
-            Done
-          </button>
+          {/* Only show Done button if not the last card */}
+          {!isLast && (
+            <button
+              type="button"
+              onClick={onEdit}
+              className="px-3 py-1.5 rounded-lg text-xs border border-[#2A2A2A] text-gray-400 hover:text-[#F2FF66] hover:border-[#F2FF66] transition-colors"
+            >
+              Done
+            </button>
+          )}
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -449,16 +457,18 @@ function CompactDeliveryCard({
 
           <div className="sm:col-span-2">
             <Field label="Package Description" htmlFor={`r_desc_${delivery._id}`}>
-              <input
+              <textarea
                 id={`r_desc_${delivery._id}`}
-                type="text"
+                rows={3}
                 value={delivery.package_description}
                 onChange={(e) => onChange('package_description', e.target.value)}
-                className={inputClass}
+                className={inputClass + ' resize-none'}
                 placeholder="₦25,000 – Sneakers – Yes Insurance – Apt 2B"
               />
               <p className="text-gray-600 text-xs mt-1">
-                Format: Item value, description, insurance request, delivery instructions
+                Format: Item value, description, insurance request (interstate/international only), delivery instructions
+                <br />
+                Example: ₦25,000 – Sneakers – Yes Insurance – Apt 2B or ₦15,000 – Laptop Bag – No Insurance – Leave with reception
               </p>
             </Field>
           </div>
@@ -528,18 +538,13 @@ function BulkUploadZone({ onFile, onDownloadTemplate }: BulkUploadZoneProps) {
     e.preventDefault();
     setIsDragging(true);
   };
-
-  const handleDragLeave = () => {
-    setIsDragging(false);
-  };
-
+  const handleDragLeave = () => setIsDragging(false);
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     setIsDragging(false);
     const file = e.dataTransfer.files?.[0];
     if (file) onFile(file);
   };
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) onFile(file);
@@ -547,38 +552,61 @@ function BulkUploadZone({ onFile, onDownloadTemplate }: BulkUploadZoneProps) {
   };
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-4">
+      {/* Drop zone */}
       <div
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
         onClick={() => fileInputRef.current?.click()}
-        className={`rounded-xl border-2 border-dashed cursor-pointer transition-colors flex flex-col items-center justify-center gap-2 py-10 px-6 text-center ${
-          isDragging
-            ? 'border-[#F2FF66] bg-[#F2FF66]/5'
-            : 'border-[#2A2A2A] bg-[#191314] hover:border-gray-600'
+        className={`rounded-xl border-2 border-dashed cursor-pointer transition-colors flex flex-col items-center justify-center gap-2 py-12 px-6 text-center ${
+          isDragging ? 'border-[#F2FF66] bg-[#F2FF66]/5' : 'border-[#2A2A2A] bg-[#0A0A0A] hover:border-gray-600'
         }`}
       >
         <svg xmlns="http://www.w3.org/2000/svg" className={`w-8 h-8 ${isDragging ? 'text-[#F2FF66]' : 'text-gray-600'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+          <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
         </svg>
-        <p className="text-gray-400 text-sm">Drag &amp; drop your CSV or XLS file here</p>
-        <p className="text-[#F2FF66] text-xs font-medium">or browse files</p>
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept=".csv,.xlsx,.xls"
-          className="hidden"
-          onChange={handleChange}
-        />
+        <p className="text-gray-300 text-sm font-medium">
+          Drop your file here or <span className="text-[#F2FF66]">Browse</span>
+        </p>
+        <p className="text-gray-600 text-xs">Max. file size must be 2MB (Supported format: .XLS, .CSV)</p>
+        <input ref={fileInputRef} type="file" accept=".csv,.xlsx,.xls" className="hidden" onChange={handleChange} />
       </div>
-      <button
-        type="button"
-        onClick={onDownloadTemplate}
-        className="self-start px-4 py-2 rounded-lg border border-[#2A2A2A] text-xs text-gray-400 hover:text-[#F2FF66] hover:border-[#F2FF66] transition-colors"
-      >
-        Download CSV Template
-      </button>
+
+      {/* Document sample row */}
+      <div className="flex items-center justify-between bg-[#0A0A0A] border border-[#2A2A2A] rounded-xl px-4 py-3">
+        <div className="flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+          <div>
+            <p className="text-[#FAFAFA] text-xs font-semibold">Document Sample</p>
+            <p className="text-gray-500 text-[10px]">Download the template and use it as a guide to create yours.</p>
+          </div>
+        </div>
+        <button
+          type="button"
+          onClick={onDownloadTemplate}
+          className="px-3 py-1.5 rounded-lg border border-[#2A2A2A] text-xs text-gray-300 hover:text-[#F2FF66] hover:border-[#F2FF66] transition-colors flex-shrink-0"
+        >
+          Download
+        </button>
+      </div>
+
+      {/* Field instructions */}
+      <div className="rounded-xl border border-[#F2FF66]/20 bg-[#F2FF66]/5 px-4 py-4 flex flex-col gap-2">
+        <p className="text-[#F2FF66] text-xs font-bold">Guide for Filling Bulk Upload Template</p>
+        <p className="text-gray-400 text-xs">Field Instructions for Bulk Upload Template</p>
+        <ul className="flex flex-col gap-1.5 text-xs text-gray-400 list-none">
+          <li><span className="text-[#FAFAFA] font-medium">recipient_name</span> → Enter the recipient&apos;s full legal name (first name and surname).</li>
+          <li><span className="text-[#FAFAFA] font-medium">recipient_phone</span> → Nigerian phone number (e.g. 08012345678 or +2348012345678).</li>
+          <li><span className="text-[#FAFAFA] font-medium">recipient_email</span> → Optional. Recipient&apos;s email address.</li>
+          <li><span className="text-[#FAFAFA] font-medium">dropoff_area</span> → Lagos delivery zone (e.g. Victoria Island, Ikeja, Lekki Phase 1).</li>
+          <li><span className="text-[#FAFAFA] font-medium">dropoff_address</span> → Provide the complete delivery address.</li>
+          <li><span className="text-[#FAFAFA] font-medium">package_weight</span> → Enter the accurate weight in kg (e.g. 1.5). Required for calculating delivery cost.</li>
+          <li><span className="text-[#FAFAFA] font-medium">package_description</span> → Describe the item, declare value, indicate insurance, add delivery instructions.</li>
+        </ul>
+      </div>
     </div>
   );
 }
@@ -593,6 +621,7 @@ interface BulkPreviewCardsProps {
   onSetEditing: (id: string | null) => void;
   onUpdateRow: (id: string, field: keyof CsvPreviewRow, value: string) => void;
   onDeleteRow: (id: string) => void;
+  onRemoveAll: (ids: string[]) => void;
   onConfirm: () => void;
   onCancel: () => void;
 }
@@ -603,114 +632,218 @@ function BulkPreviewCards({
   onSetEditing,
   onUpdateRow,
   onDeleteRow,
+  onRemoveAll,
   onConfirm,
   onCancel,
 }: BulkPreviewCardsProps) {
+  const [activeTab, setActiveTab] = useState<'valid' | 'invalid'>('valid');
+
+  const validRows = rows.filter((r) => !r._error);
+  const invalidRows = rows.filter((r) => !!r._error);
+  const displayRows = activeTab === 'valid' ? validRows : invalidRows;
+
+  // Edit modal state
+  const editingRow = rows.find((r) => r._id === editingId) ?? null;
+
   return (
-    <div className="flex flex-col gap-3">
-      <div className="flex items-center justify-between">
-        <p className="text-[#FAFAFA] font-semibold text-sm">
-          Preview — {rows.length} row{rows.length !== 1 ? 's' : ''}
-        </p>
+    <div className="flex flex-col gap-4">
+      {/* Summary line */}
+      <div className="rounded-lg border border-[#2A2A2A] bg-[#0A0A0A] px-4 py-2.5 text-sm">
+        Found{' '}
+        <span className="text-green-400 font-semibold">{validRows.length} valid</span>
+        {' '}and{' '}
+        <span className="text-red-400 font-semibold">{invalidRows.length} invalid</span>
+        {' '}deliveries.
+      </div>
+
+      {/* Tabs + Remove all */}
+      <div className="flex items-center justify-between border-b border-[#2A2A2A]">
+        <div className="flex">
+          {(['valid', 'invalid'] as const).map((tab) => (
+            <button
+              key={tab}
+              type="button"
+              onClick={() => setActiveTab(tab)}
+              className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors capitalize ${
+                activeTab === tab
+                  ? 'border-[#F2FF66] text-[#F2FF66]'
+                  : 'border-transparent text-gray-500 hover:text-[#FAFAFA]'
+              }`}
+            >
+              {tab} ({tab === 'valid' ? validRows.length : invalidRows.length})
+            </button>
+          ))}
+        </div>
+        {invalidRows.length > 0 && activeTab === 'invalid' && (
+          <button
+            type="button"
+            onClick={() => onRemoveAll(invalidRows.map((r) => r._id))}
+            className="flex items-center gap-1.5 text-xs text-red-400 hover:text-red-300 border border-red-800/40 hover:border-red-600/40 px-3 py-1.5 rounded-lg transition-colors"
+          >
+            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+            Remove all
+          </button>
+        )}
+      </div>
+
+      {/* Table */}
+      <div className="overflow-x-auto rounded-xl border border-[#2A2A2A]">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="border-b border-[#2A2A2A]">
+              {['Full Name', 'Address', 'Phone number', 'Weight', 'Item Desc.', 'Action'].map((h) => (
+                <th key={h} className="text-left text-[#888888] text-xs font-medium px-3 py-3 whitespace-nowrap">{h}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {displayRows.length === 0 ? (
+              <tr>
+                <td colSpan={6} className="text-center text-gray-600 text-xs py-8">No {activeTab} deliveries</td>
+              </tr>
+            ) : (
+              displayRows.map((row) => (
+                <tr
+                  key={row._id}
+                  className={`border-b border-[#1A1A1A] last:border-0 ${row._error ? 'bg-red-900/10' : 'hover:bg-[#1A1A1A]'}`}
+                >
+                  <td className="px-3 py-3 text-[#FAFAFA] text-xs whitespace-nowrap">
+                    {row.recipient_name || <span className="text-gray-600 italic">Missing</span>}
+                  </td>
+                  <td className="px-3 py-3 text-gray-400 text-xs max-w-[200px]">
+                    <p className="truncate">{row.dropoff_address || <span className="text-red-400 italic">Missing</span>}</p>
+                    {row.dropoff_area && <p className="text-[#888888] text-[10px] truncate">{row.dropoff_area}</p>}
+                  </td>
+                  <td className="px-3 py-3 text-gray-400 text-xs whitespace-nowrap">
+                    {row.recipient_phone || <span className="text-red-400 italic">Missing</span>}
+                  </td>
+                  <td className="px-3 py-3 text-gray-400 text-xs whitespace-nowrap">
+                    {row.package_weight ? `${row.package_weight}kg` : <span className="text-red-400 italic">Missing</span>}
+                  </td>
+                  <td className="px-3 py-3 text-gray-400 text-xs max-w-[160px]">
+                    <p className="truncate">{row.package_description || '—'}</p>
+                  </td>
+                  <td className="px-3 py-3 whitespace-nowrap">
+                    <div className="flex items-center gap-1">
+                      <button
+                        type="button"
+                        onClick={() => onSetEditing(row._id)}
+                        title="Edit"
+                        className="p-1.5 text-[#F2FF66]/60 hover:text-[#F2FF66] hover:bg-[#F2FF66]/10 rounded-lg transition-colors"
+                      >
+                        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536M9 13l6.586-6.586a2 2 0 112.828 2.828L11.828 15.828a2 2 0 01-1.414.586H9v-2a2 2 0 01.586-1.414z" />
+                        </svg>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => onDeleteRow(row._id)}
+                        title="Remove"
+                        className="p-1.5 text-red-500/60 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-colors"
+                      >
+                        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Bottom actions */}
+      <div className="flex items-center justify-between gap-3">
         <button
           type="button"
           onClick={onCancel}
-          className="px-3 py-1.5 rounded-lg text-xs border border-[#2A2A2A] text-gray-400 hover:text-[#FAFAFA] transition-colors"
+          className="px-4 py-2 rounded-lg text-xs border border-[#2A2A2A] text-gray-400 hover:text-[#FAFAFA] transition-colors"
         >
           Cancel
         </button>
+        <button
+          type="button"
+          onClick={onConfirm}
+          disabled={validRows.length === 0}
+          className="px-5 py-2.5 rounded-xl bg-[#F2FF66] text-[#0A0A0A] font-semibold text-sm hover:bg-[#e8f550] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+        >
+          Import {validRows.length} deliver{validRows.length === 1 ? 'y' : 'ies'}
+        </button>
       </div>
 
-      <div className="flex flex-col gap-2">
-        {rows.map((row, idx) => {
-          if (editingId === row._id) {
-            return (
-              <div key={row._id} className="rounded-xl border border-[#F2FF66]/40 bg-[#191314] p-4 flex flex-col gap-3">
-                <div className="flex items-center justify-between mb-1">
-                  <p className="text-[#F2FF66] text-xs font-semibold uppercase tracking-wider">Row {idx + 1}</p>
-                  <button
-                    type="button"
-                    onClick={() => onSetEditing(null)}
-                    className="px-3 py-1 rounded-lg text-xs border border-[#2A2A2A] text-gray-400 hover:text-[#F2FF66] hover:border-[#F2FF66] transition-colors"
-                  >
-                    Done
-                  </button>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {(
-                    [
-                      ['recipient_name', 'Recipient Name', 'text'],
-                      ['recipient_phone', 'Phone', 'tel'],
-                      ['recipient_email', 'Email (optional)', 'email'],
-                      ['dropoff_area', 'Dropoff Area', 'text'],
-                      ['dropoff_address', 'Dropoff Address', 'text'],
-                      ['package_weight', 'Weight (kg)', 'number'],
-                      ['package_description', 'Description', 'text'],
-                    ] as [keyof CsvPreviewRow, string, string][]
-                  ).map(([field, label, type]) => (
-                    <Field key={field} label={label} htmlFor={`bulk_${row._id}_${field}`}>
-                      <input
-                        id={`bulk_${row._id}_${field}`}
-                        type={type}
-                        value={row[field] as string}
-                        onChange={(e) => onUpdateRow(row._id, field, e.target.value)}
-                        className={inputClass}
-                      />
-                    </Field>
-                  ))}
-                </div>
-              </div>
-            );
-          }
-
-          return (
-            <div key={row._id} className="rounded-xl border border-[#2A2A2A] bg-[#191314] px-4 py-3 flex items-center justify-between gap-3">
-              <div className="flex flex-col gap-0.5 min-w-0">
-                <p className="text-[#FAFAFA] font-bold text-sm truncate">
-                  {row.recipient_name || <span className="text-gray-600">Unnamed</span>}
-                </p>
-                <p className="text-gray-500 text-xs truncate">
-                  {row.dropoff_area || '—'} → {row.dropoff_address || '—'}
-                </p>
-                <p className="text-gray-500 text-xs">
-                  {row.recipient_phone || '—'}
-                  {row.package_weight ? ` · ${row.package_weight}kg` : ''}
-                </p>
-              </div>
-              <div className="flex items-center gap-2 flex-shrink-0">
-                <button
-                  type="button"
-                  onClick={() => onSetEditing(row._id)}
-                  title="Edit"
-                  className="p-1.5 rounded-lg text-gray-500 hover:text-[#F2FF66] hover:bg-[#F2FF66]/10 transition-colors"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536M9 13l6.586-6.586a2 2 0 112.828 2.828L11.828 15.828a2 2 0 01-1.414.586H9v-2a2 2 0 01.586-1.414z" />
-                  </svg>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => onDeleteRow(row._id)}
-                  title="Remove"
-                  className="p-1.5 rounded-lg text-gray-500 hover:text-red-400 hover:bg-red-400/10 transition-colors"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                  </svg>
-                </button>
+      {/* Edit modal overlay */}
+      {editingRow && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70">
+          <div className="bg-[#191314] border border-[#2A2A2A] rounded-2xl p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto flex flex-col gap-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-[#FAFAFA] font-semibold text-base">Edit Delivery Details</h3>
+              <button
+                type="button"
+                onClick={() => onSetEditing(null)}
+                className="text-gray-500 hover:text-[#FAFAFA] transition-colors"
+              >
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {(
+                [
+                  ['recipient_name', 'Full Name', 'text', true],
+                  ['recipient_email', 'Email', 'email', false],
+                  ['dropoff_address', 'Address', 'text', true],
+                  ['dropoff_area', 'Area / City', 'text', true],
+                  ['recipient_phone', 'Phone Number', 'tel', true],
+                  ['package_weight', 'Product Weight (kg)', 'number', true],
+                ] as [keyof CsvPreviewRow, string, string, boolean][]
+              ).map(([field, label, type, required]) => (
+                <Field key={field} label={`${label}${required ? '' : ''}`} htmlFor={`modal_${editingRow._id}_${field}`} optional={!required}>
+                  <input
+                    id={`modal_${editingRow._id}_${field}`}
+                    type={type}
+                    value={editingRow[field] as string}
+                    onChange={(e) => onUpdateRow(editingRow._id, field, e.target.value)}
+                    className={inputClass}
+                  />
+                </Field>
+              ))}
+              <div className="sm:col-span-2">
+                <Field label="Item Description & Instruction" htmlFor={`modal_${editingRow._id}_desc`}>
+                  <textarea
+                    id={`modal_${editingRow._id}_desc`}
+                    rows={3}
+                    value={editingRow.package_description}
+                    onChange={(e) => onUpdateRow(editingRow._id, 'package_description', e.target.value)}
+                    className={inputClass + ' resize-none'}
+                    placeholder="Describe the item, value, insurance need, and delivery instructions"
+                  />
+                </Field>
               </div>
             </div>
-          );
-        })}
-      </div>
-
-      <button
-        type="button"
-        onClick={onConfirm}
-        className="w-full py-3 rounded-xl bg-[#F2FF66] text-[#0A0A0A] font-semibold text-sm hover:bg-[#e8f550] transition-colors"
-      >
-        Confirm Import ({rows.length} deliveries)
-      </button>
+            <div className="flex gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => onSetEditing(null)}
+                className="flex-1 py-2.5 rounded-xl border border-[#2A2A2A] text-gray-400 text-sm hover:text-[#FAFAFA] transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => onSetEditing(null)}
+                className="flex-1 py-2.5 rounded-xl bg-[#F2FF66] text-[#0A0A0A] font-semibold text-sm hover:bg-[#e8f550] transition-colors"
+              >
+                Save Changes
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -904,18 +1037,18 @@ function SingleDeliveryForm({ delivery, onChange }: SingleDeliveryFormProps) {
 
         <div className="sm:col-span-2">
           <Field label="Package Description" htmlFor="package_description">
-            <input
+            <textarea
               id="package_description"
-              type="text"
+              rows={3}
               value={delivery.package_description}
               onChange={(e) => onChange('package_description', e.target.value)}
-              className={inputClass}
+              className={inputClass + ' resize-none'}
               placeholder="₦25,000 – Sneakers – Yes Insurance – Apt 2B"
             />
             <p className="text-gray-600 text-xs mt-1">
-              Format: Item value, description, insurance request, delivery instructions
+              Format: Item value, description, insurance request (interstate/international only), delivery instructions
               <br />
-              Example: ₦25,000 – Sneakers – Yes Insurance – Apt 2B
+              Example: ₦25,000 – Sneakers – Yes Insurance – Apt 2B or ₦15,000 – Laptop Bag – No Insurance – Leave with reception
             </p>
           </Field>
         </div>
@@ -958,6 +1091,7 @@ export default function CreateOrderPage() {
   // Error / status
   const [error, setError] = useState('');
   const [estimating, setEstimating] = useState(false);
+  const [showMobileEstimate, setShowMobileEstimate] = useState(false);
 
   // Multi-input mode toggle
   const [multiInputMode, setMultiInputMode] = useState<'manual' | 'bulk'>('manual');
@@ -1143,6 +1277,10 @@ export default function CreateOrderPage() {
       const data: Estimates = await res.json();
       setEstimates(data);
       setHasEstimated(true);
+      // On mobile, open the full-screen estimate sheet automatically
+      if (typeof window !== 'undefined' && window.innerWidth < 1024) {
+        setShowMobileEstimate(true);
+      }
     } catch {
       setError('Network error. Please try again.');
     } finally {
@@ -1232,17 +1370,44 @@ export default function CreateOrderPage() {
       }
       const headers = lines[0].split(',').map((h) => h.trim().toLowerCase());
       const rows: CsvPreviewRow[] = lines.slice(1).map((line) => {
-        const cols = line.split(',').map((c) => c.trim().replace(/^"|"$/g, ''));
-        const get = (name: string) => cols[headers.indexOf(name)] ?? '';
+        // Handle quoted commas properly
+        const cols: string[] = [];
+        let inQuote = false;
+        let current = '';
+        for (const ch of line) {
+          if (ch === '"') { inQuote = !inQuote; }
+          else if (ch === ',' && !inQuote) { cols.push(current.trim()); current = ''; }
+          else { current += ch; }
+        }
+        cols.push(current.trim());
+
+        const get = (name: string) => cols[headers.indexOf(name)]?.replace(/^"|"$/g, '').trim() ?? '';
+
+        const recipient_name = get('recipient_name') || get('name') || get('full_name');
+        const recipient_phone = get('recipient_phone') || get('phone') || get('phone_number');
+        const recipient_email = get('recipient_email') || get('email');
+        const dropoff_area = get('dropoff_area') || get('area') || get('city');
+        const dropoff_address = get('dropoff_address') || get('address');
+        const package_description = get('package_description') || get('description') || get('item_description');
+        const package_weight = get('package_weight') || get('weight') || get('product_weight');
+
+        // Validate row
+        const errors: string[] = [];
+        if (!recipient_name) errors.push('Missing name');
+        if (!recipient_phone) errors.push('Missing phone');
+        if (!dropoff_area && !dropoff_address) errors.push('Missing address');
+        if (!package_weight || isNaN(parseFloat(package_weight))) errors.push('Missing/invalid weight');
+
         return {
           _id: generateId(),
-          recipient_name: get('recipient_name') || get('name'),
-          recipient_phone: get('recipient_phone') || get('phone'),
-          recipient_email: get('recipient_email') || get('email'),
-          dropoff_area: get('dropoff_area') || get('area'),
-          dropoff_address: get('dropoff_address') || get('address'),
-          package_description: get('package_description') || get('description'),
-          package_weight: get('package_weight') || get('weight'),
+          recipient_name,
+          recipient_phone,
+          recipient_email,
+          dropoff_area,
+          dropoff_address,
+          package_description,
+          package_weight,
+          _error: errors.length > 0 ? errors.join(', ') : undefined,
         };
       });
       setCsvPreview(rows);
@@ -1373,7 +1538,7 @@ export default function CreateOrderPage() {
         </div>
 
         {/* Two-column layout on desktop */}
-        <div className="lg:grid lg:grid-cols-[1fr_360px] lg:gap-8 flex flex-col gap-6">
+        <div className="lg:grid lg:grid-cols-[1fr_380px] lg:gap-8 flex flex-col gap-6">
           {/* ======= LEFT COLUMN: Form ======= */}
           <div className="flex flex-col gap-6">
             {/* Pickup section */}
@@ -1425,6 +1590,7 @@ export default function CreateOrderPage() {
                     index={idx}
                     total={deliveries.length}
                     isEditing={editingId === d._id}
+                    isLast={idx === deliveries.length - 1}
                     onEdit={() => setEditingId(editingId === d._id ? null : d._id)}
                     onRemove={() => removeDelivery(idx)}
                     onChange={(field, value) => handleDeliveryChange(idx, field, value)}
@@ -1453,6 +1619,7 @@ export default function CreateOrderPage() {
                     onSetEditing={setBulkEditingId}
                     onUpdateRow={handleBulkUpdateRow}
                     onDeleteRow={handleBulkDeleteRow}
+                    onRemoveAll={(ids) => setCsvPreview((rows) => rows ? rows.filter((r) => !ids.includes(r._id)) : rows)}
                     onConfirm={handleBulkConfirm}
                     onCancel={() => setCsvPreview(null)}
                   />
@@ -1482,46 +1649,65 @@ export default function CreateOrderPage() {
               {estimating ? 'Estimating…' : 'Estimate Cost'}
             </button>
 
-            {/* Mobile: Estimate Summary card (only when hasEstimated) */}
-            {hasEstimated && estimates && (
-              <div className="lg:hidden">
-                <EstimateSummary
-                  pickup={pickup}
-                  deliveries={activeDeliveries}
-                  estimates={estimates}
-                  isMulti={isMulti}
-                  onPlaceOrder={() => submitOrder(false)}
-                  onSaveDraft={() => submitOrder(true)}
-                  placing={placing}
-                  savingDraft={savingDraft}
-                  draftOrderNumber={draftOrderNumber}
-                />
-              </div>
-            )}
           </div>
 
-          {/* ======= RIGHT COLUMN: Sticky estimate panel (desktop only) ======= */}
+          {/* ======= RIGHT COLUMN: Fixed estimate panel (desktop only) ======= */}
           <div className="hidden lg:block">
-            <div className="sticky top-24">
-              {hasEstimated && estimates ? (
-                <EstimateSummary
-                  pickup={pickup}
-                  deliveries={activeDeliveries}
-                  estimates={estimates}
-                  isMulti={isMulti}
-                  onPlaceOrder={() => submitOrder(false)}
-                  onSaveDraft={() => submitOrder(true)}
-                  placing={placing}
-                  savingDraft={savingDraft}
-                  draftOrderNumber={draftOrderNumber}
-                />
-              ) : (
-                <EstimatePlaceholder />
-              )}
+            <div className="sticky top-20" style={{ height: '80vh' }}>
+              <div className="h-full overflow-y-auto">
+                {hasEstimated && estimates ? (
+                  <EstimateSummary
+                    pickup={pickup}
+                    deliveries={activeDeliveries}
+                    estimates={estimates}
+                    isMulti={isMulti}
+                    onPlaceOrder={() => submitOrder(false)}
+                    onSaveDraft={() => submitOrder(true)}
+                    placing={placing}
+                    savingDraft={savingDraft}
+                    draftOrderNumber={draftOrderNumber}
+                  />
+                ) : (
+                  <EstimatePlaceholder />
+                )}
+              </div>
             </div>
           </div>
         </div>
       </main>
+
+      {/* ======= MOBILE: Full-screen estimate sheet ======= */}
+      {showMobileEstimate && hasEstimated && estimates && (
+        <div className="lg:hidden fixed inset-0 z-50 bg-[#0A0A0A] flex flex-col">
+          {/* Sheet header */}
+          <div className="flex items-center gap-3 px-4 py-4 border-b border-[#1A1A1A]">
+            <button
+              type="button"
+              onClick={() => setShowMobileEstimate(false)}
+              className="flex items-center gap-1.5 text-gray-400 hover:text-[#FAFAFA] text-sm transition-colors"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+              </svg>
+              Go Back
+            </button>
+          </div>
+          {/* Scrollable estimate content */}
+          <div className="flex-1 overflow-y-auto p-4">
+            <EstimateSummary
+              pickup={pickup}
+              deliveries={activeDeliveries}
+              estimates={estimates}
+              isMulti={isMulti}
+              onPlaceOrder={() => { setShowMobileEstimate(false); submitOrder(false); }}
+              onSaveDraft={() => { setShowMobileEstimate(false); submitOrder(true); }}
+              placing={placing}
+              savingDraft={savingDraft}
+              draftOrderNumber={draftOrderNumber}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
