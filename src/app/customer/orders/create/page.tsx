@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import AddressInput from '@/components/AddressInput';
@@ -634,7 +634,7 @@ interface BulkPreviewCardsProps {
   onUpdateRow: (id: string, field: keyof CsvPreviewRow, value: string) => void;
   onSaveRow: (id: string) => void;
   onDeleteRow: (id: string) => void;
-  onRemoveAll: () => void;
+  onRemoveAll: (tab: 'valid' | 'invalid') => void;
   onConfirm: () => void;
   onCancel: () => void;
 }
@@ -690,7 +690,7 @@ function BulkPreviewCards({
         </div>
         <button
           type="button"
-          onClick={onRemoveAll}
+          onClick={() => onRemoveAll(activeTab)}
           className="flex items-center gap-1.5 text-xs text-red-400 hover:text-red-300 border border-red-800/40 hover:border-red-600/40 px-3 py-1.5 rounded-lg transition-colors"
         >
           <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -768,17 +768,24 @@ function BulkPreviewCards({
         </table>
       </div>
 
-      {/* Bottom actions */}
-      <div className="flex items-center justify-end gap-3">
-        <button
-          type="button"
-          onClick={onConfirm}
-          disabled={validRows.length === 0}
-          className="px-5 py-2.5 rounded-xl bg-[#F2FF66] text-[#0A0A0A] font-semibold text-sm hover:bg-[#e8f550] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-        >
-          Import {validRows.length} deliver{validRows.length === 1 ? 'y' : 'ies'}
-        </button>
-      </div>
+      {/* Bottom actions — Import only on Valid tab */}
+      {activeTab === 'valid' && (
+        <div className="flex flex-col items-end gap-2">
+          {invalidRows.length > 0 && (
+            <p className="text-xs text-red-400">
+              Fix or remove all {invalidRows.length} invalid row{invalidRows.length !== 1 ? 's' : ''} before importing.
+            </p>
+          )}
+          <button
+            type="button"
+            onClick={onConfirm}
+            disabled={validRows.length === 0 || invalidRows.length > 0}
+            className="px-5 py-2.5 rounded-xl bg-[#F2FF66] text-[#0A0A0A] font-semibold text-sm hover:bg-[#e8f550] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            Import {validRows.length} deliver{validRows.length === 1 ? 'y' : 'ies'}
+          </button>
+        </div>
+      )}
 
       {/* Edit modal overlay */}
       {editingRow && (
@@ -1066,7 +1073,7 @@ function SingleDeliveryForm({ delivery, onChange }: SingleDeliveryFormProps) {
 /*  Main Page                                                           */
 /* ------------------------------------------------------------------ */
 
-export default function CreateOrderPage() {
+function CreateOrderPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const draftParam = searchParams.get('draft');
@@ -1625,7 +1632,16 @@ export default function CreateOrderPage() {
                     onUpdateRow={handleBulkUpdateRow}
                     onSaveRow={(id) => setCsvPreview((rows) => rows ? rows.map((r) => r._id === id ? revalidateRow(r) : r) : rows)}
                     onDeleteRow={handleBulkDeleteRow}
-                    onRemoveAll={() => setCsvPreview(null)}
+                    onRemoveAll={(tab) => {
+                      setCsvPreview((prev) => {
+                        if (!prev) return null;
+                        const remaining =
+                          tab === 'valid'
+                            ? prev.filter((r) => !!r._error)   // keep only invalid
+                            : prev.filter((r) => !r._error);   // keep only valid
+                        return remaining.length === 0 ? null : remaining;
+                      });
+                    }}
                     onConfirm={handleBulkConfirm}
                     onCancel={() => setCsvPreview(null)}
                   />
@@ -1715,5 +1731,13 @@ export default function CreateOrderPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function CreateOrderPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center"><div className="w-6 h-6 border-2 border-[#F2FF66] border-t-transparent rounded-full animate-spin" /></div>}>
+      <CreateOrderPageContent />
+    </Suspense>
   );
 }
