@@ -4,9 +4,10 @@ import StatusBadge from './StatusBadge';
 
 function formatTimestamp(timestamp: string): string {
   const date = new Date(timestamp);
-  return date.toLocaleString('en-US', {
+  return date.toLocaleString('en-NG', {
     month: 'short',
     day: 'numeric',
+    year: 'numeric',
     hour: 'numeric',
     minute: '2-digit',
     hour12: true,
@@ -14,6 +15,7 @@ function formatTimestamp(timestamp: string): string {
 }
 
 export default function Timeline({ history }: { history: DeliveryHistory[] }) {
+  // Newest first
   const sorted = [...history].sort(
     (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
   );
@@ -25,42 +27,36 @@ export default function Timeline({ history }: { history: DeliveryHistory[] }) {
   }
 
   return (
-    <ol className="relative border-l border-gray-800 ml-3 space-y-6">
+    <ol className="relative border-l border-gray-800 ml-3 space-y-0">
       {sorted.map((entry, i) => (
-        <li key={entry.id} className="ml-6">
-          {/* Dot on the timeline */}
+        <li key={entry.id} className="ml-6 pb-7 last:pb-0">
+          {/* Timeline dot */}
           <span
             className={`absolute -left-2.5 flex items-center justify-center w-5 h-5 rounded-full ring-4 ring-[#0A0A0A] ${
-              i === 0 ? 'bg-[#F2FF66]' : 'bg-gray-700'
+              i === 0 ? 'bg-[#F2FF66]' : 'bg-[#191314] border border-gray-700'
             }`}
           >
-            {i === 0 && (
-              <div className="w-2 h-2 rounded-full bg-black" />
-            )}
+            {i === 0 && <div className="w-2 h-2 rounded-full bg-black" />}
           </span>
 
-          <div className="flex flex-col gap-1.5">
+          <div className="flex flex-col gap-1">
             {/* Timestamp */}
-            <time className="text-xs font-normal text-gray-500">
+            <time className="text-xs text-gray-500 leading-none">
               {formatTimestamp(entry.timestamp)}
             </time>
 
-            {/* Status badge */}
-            <div>
-              <StatusBadge status={entry.status} />
-            </div>
-
-            {/* Triggered by */}
-            <p className="text-xs text-gray-600 capitalize">
-              Updated by {entry.triggered_by}
+            {/* Description — primary, prominent */}
+            <p className="text-sm font-medium text-[#FAFAFA] leading-snug">
+              {entry.note || STATUS_LABELS[entry.status] || entry.status}
             </p>
 
-            {/* Note */}
-            {entry.note && (
-              <p className="text-sm text-gray-300 bg-gray-900 rounded-lg px-3 py-2">
-                {entry.note}
-              </p>
-            )}
+            {/* Status badge — secondary */}
+            <div className="flex items-center gap-2 flex-wrap">
+              <StatusBadge status={entry.status} />
+              <span className="text-xs text-gray-600 capitalize">
+                via {entry.triggered_by}
+              </span>
+            </div>
           </div>
         </li>
       ))}

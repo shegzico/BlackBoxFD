@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 import { verifyToken } from '@/lib/auth';
+import { getEditNote } from '@/lib/status-notes';
 
 export async function PATCH(
   request: NextRequest,
@@ -61,7 +62,7 @@ export async function PATCH(
       delivery_id: id,
       status: delivery.status,
       triggered_by: 'customer',
-      note: `Order details edited by ${payload.name}`,
+      note: getEditNote(payload.name),
       performed_by_customer_id: payload.id,
       performed_by_name: payload.name,
     });

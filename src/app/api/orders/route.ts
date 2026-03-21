@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 import { verifyToken } from '@/lib/auth';
 import { generateTrackingId } from '@/lib/tracking-id';
+import { getStatusNote } from '@/lib/status-notes';
 
 // Characters excluding easily confused ones: O, 0, I, 1, L
 const CHARS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
@@ -210,7 +211,7 @@ export async function POST(request: NextRequest) {
             delivery_id: tracking_id,
             status: 'pending',
             triggered_by: 'customer',
-            note: `Order placed by ${payload.name}`,
+            note: getStatusNote('pending', { actorName: payload.name }),
             performed_by_customer_id: payload.id,
             performed_by_name: payload.name,
           });

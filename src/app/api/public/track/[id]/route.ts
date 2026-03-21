@@ -32,7 +32,7 @@ export async function GET(
       .from('delivery_history')
       .select('id, status, timestamp, note')
       .eq('delivery_id', id)
-      .order('timestamp', { ascending: true });
+      .order('timestamp', { ascending: false });
 
     return NextResponse.json({
       tracking: {

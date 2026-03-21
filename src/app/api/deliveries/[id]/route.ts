@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
+import { getStatusNote } from '@/lib/status-notes';
 
 export async function GET(
   request: NextRequest,
@@ -22,7 +23,7 @@ export async function GET(
       .from('delivery_history')
       .select('*')
       .eq('delivery_id', id)
-      .order('timestamp', { ascending: true });
+      .order('timestamp', { ascending: false });
 
     if (historyError) {
       return NextResponse.json({ error: historyError.message }, { status: 500 });
@@ -95,13 +96,14 @@ export async function PATCH(
     // If status changed, insert a new history entry
     const newStatus = resolvedStatus;
     if (newStatus && newStatus !== current.status) {
+      const rider = Array.isArray(delivery.rider) ? delivery.rider[0] : delivery.rider;
       const { error: historyError } = await supabase
         .from('delivery_history')
         .insert({
           delivery_id: id,
           status: newStatus,
           triggered_by,
-          note: note || null,
+          note: note || getStatusNote(newStatus, { riderName: rider?.name }),
         });
 
       if (historyError) {

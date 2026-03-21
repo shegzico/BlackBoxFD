@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 import { verifyToken } from '@/lib/auth';
 import { generateTrackingId } from '@/lib/tracking-id';
+import { getDraftConfirmNote } from '@/lib/status-notes';
 
 // Characters excluding easily confused ones: O, 0, I, 1, L
 const PATCH_CHARS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
@@ -264,7 +265,7 @@ export async function PATCH(
             delivery_id: tracking_id,
             status: 'pending',
             triggered_by: 'customer',
-            note: `Order confirmed from draft by ${payload.name}`,
+            note: getDraftConfirmNote(payload.name),
             performed_by_customer_id: payload.id,
             performed_by_name: payload.name,
           });

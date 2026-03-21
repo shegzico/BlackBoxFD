@@ -530,25 +530,30 @@
       var tlEvents = el('div', { class: 'bbx-tl-events' });
       var events = el('div', { class: 'bbx-events' });
 
+      // API returns newest-first; render in that order
       d.history.forEach(function (h) {
-        var hColor = STATUS_COLORS[h.status] || t.textMuted;
         var evnt = el('div', { class: 'bbx-event' });
         var left = el('div', { class: 'bbx-event-left' });
-        var dot  = el('div', { class: 'bbx-event-dot',  style: { background: hColor } });
+        var dot  = el('div', { class: 'bbx-event-dot',  style: { background: t.progressDone } });
         var line = el('div', { class: 'bbx-event-line', style: { background: t.border } });
         left.appendChild(dot);
         left.appendChild(line);
 
         var body = el('div', { class: 'bbx-event-body' });
-        var evStatus = el('div', { class: 'bbx-event-status', style: { color: t.text } },
-          STATUS_LABELS[h.status] || esc(h.status));
-        body.appendChild(evStatus);
-        if (h.note) {
-          var note = el('div', { class: 'bbx-event-note', style: { color: t.textMuted } }, esc(h.note));
-          body.appendChild(note);
-        }
+
+        // Timestamp — top, muted
         var ts = el('div', { class: 'bbx-event-time', style: { color: t.textDim } }, fmtTime(h.timestamp));
         body.appendChild(ts);
+
+        // Description — primary, prominent (note preferred; fall back to label)
+        var desc = el('div', { class: 'bbx-event-status', style: { color: t.text } },
+          esc(h.note || STATUS_LABELS[h.status] || h.status));
+        body.appendChild(desc);
+
+        // Status label — secondary, muted
+        var statusLabel = el('div', { class: 'bbx-event-note', style: { color: t.textMuted } },
+          STATUS_LABELS[h.status] || esc(h.status));
+        body.appendChild(statusLabel);
 
         evnt.appendChild(left);
         evnt.appendChild(body);

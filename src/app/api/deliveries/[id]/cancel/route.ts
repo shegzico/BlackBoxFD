@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 import { verifyToken } from '@/lib/auth';
+import { getStatusNote } from '@/lib/status-notes';
 
 export async function PATCH(
   request: NextRequest,
@@ -67,8 +68,8 @@ export async function PATCH(
     }
 
     const note = payload.role === 'customer'
-      ? `Cancelled by ${actorName}${payload.business_id ? ` (team member)` : ''}`
-      : `Cancelled by admin`;
+      ? getStatusNote('cancelled', { actorName, isTeamMember: !!payload.business_id })
+      : getStatusNote('cancelled', { actorName: 'admin' });
 
     // Log to history
     await supabase.from('delivery_history').insert({
