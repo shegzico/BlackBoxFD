@@ -15,10 +15,21 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { data: deliveries, error } = await supabase
+    const { searchParams } = new URL(request.url);
+    const days = parseInt(searchParams.get('days') || '0');
+
+    let query = supabase
       .from('deliveries')
       .select('status')
       .eq('customer_id', payload.id);
+
+    if (days > 0) {
+      const since = new Date();
+      since.setDate(since.getDate() - days);
+      query = query.gte('created_at', since.toISOString());
+    }
+
+    const { data: deliveries, error } = await query;
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 });
@@ -32,6 +43,7 @@ export async function GET(request: NextRequest) {
       in_transit: 0,
       delivered: 0,
       confirmed: 0,
+      cancelled: 0,
     };
 
     for (const delivery of deliveries) {
