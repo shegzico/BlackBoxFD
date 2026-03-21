@@ -10,6 +10,7 @@
  *   data-sub="Enter your tracking ID…"  (custom sub text)
  *   data-show-sub="true|false"           (show/hide sub, default: true)
  *   data-btn-position="below|beside"     (button below or beside input, default: below)
+ *   data-inherit-styles="true|false"     (inherit site styles for input+button, default: false)
  */
 (function () {
   'use strict';
@@ -48,6 +49,8 @@
       textDim: '#555555',
       accent: '#F2FF66',
       accentText: '#0A0A0A',
+      inputBg: '#232023',
+      inputBorder: '#3A3A3A',
       errorBg: 'rgba(239,68,68,0.1)',
       errorBorder: 'rgba(239,68,68,0.3)',
       errorText: '#f87171',
@@ -66,7 +69,9 @@
       textMuted: '#6b7280',
       textDim: '#9ca3af',
       accent: '#0A0A0A',
-      accentText: '#F2FF66',
+      accentText: '#ffffff',
+      inputBg: '#ffffff',
+      inputBorder: '#d1d5db',
       errorBg: 'rgba(239,68,68,0.05)',
       errorBorder: 'rgba(239,68,68,0.3)',
       errorText: '#dc2626',
@@ -133,10 +138,19 @@
       /* Heading / sub — styled but invisible if hidden */
       '.bbx-heading{font-size:20px;font-weight:700;line-height:1.2;margin-bottom:6px;}',
       '.bbx-sub{font-size:13px;opacity:.5;margin-bottom:16px;}',
-      /* Field wrapper — layout only, no visual styles */
+      /* Field wrapper — layout */
       '.bbx-field-below{display:flex;flex-direction:column;gap:8px;}',
+      '.bbx-field-below .bbx-input-wrap{width:100%;}',
       '.bbx-field-beside{display:flex;flex-direction:row;gap:8px;align-items:stretch;}',
       '.bbx-field-beside .bbx-input-wrap{flex:1;}',
+      /* Default styled input (used unless data-inherit-styles="true") */
+      '.bbx-input{width:100%;border-radius:10px;border:1.5px solid;padding:12px 14px;font-size:14px;font-family:inherit;outline:none;transition:border-color .2s,box-shadow .2s;letter-spacing:.5px;}',
+      /* Default styled button */
+      '.bbx-btn{border:none;border-radius:10px;padding:12px 20px;font-size:13px;font-weight:700;cursor:pointer;transition:opacity .15s,transform .15s;white-space:nowrap;display:inline-flex;align-items:center;justify-content:center;gap:6px;letter-spacing:.3px;font-family:inherit;}',
+      '.bbx-btn:active{transform:scale(.97);}',
+      '.bbx-btn:disabled{opacity:.55;cursor:not-allowed;transform:none!important;}',
+      /* Full-width button when stacked below */
+      '.bbx-field-below .bbx-btn{width:100%;}',
       /* Error */
       '.bbx-error{border-radius:10px;padding:10px 14px;font-size:13px;margin-top:10px;display:none;}',
       /* Result panel */
@@ -221,8 +235,9 @@
     this.headingText  = attr(container, 'data-heading', 'Track your package');
     this.showSub      = boolAttr(container, 'data-show-sub', true);
     this.subText      = attr(container, 'data-sub', 'Enter your BlackBox tracking ID to see real-time status');
-    this.btnPos       = attr(container, 'data-btn-position', 'below') === 'beside' ? 'beside' : 'below';
-    this.t            = THEMES[this.theme];
+    this.btnPos        = attr(container, 'data-btn-position', 'below') === 'beside' ? 'beside' : 'below';
+    this.inheritStyles = boolAttr(container, 'data-inherit-styles', false);
+    this.t             = THEMES[this.theme];
     this._build();
   }
 
@@ -246,16 +261,32 @@
       inner.appendChild(sub);
     }
 
-    // Field wrapper — layout driven by btn-position, no visual styles on input/button
+    // Field wrapper — layout driven by btn-position
     var fieldWrap = el('div', { class: this.btnPos === 'beside' ? 'bbx-field-beside' : 'bbx-field-below' });
     var inputWrap = el('div', { class: 'bbx-input-wrap' });
-    var input = el('input', {
+
+    var inputAttrs = {
       type: 'text',
       placeholder: 'e.g. BB-A1B2C3',
       maxlength: '20',
       autocomplete: 'off',
       spellcheck: 'false',
-    });
+    };
+    // Apply app styles by default; skip if inheriting site styles
+    if (!this.inheritStyles) {
+      inputAttrs['class'] = 'bbx-input';
+    }
+    var input = el('input', inputAttrs);
+
+    // Apply theme colours to styled input
+    if (!this.inheritStyles) {
+      input.style.background   = t.inputBg;
+      input.style.borderColor  = t.inputBorder;
+      input.style.color        = t.text;
+      input.addEventListener('focus', function () { input.style.borderColor = t.accent; });
+      input.addEventListener('blur',  function () { input.style.borderColor = t.inputBorder; });
+    }
+
     if (this.prefill) input.value = this.prefill.toUpperCase();
 
     input.addEventListener('input', function () {
@@ -263,9 +294,20 @@
       errorDiv.style.display = 'none';
     });
 
-    var trackBtn = el('button', { type: 'button' });
+    var btnAttrs = { type: 'button' };
+    if (!this.inheritStyles) {
+      btnAttrs['class'] = 'bbx-btn';
+    }
+    var trackBtn = el('button', btnAttrs);
+
+    // Apply theme colours to styled button
+    if (!this.inheritStyles) {
+      trackBtn.style.background = t.accent;
+      trackBtn.style.color      = t.accentText;
+    }
+
     var btnLabel = el('span', null, 'Track');
-    var btnIcon = el('span', { style: { display: 'inline-flex', verticalAlign: 'middle', marginRight: '4px' } }, ICONS.search);
+    var btnIcon  = el('span', { style: { display: 'inline-flex', verticalAlign: 'middle', marginRight: '4px' } }, ICONS.search);
     trackBtn.appendChild(btnIcon);
     trackBtn.appendChild(btnLabel);
 
@@ -309,10 +351,10 @@
     this._btnLabel.textContent = on ? 'Tracking…' : 'Track';
     var spinner = this._trackBtn.querySelector('.bbx-spinner');
     if (on && !spinner) {
+      var spinColor = this.inheritStyles ? 'currentColor' : this.t.accentText;
       var s = el('span', { class: 'bbx-spinner' });
-      s.style.borderTopColor = 'currentColor';
-      s.style.borderColor = 'rgba(128,128,128,0.3)';
-      s.style.borderTopColor = 'currentColor';
+      s.style.borderColor = spinColor + '44';
+      s.style.borderTopColor = spinColor;
       this._btnIcon.innerHTML = '';
       this._btnIcon.appendChild(s);
     } else if (!on) {
