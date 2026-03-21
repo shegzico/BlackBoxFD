@@ -486,15 +486,14 @@
       result.appendChild(progressWrap);
     }
 
-    // ── Info cards ────────────────────────────────────────────
+    // ── Info cards (public — no personal details) ─────────────
     var cards = el('div', { class: 'bbx-cards' });
     var cardDefs = [
-      { label: 'From',  value: d.sender_name,                         sub: d.pickup_area,  icon: ICONS.user },
-      { label: 'To',    value: d.recipient_name,                       sub: d.dropoff_area, icon: ICONS.pin  },
-      { label: 'Rider', value: d.rider_name || 'Not yet assigned',     sub: null,           icon: ICONS.bike },
+      { label: 'Pickup',   value: d.pickup_area,   icon: ICONS.pin  },
+      { label: 'Dropoff',  value: d.dropoff_area,  icon: ICONS.pin  },
+      { label: 'Rider',    value: d.rider_assigned ? 'Assigned' : 'Not yet assigned', icon: ICONS.bike },
     ];
-    if (d.pickup_date)          cardDefs.push({ label: 'Pickup Date', value: fmtDate(d.pickup_date),      icon: ICONS.cal });
-    if (d.package_description)  cardDefs.push({ label: 'Package',     value: d.package_description,       icon: ICONS.pkg });
+    if (d.pickup_date) cardDefs.push({ label: 'Pickup Date', value: fmtDate(d.pickup_date), icon: ICONS.cal });
 
     cardDefs.forEach(function (c) {
       var card = el('div', { class: 'bbx-card', style: { background: t.surface, borderColor: t.border } });

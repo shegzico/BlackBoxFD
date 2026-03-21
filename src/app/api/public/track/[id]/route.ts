@@ -20,7 +20,7 @@ export async function GET(
 
     const { data: delivery, error } = await supabase
       .from('deliveries')
-      .select('id, status, pickup_area, dropoff_area, pickup_date, is_express, package_description, sender_name, recipient_name, rider:riders(name)')
+      .select('id, status, pickup_area, dropoff_area, pickup_date, is_express, rider_id')
       .eq('id', id)
       .single();
 
@@ -30,17 +30,9 @@ export async function GET(
 
     const { data: history } = await supabase
       .from('delivery_history')
-      .select('id, status, timestamp, note, triggered_by')
+      .select('id, status, timestamp, note')
       .eq('delivery_id', id)
       .order('timestamp', { ascending: true });
-
-    // Mask recipient to first name + last initial only for privacy
-    const recipientParts = (delivery.recipient_name || '').trim().split(' ');
-    const maskedRecipient = recipientParts.length > 1
-      ? `${recipientParts[0]} ${recipientParts[recipientParts.length - 1][0]}.`
-      : recipientParts[0] || 'Recipient';
-
-    const rider = Array.isArray(delivery.rider) ? delivery.rider[0] : delivery.rider;
 
     return NextResponse.json({
       tracking: {
@@ -50,10 +42,7 @@ export async function GET(
         dropoff_area: delivery.dropoff_area,
         pickup_date: delivery.pickup_date,
         is_express: delivery.is_express,
-        package_description: delivery.package_description,
-        sender_name: delivery.sender_name,
-        recipient_name: maskedRecipient,
-        rider_name: rider?.name ?? null,
+        rider_assigned: delivery.rider_id !== null,
         history: (history || []).map((h) => ({
           id: h.id,
           status: h.status,
