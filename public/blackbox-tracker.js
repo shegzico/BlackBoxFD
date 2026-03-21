@@ -177,10 +177,13 @@
       '.bbx-card-label{font-size:10px;font-weight:500;letter-spacing:.4px;text-transform:uppercase;margin-bottom:2px;}',
       '.bbx-card-value{font-size:13px;font-weight:600;}',
       '.bbx-card-sub{font-size:11px;margin-top:1px;}',
-      /* Timeline toggle button */
+      /* Timeline header row — toggle + full details link side by side */
+      '.bbx-tl-header{display:flex;align-items:center;justify-content:space-between;gap:8px;}',
       '.bbx-tl-toggle{display:flex;align-items:center;gap:6px;background:none;border:none;padding:0;cursor:pointer;font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;}',
       '.bbx-tl-toggle svg{width:12px;height:12px;transition:transform .2s;}',
       '.bbx-tl-toggle.open svg{transform:rotate(180deg);}',
+      '.bbx-tl-link{background:none;border:none;padding:0;cursor:pointer;font-size:11px;font-weight:600;letter-spacing:.4px;text-decoration:underline;text-underline-offset:2px;display:inline-flex;align-items:center;gap:4px;}',
+      '.bbx-tl-link svg{width:11px;height:11px;}',
       /* Timeline events */
       '.bbx-tl-events{margin-top:12px;display:none;}',
       '.bbx-events{display:flex;flex-direction:column;gap:0;}',
@@ -516,16 +519,29 @@
     result.appendChild(cards);
 
     // ── Timeline (collapsed by default) ───────────────────────
+    // ── "Full details" link — shared reference, placed beside timeline toggle
+    var viewBtn = el('button', { class: 'bbx-tl-link', type: 'button', style: { color: t.textDim } });
+    viewBtn.innerHTML = ICONS.share + '<span>Full details</span>';
+    viewBtn.addEventListener('click', function () {
+      window.open(APP_TRACK + '/' + encodeURIComponent(d.id), '_blank', 'noopener');
+    });
+
     if (d.history && d.history.length > 0) {
       result.appendChild(el('div', { class: 'bbx-divider', style: { background: t.border } }));
 
       var tlOpen = false;
 
+      // Header row: "Delivery history (N)" toggle  +  "Full details" link
+      var tlHeader = el('div', { class: 'bbx-tl-header' });
+
       var tlToggle = el('button', { class: 'bbx-tl-toggle', type: 'button', style: { color: t.textDim } });
       tlToggle.innerHTML = 'Delivery history (' + d.history.length + ')';
       var chevWrap = el('span', { style: { display: 'inline-flex', marginLeft: '4px', color: t.textDim } }, ICONS.chevDown);
       tlToggle.appendChild(chevWrap);
-      result.appendChild(tlToggle);
+
+      tlHeader.appendChild(tlToggle);
+      tlHeader.appendChild(viewBtn);
+      result.appendChild(tlHeader);
 
       var tlEvents = el('div', { class: 'bbx-tl-events' });
       var events = el('div', { class: 'bbx-events' });
@@ -568,37 +584,11 @@
         tlEvents.style.display = tlOpen ? 'block' : 'none';
         tlToggle.classList.toggle('open', tlOpen);
       });
+    } else {
+      // No history — show Full details link on its own below the cards
+      result.appendChild(el('div', { class: 'bbx-divider', style: { background: t.border } }));
+      result.appendChild(viewBtn);
     }
-
-    // ── Action buttons ────────────────────────────────────────
-    var actions = el('div', { class: 'bbx-actions' });
-
-    var resetBtn = el('button', {
-      class: 'bbx-btn-ghost',
-      type: 'button',
-      style: { color: t.textMuted, borderColor: t.border },
-    });
-    resetBtn.innerHTML = ICONS.refresh + '<span>Track another</span>';
-    resetBtn.addEventListener('click', function () {
-      self._resultDiv.style.display = 'none';
-      self._input.value = '';
-      self._input.disabled = false;
-      self._input.focus();
-    });
-
-    var viewBtn = el('button', {
-      class: 'bbx-btn-ghost',
-      type: 'button',
-      style: { color: t.textMuted, borderColor: t.border },
-    });
-    viewBtn.innerHTML = ICONS.share + '<span>Full details</span>';
-    viewBtn.addEventListener('click', function () {
-      window.open(APP_TRACK + '/' + encodeURIComponent(d.id), '_blank', 'noopener');
-    });
-
-    actions.appendChild(resetBtn);
-    actions.appendChild(viewBtn);
-    result.appendChild(actions);
 
     result.style.display = 'block';
   };
