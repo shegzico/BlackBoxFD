@@ -54,12 +54,30 @@ export async function PATCH(
       return NextResponse.json({ error: updateError.message }, { status: 500 });
     }
 
+    // Build actor name for audit trail
+    let actorName = payload.name;
+    if (payload.role === 'customer' && payload.business_id) {
+      // Fetch actual name for richer audit note
+      const { data: actor } = await supabase
+        .from('customers')
+        .select('name')
+        .eq('id', payload.id)
+        .single();
+      if (actor) actorName = actor.name;
+    }
+
+    const note = payload.role === 'customer'
+      ? `Cancelled by ${actorName}${payload.business_id ? ` (team member)` : ''}`
+      : `Cancelled by admin`;
+
     // Log to history
     await supabase.from('delivery_history').insert({
       delivery_id: id,
       status: 'cancelled',
-      triggered_by: payload.role,
-      note: payload.role === 'customer' ? 'Cancelled by customer' : 'Cancelled by admin',
+      triggered_by: payload.role === 'customer' ? 'customer' : 'admin',
+      note,
+      performed_by_customer_id: payload.role === 'customer' ? payload.id : null,
+      performed_by_name: payload.role === 'customer' ? actorName : null,
     });
 
     return NextResponse.json({ success: true });

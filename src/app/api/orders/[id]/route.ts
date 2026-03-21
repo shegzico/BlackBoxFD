@@ -264,7 +264,9 @@ export async function PATCH(
             delivery_id: tracking_id,
             status: 'pending',
             triggered_by: 'customer',
-            note: 'Order confirmed from draft',
+            note: `Order confirmed from draft by ${payload.name}`,
+            performed_by_customer_id: payload.id,
+            performed_by_name: payload.name,
           });
         }
 

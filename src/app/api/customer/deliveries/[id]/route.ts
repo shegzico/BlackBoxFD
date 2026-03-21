@@ -56,6 +56,16 @@ export async function PATCH(
       return NextResponse.json({ error: updateError.message }, { status: 500 });
     }
 
+    // Log edit to history for audit trail
+    await supabase.from('delivery_history').insert({
+      delivery_id: id,
+      status: delivery.status,
+      triggered_by: 'customer',
+      note: `Order details edited by ${payload.name}`,
+      performed_by_customer_id: payload.id,
+      performed_by_name: payload.name,
+    });
+
     return NextResponse.json({ message: 'Delivery updated' });
   } catch {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

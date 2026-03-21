@@ -210,7 +210,9 @@ export async function POST(request: NextRequest) {
             delivery_id: tracking_id,
             status: 'pending',
             triggered_by: 'customer',
-            note: 'Delivery created',
+            note: `Order placed by ${payload.name}`,
+            performed_by_customer_id: payload.id,
+            performed_by_name: payload.name,
           });
 
         if (historyError) {

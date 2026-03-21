@@ -60,6 +60,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Fetch business name if applicable
+    let business_name: string | null = null;
+    if (customer.business_id) {
+      const { data: biz } = await supabase
+        .from('businesses')
+        .select('name')
+        .eq('id', customer.business_id)
+        .single();
+      business_name = biz?.name ?? null;
+    }
+
     // Sign JWT token
     const tokenPayload: Parameters<typeof signToken>[0] = {
       id: customer.id,
@@ -80,9 +91,10 @@ export async function POST(request: NextRequest) {
         name: customer.name,
         email: customer.email,
         phone: customer.phone,
-        business_id: customer.business_id || null,
-        business_role: customer.business_role || null,
-        account_type: customer.account_type || 'individual',
+        business_id: customer.business_id ?? null,
+        business_role: customer.business_role ?? null,
+        account_type: customer.account_type ?? 'individual',
+        business_name,
       },
     });
   } catch (err) {

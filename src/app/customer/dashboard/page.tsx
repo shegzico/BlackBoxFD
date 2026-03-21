@@ -450,7 +450,12 @@ export default function CustomerDashboard() {
   useEffect(() => {
     try {
       const info = JSON.parse(localStorage.getItem('customer_info') || '{}');
-      setCustomerName(info.name?.split(' ')[0] || '');
+      // Business accounts: show business name; individuals: show first name
+      if (info.business_name) {
+        setCustomerName(info.business_name);
+      } else {
+        setCustomerName(info.name?.split(' ')[0] || '');
+      }
     } catch { /**/ }
     fetchOrders();
   }, [fetchOrders]);
@@ -526,7 +531,15 @@ export default function CustomerDashboard() {
         <h1 className="text-lg md:text-xl font-bold text-[#FAFAFA]">
           {getGreeting()}{customerName ? `, ${customerName}` : ''} 👋
         </h1>
-        <p className="text-[#888888] text-sm mt-0.5">Here&apos;s your delivery overview</p>
+        {(() => {
+          try {
+            const info = JSON.parse(localStorage.getItem('customer_info') || '{}');
+            if (info.business_name) {
+              return <p className="text-[#888888] text-sm mt-0.5">Here&apos;s your business delivery overview</p>;
+            }
+          } catch { /**/ }
+          return <p className="text-[#888888] text-sm mt-0.5">Here&apos;s your delivery overview</p>;
+        })()}
       </div>
 
       {/* Banner */}
