@@ -15,8 +15,8 @@
 (function () {
   'use strict';
 
-  var API_BASE = 'https://black-box-fd.vercel.app/api/public/track';
-  var APP_TRACK = 'https://black-box-fd.vercel.app/track';
+  var API_BASE = 'https://app-blackbox.vercel.app/api/public/track';
+  var APP_TRACK = 'https://app-blackbox.vercel.app/track';
 
   // ── Status config ────────────────────────────────────────────
   var STATUS_ORDER = ['pending', 'assigned', 'picked_up', 'in_transit', 'delivered', 'confirmed'];
