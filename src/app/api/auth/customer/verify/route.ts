@@ -61,11 +61,17 @@ export async function POST(request: NextRequest) {
     }
 
     // Sign JWT token
-    const token = signToken({
+    const tokenPayload: Parameters<typeof signToken>[0] = {
       id: customer.id,
       role: 'customer',
       name: customer.name,
-    });
+    };
+
+    if (customer.business_id) tokenPayload.business_id = customer.business_id;
+    if (customer.business_role) tokenPayload.business_role = customer.business_role;
+    if (customer.account_type) tokenPayload.account_type = customer.account_type;
+
+    const token = signToken(tokenPayload);
 
     return NextResponse.json({
       token,
@@ -74,6 +80,9 @@ export async function POST(request: NextRequest) {
         name: customer.name,
         email: customer.email,
         phone: customer.phone,
+        business_id: customer.business_id || null,
+        business_role: customer.business_role || null,
+        account_type: customer.account_type || 'individual',
       },
     });
   } catch (err) {

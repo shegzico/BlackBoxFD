@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { LAGOS_ZONES } from '@/lib/types';
 
-type Tab = 'profile' | 'security' | 'location';
+type Tab = 'profile' | 'security' | 'location' | 'team';
 
 interface Profile {
   id: number;
@@ -16,7 +16,51 @@ interface Profile {
   avatar_url: string | null;
   default_pickup_area: string | null;
   default_pickup_address: string | null;
+  business_id?: number | null;
+  business_role?: string | null;
+  account_type?: string | null;
 }
+
+interface Business {
+  id: number;
+  name: string;
+  email: string | null;
+  phone: string | null;
+  address: string | null;
+  type: string | null;
+  state: string | null;
+}
+
+interface TeamMember {
+  id: number;
+  name: string;
+  email: string;
+  phone: string;
+  business_role: string;
+  account_type: string;
+  created_at: string;
+}
+
+interface Invite {
+  id: number;
+  email: string;
+  role: string;
+  created_at: string;
+  status: string;
+  expires_at: string;
+  token?: string;
+}
+
+const BUSINESS_TYPES = [
+  'Retail',
+  'E-commerce',
+  'Fashion',
+  'Food & Beverage',
+  'Pharmacy/Health',
+  'Logistics',
+  'Technology',
+  'Other',
+];
 
 function getInitials(profile: Profile): string {
   const fn = profile.first_name?.trim();
@@ -45,6 +89,168 @@ function authHeaders(token: string) {
     'Content-Type': 'application/json',
     Authorization: `Bearer ${token}`,
   };
+}
+
+function RoleBadge({ role }: { role: string }) {
+  const isAdmin = role === 'admin';
+  return (
+    <span
+      className={`px-2 py-0.5 rounded-full text-xs font-semibold capitalize ${
+        isAdmin
+          ? 'bg-[#F2FF66]/15 text-[#F2FF66]'
+          : 'bg-[#2A2A2A] text-[#888888]'
+      }`}
+    >
+      {role}
+    </span>
+  );
+}
+
+// ===== Invite Modal =====
+function InviteModal({
+  onClose,
+  onSent,
+  token,
+}: {
+  onClose: () => void;
+  onSent: () => void;
+  token: string;
+}) {
+  const [inviteEmail, setInviteEmail] = useState('');
+  const [inviteRole, setInviteRole] = useState<'admin' | 'basic'>('basic');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  async function handleSend(e: React.FormEvent) {
+    e.preventDefault();
+    if (!inviteEmail.trim()) { setError('Email is required'); return; }
+    setError('');
+    setLoading(true);
+
+    try {
+      const res = await fetch('/api/business/invite', {
+        method: 'POST',
+        headers: authHeaders(token),
+        body: JSON.stringify({ email: inviteEmail, role: inviteRole }),
+      });
+      const data = await res.json();
+      if (!res.ok) { setError(data.error || 'Failed to send invite'); setLoading(false); return; }
+      onSent();
+    } catch {
+      setError('Network error. Please try again.');
+      setLoading(false);
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center px-4" style={{ backdropFilter: 'blur(4px)', background: 'rgba(0,0,0,0.7)' }}>
+      <div className="w-full max-w-sm bg-[#191314] border border-[#2A2A2A] rounded-2xl p-6 shadow-2xl">
+        <div className="flex items-center justify-between mb-5">
+          <h2 className="text-base font-bold text-[#FAFAFA]">Invite Team Member</h2>
+          <button onClick={onClose} className="text-[#888888] hover:text-[#FAFAFA] transition-colors">
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        {error && (
+          <div className="mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm">
+            {error}
+          </div>
+        )}
+
+        <form onSubmit={handleSend} className="space-y-4">
+          <div>
+            <label className="block text-xs text-[#888888] mb-1.5">Email Address</label>
+            <input
+              type="email"
+              value={inviteEmail}
+              onChange={(e) => setInviteEmail(e.target.value)}
+              placeholder="colleague@company.com"
+              required
+              disabled={loading}
+              className="w-full rounded-lg bg-[#232023] border border-gray-700 text-[#FAFAFA] px-3 py-3 text-sm placeholder-gray-600 focus:outline-none focus:border-[#F2FF66] focus:ring-1 focus:ring-[#F2FF66] transition-colors disabled:opacity-50"
+            />
+          </div>
+
+          {/* Role selector */}
+          <div>
+            <label className="block text-xs text-[#888888] mb-2">Role</label>
+            <div className="flex gap-2">
+              {/* Admin card */}
+              <button
+                type="button"
+                onClick={() => setInviteRole('admin')}
+                className={`flex-1 p-3 rounded-xl border-2 text-left transition-all ${
+                  inviteRole === 'admin'
+                    ? 'border-[#F2FF66] bg-[#F2FF66]/5'
+                    : 'border-[#2A2A2A] bg-[#0A0A0A] hover:border-[#F2FF66]/40'
+                }`}
+              >
+                <p className={`text-sm font-semibold mb-1.5 ${inviteRole === 'admin' ? 'text-[#F2FF66]' : 'text-[#FAFAFA]'}`}>
+                  Admin
+                </p>
+                <ul className="space-y-1">
+                  {['Create shipments', 'Edit orders', 'Manage users', 'Top-up wallets'].map((p) => (
+                    <li key={p} className="flex items-center gap-1.5 text-xs text-[#888888]">
+                      <svg className="w-3 h-3 text-[#F2FF66]/70 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                      </svg>
+                      {p}
+                    </li>
+                  ))}
+                </ul>
+              </button>
+
+              {/* Basic card */}
+              <button
+                type="button"
+                onClick={() => setInviteRole('basic')}
+                className={`flex-1 p-3 rounded-xl border-2 text-left transition-all ${
+                  inviteRole === 'basic'
+                    ? 'border-[#F2FF66] bg-[#F2FF66]/5'
+                    : 'border-[#2A2A2A] bg-[#0A0A0A] hover:border-[#F2FF66]/40'
+                }`}
+              >
+                <p className={`text-sm font-semibold mb-1.5 ${inviteRole === 'basic' ? 'text-[#F2FF66]' : 'text-[#FAFAFA]'}`}>
+                  Basic
+                </p>
+                <ul className="space-y-1">
+                  {['Create shipments'].map((p) => (
+                    <li key={p} className="flex items-center gap-1.5 text-xs text-[#888888]">
+                      <svg className="w-3 h-3 text-[#F2FF66]/70 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                      </svg>
+                      {p}
+                    </li>
+                  ))}
+                </ul>
+              </button>
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-[#F2FF66] text-[#0A0A0A] py-3 rounded-lg text-sm font-bold hover:bg-[#e8f55c] transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+          >
+            {loading ? (
+              <>
+                <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+                </svg>
+                Sending...
+              </>
+            ) : (
+              'Send Invite'
+            )}
+          </button>
+        </form>
+      </div>
+    </div>
+  );
 }
 
 export default function CustomerAccount() {
@@ -81,6 +287,30 @@ export default function CustomerAccount() {
   const [locationError, setLocationError] = useState('');
   const [locationSuccess, setLocationSuccess] = useState('');
 
+  // --- Team tab state ---
+  const [business, setBusiness] = useState<Business | null>(null);
+  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
+  const [invites, setInvites] = useState<Invite[]>([]);
+  const [teamLoading, setTeamLoading] = useState(false);
+  const [showInviteModal, setShowInviteModal] = useState(false);
+  const [teamError, setTeamError] = useState('');
+
+  // Business profile editing
+  const [editingBiz, setEditingBiz] = useState(false);
+  const [bizName, setBizName] = useState('');
+  const [bizEmail, setBizEmail] = useState('');
+  const [bizPhone, setBizPhone] = useState('');
+  const [bizAddress, setBizAddress] = useState('');
+  const [bizType, setBizType] = useState('');
+  const [bizSaving, setBizSaving] = useState(false);
+  const [bizError, setBizError] = useState('');
+  const [bizSuccess, setBizSuccess] = useState('');
+
+  // Auth token and customer info
+  const [authToken, setAuthToken] = useState('');
+  const [hasBusiness, setHasBusiness] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+
   useEffect(() => {
     async function fetchProfile() {
       const token = localStorage.getItem('customer_token');
@@ -88,6 +318,19 @@ export default function CustomerAccount() {
         router.replace('/customer');
         return;
       }
+      setAuthToken(token);
+
+      // Read business info from localStorage
+      try {
+        const info = JSON.parse(localStorage.getItem('customer_info') || '{}');
+        if (info.business_id) {
+          setHasBusiness(true);
+          setIsAdmin(info.business_role === 'admin');
+        }
+      } catch {
+        // ignore
+      }
+
       try {
         const res = await fetch('/api/customer/profile', {
           headers: { Authorization: `Bearer ${token}` },
@@ -103,6 +346,12 @@ export default function CustomerAccount() {
           setPickupArea(data.default_pickup_area || '');
           setPickupAddress(data.default_pickup_address || '');
           if (data.avatar_url) setAvatarPreview(data.avatar_url);
+
+          // Update business state from profile
+          if (data.business_id) {
+            setHasBusiness(true);
+            setIsAdmin(data.business_role === 'admin');
+          }
         }
       } catch (err) {
         console.error('Failed to fetch profile:', err);
@@ -112,6 +361,51 @@ export default function CustomerAccount() {
     }
     fetchProfile();
   }, [router]);
+
+  async function fetchTeamData(token: string) {
+    setTeamLoading(true);
+    setTeamError('');
+    try {
+      const [bizRes, membersRes, invitesRes] = await Promise.all([
+        fetch('/api/business/profile', { headers: { Authorization: `Bearer ${token}` } }),
+        fetch('/api/business/users', { headers: { Authorization: `Bearer ${token}` } }),
+        isAdmin
+          ? fetch('/api/business/invite', { headers: { Authorization: `Bearer ${token}` } })
+          : Promise.resolve(null),
+      ]);
+
+      if (bizRes.ok) {
+        const { business: biz } = await bizRes.json();
+        setBusiness(biz);
+        setBizName(biz.name || '');
+        setBizEmail(biz.email || '');
+        setBizPhone(biz.phone || '');
+        setBizAddress(biz.address || '');
+        setBizType(biz.type || '');
+      }
+
+      if (membersRes.ok) {
+        const { users } = await membersRes.json();
+        setTeamMembers(users || []);
+      }
+
+      if (invitesRes && invitesRes.ok) {
+        const { invites: inv } = await invitesRes.json();
+        setInvites(inv || []);
+      }
+    } catch {
+      setTeamError('Failed to load team data.');
+    } finally {
+      setTeamLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    if (activeTab === 'team' && hasBusiness && authToken) {
+      fetchTeamData(authToken);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTab, hasBusiness, authToken]);
 
   // ---- Profile handlers ----
   function handleCancelEdit() {
@@ -273,6 +567,96 @@ export default function CustomerAccount() {
     }
   }
 
+  // ---- Business profile handler ----
+  async function handleSaveBusiness(e: React.FormEvent) {
+    e.preventDefault();
+    setBizError('');
+    setBizSuccess('');
+
+    if (!bizName.trim()) { setBizError('Business name is required.'); return; }
+
+    setBizSaving(true);
+    try {
+      const res = await fetch('/api/business/profile', {
+        method: 'PATCH',
+        headers: authHeaders(authToken),
+        body: JSON.stringify({
+          name: bizName,
+          email: bizEmail || null,
+          phone: bizPhone || null,
+          address: bizAddress || null,
+          type: bizType || null,
+        }),
+      });
+
+      const data = await res.json().catch(() => ({}));
+      if (res.ok) {
+        setBusiness(data.business);
+        setEditingBiz(false);
+        setBizSuccess('Business profile updated.');
+      } else {
+        setBizError(data.error || 'Failed to update business profile.');
+      }
+    } catch {
+      setBizError('Network error. Please try again.');
+    } finally {
+      setBizSaving(false);
+    }
+  }
+
+  // ---- Team member role update ----
+  async function handleRoleChange(memberId: number, newRole: string) {
+    try {
+      const res = await fetch(`/api/business/users/${memberId}`, {
+        method: 'PATCH',
+        headers: authHeaders(authToken),
+        body: JSON.stringify({ business_role: newRole }),
+      });
+
+      if (res.ok) {
+        setTeamMembers((prev) =>
+          prev.map((m) => m.id === memberId ? { ...m, business_role: newRole } : m)
+        );
+      }
+    } catch {
+      // silent
+    }
+  }
+
+  // ---- Remove team member ----
+  async function handleRemoveMember(memberId: number) {
+    if (!confirm('Remove this user from your business?')) return;
+
+    try {
+      const res = await fetch(`/api/business/users/${memberId}`, {
+        method: 'DELETE',
+        headers: authHeaders(authToken),
+      });
+
+      if (res.ok) {
+        setTeamMembers((prev) => prev.filter((m) => m.id !== memberId));
+      }
+    } catch {
+      // silent
+    }
+  }
+
+  // ---- Cancel invite ----
+  async function handleCancelInvite(inviteToken: string) {
+    try {
+      const res = await fetch(`/api/business/invite/${inviteToken}`, {
+        method: 'DELETE',
+        headers: authHeaders(authToken),
+      });
+
+      if (res.ok) {
+        await fetchTeamData(authToken);
+      }
+    } catch {
+      // silent
+    }
+  }
+
   // ---- Logout ----
   function handleLogout() {
     localStorage.removeItem('customer_token');
@@ -285,10 +669,11 @@ export default function CustomerAccount() {
     'w-full bg-[#0A0A0A] border border-[#2A2A2A] rounded-lg px-3 py-2.5 text-sm text-[#FAFAFA] focus:outline-none focus:border-[#F2FF66]/50 transition-colors placeholder:text-[#555]';
   const labelClass = 'block text-xs text-[#888888] mb-1.5';
 
-  const tabs: { id: Tab; label: string }[] = [
-    { id: 'profile', label: 'Profile' },
-    { id: 'security', label: 'Security' },
-    { id: 'location', label: 'Location' },
+  const tabs: { id: Tab; label: string; visible: boolean }[] = [
+    { id: 'profile', label: 'Profile', visible: true },
+    { id: 'security', label: 'Security', visible: true },
+    { id: 'location', label: 'Location', visible: true },
+    { id: 'team', label: 'Team', visible: hasBusiness },
   ];
 
   if (loading) {
@@ -302,12 +687,24 @@ export default function CustomerAccount() {
 
   return (
     <div className="px-4 py-6 max-w-lg mx-auto space-y-4" style={{ background: '#0A0A0A', minHeight: '100vh' }}>
+      {/* Invite modal */}
+      {showInviteModal && (
+        <InviteModal
+          token={authToken}
+          onClose={() => setShowInviteModal(false)}
+          onSent={() => {
+            setShowInviteModal(false);
+            fetchTeamData(authToken);
+          }}
+        />
+      )}
+
       {/* Page title */}
       <h1 className="text-xl font-bold text-[#FAFAFA]">Account</h1>
 
       {/* Tab bar */}
       <div className="flex border-b border-[#2A2A2A]">
-        {tabs.map((tab) => (
+        {tabs.filter((t) => t.visible).map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
@@ -611,6 +1008,231 @@ export default function CustomerAccount() {
               </button>
             </form>
           </div>
+        </div>
+      )}
+
+      {/* ===== TEAM TAB ===== */}
+      {activeTab === 'team' && hasBusiness && (
+        <div className="space-y-5">
+          {teamLoading ? (
+            <div className="space-y-3">
+              <div className="bg-[#191314] border border-[#2A2A2A] rounded-xl p-5 animate-pulse h-32" />
+              <div className="bg-[#191314] border border-[#2A2A2A] rounded-xl p-5 animate-pulse h-48" />
+            </div>
+          ) : (
+            <>
+              {teamError && (
+                <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm">
+                  {teamError}
+                </div>
+              )}
+
+              {/* Business Profile Section */}
+              <div className="bg-[#191314] border border-[#2A2A2A] rounded-xl p-5">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-sm font-semibold text-[#888888] uppercase tracking-wide">
+                    Business Profile
+                  </h2>
+                  {isAdmin && !editingBiz && (
+                    <button
+                      onClick={() => { setBizError(''); setBizSuccess(''); setEditingBiz(true); }}
+                      className="text-xs font-medium text-[#F2FF66] hover:underline"
+                    >
+                      Edit
+                    </button>
+                  )}
+                </div>
+
+                {bizError && (
+                  <div className="mb-3 p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm">
+                    {bizError}
+                  </div>
+                )}
+                {bizSuccess && (
+                  <div className="mb-3 p-3 bg-green-500/10 border border-green-500/20 rounded-lg text-green-400 text-sm">
+                    {bizSuccess}
+                  </div>
+                )}
+
+                {editingBiz ? (
+                  <form onSubmit={handleSaveBusiness} className="space-y-3">
+                    <div>
+                      <label className={labelClass}>Business Name</label>
+                      <input type="text" value={bizName} onChange={(e) => setBizName(e.target.value)} className={inputClass} placeholder="Acme Corp" required />
+                    </div>
+                    <div>
+                      <label className={labelClass}>Business Email</label>
+                      <input type="email" value={bizEmail} onChange={(e) => setBizEmail(e.target.value)} className={inputClass} placeholder="info@company.com" />
+                    </div>
+                    <div>
+                      <label className={labelClass}>Business Phone</label>
+                      <input type="tel" value={bizPhone} onChange={(e) => setBizPhone(e.target.value)} className={inputClass} placeholder="08012345678" />
+                    </div>
+                    <div>
+                      <label className={labelClass}>Business Address</label>
+                      <input type="text" value={bizAddress} onChange={(e) => setBizAddress(e.target.value)} className={inputClass} placeholder="12 Admiralty Way, Lekki" />
+                    </div>
+                    <div>
+                      <label className={labelClass}>Business Type</label>
+                      <select value={bizType} onChange={(e) => setBizType(e.target.value)} className={inputClass}>
+                        <option value="">Select type</option>
+                        {BUSINESS_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
+                      </select>
+                    </div>
+                    <div className="flex gap-2 pt-1">
+                      <button
+                        type="button"
+                        onClick={() => { setEditingBiz(false); setBizError(''); }}
+                        className="flex-1 py-2 text-sm text-[#888888] border border-[#2A2A2A] rounded-lg hover:text-[#FAFAFA] transition-colors"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="submit"
+                        disabled={bizSaving}
+                        className="flex-1 py-2 text-sm font-semibold bg-[#F2FF66] text-[#0A0A0A] rounded-lg hover:bg-[#E5F25E] transition-colors disabled:opacity-50"
+                      >
+                        {bizSaving ? 'Saving…' : 'Save'}
+                      </button>
+                    </div>
+                  </form>
+                ) : (
+                  <div className="space-y-3">
+                    <div>
+                      <p className={labelClass}>Name</p>
+                      <p className="text-sm text-[#FAFAFA]">{business?.name || '—'}</p>
+                    </div>
+                    <div>
+                      <p className={labelClass}>Type</p>
+                      <p className="text-sm text-[#FAFAFA]">{business?.type || '—'}</p>
+                    </div>
+                    <div>
+                      <p className={labelClass}>Address</p>
+                      <p className="text-sm text-[#FAFAFA]">{business?.address || '—'}</p>
+                    </div>
+                    <div>
+                      <p className={labelClass}>Email</p>
+                      <p className="text-sm text-[#FAFAFA]">{business?.email || '—'}</p>
+                    </div>
+                    <div>
+                      <p className={labelClass}>Phone</p>
+                      <p className="text-sm text-[#FAFAFA]">{business?.phone || '—'}</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Team Members */}
+              <div className="bg-[#191314] border border-[#2A2A2A] rounded-xl p-5">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-sm font-semibold text-[#888888] uppercase tracking-wide">
+                    Team Members ({teamMembers.length})
+                  </h2>
+                  {isAdmin && (
+                    <button
+                      onClick={() => setShowInviteModal(true)}
+                      className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 bg-[#F2FF66] text-[#0A0A0A] rounded-lg hover:bg-[#E5F25E] transition-colors"
+                    >
+                      <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                      </svg>
+                      Invite User
+                    </button>
+                  )}
+                </div>
+
+                {teamMembers.length === 0 ? (
+                  <p className="text-sm text-[#555] text-center py-4">No team members yet.</p>
+                ) : (
+                  <div className="space-y-3">
+                    {teamMembers.map((member) => {
+                      const isSelf = member.id === profile?.id;
+                      return (
+                        <div
+                          key={member.id}
+                          className="flex items-center justify-between py-2 border-b border-[#2A2A2A] last:border-0"
+                        >
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <p className="text-sm text-[#FAFAFA] font-medium truncate">{member.name}</p>
+                              {isSelf && (
+                                <span className="text-xs px-1.5 py-0.5 bg-[#2A2A2A] text-[#888888] rounded">You</span>
+                              )}
+                              <RoleBadge role={member.business_role} />
+                            </div>
+                            <p className="text-xs text-[#888888] truncate mt-0.5">{member.email}</p>
+                          </div>
+
+                          {isAdmin && !isSelf && (
+                            <div className="flex items-center gap-2 ml-3 flex-shrink-0">
+                              <select
+                                value={member.business_role}
+                                onChange={(e) => handleRoleChange(member.id, e.target.value)}
+                                className="text-xs bg-[#0A0A0A] border border-[#2A2A2A] text-[#FAFAFA] rounded px-2 py-1 focus:outline-none focus:border-[#F2FF66]/50"
+                              >
+                                <option value="admin">Admin</option>
+                                <option value="basic">Basic</option>
+                              </select>
+                              <button
+                                onClick={() => handleRemoveMember(member.id)}
+                                className="text-xs text-red-400 hover:text-red-300 transition-colors"
+                                title="Remove from business"
+                              >
+                                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+
+              {/* Pending Invites — admin only */}
+              {isAdmin && (
+                <div className="bg-[#191314] border border-[#2A2A2A] rounded-xl p-5">
+                  <h2 className="text-sm font-semibold text-[#888888] uppercase tracking-wide mb-4">
+                    Pending Invites ({invites.filter((i) => i.status === 'pending').length})
+                  </h2>
+
+                  {invites.filter((i) => i.status === 'pending').length === 0 ? (
+                    <p className="text-sm text-[#555] text-center py-2">No pending invites.</p>
+                  ) : (
+                    <div className="space-y-3">
+                      {invites
+                        .filter((inv) => inv.status === 'pending')
+                        .map((inv) => (
+                          <div
+                            key={inv.id}
+                            className="flex items-center justify-between py-2 border-b border-[#2A2A2A] last:border-0"
+                          >
+                            <div className="min-w-0 flex-1">
+                              <p className="text-sm text-[#FAFAFA] truncate">{inv.email}</p>
+                              <div className="flex items-center gap-2 mt-0.5">
+                                <RoleBadge role={inv.role} />
+                                <span className="text-xs text-[#888888]">
+                                  Sent {new Date(inv.created_at).toLocaleDateString()}
+                                </span>
+                              </div>
+                            </div>
+                            <button
+                              onClick={() => inv.token && handleCancelInvite(inv.token)}
+                              className="ml-3 text-xs text-red-400 hover:text-red-300 transition-colors flex-shrink-0"
+                              title="Cancel invite"
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        ))}
+                    </div>
+                  )}
+                </div>
+              )}
+            </>
+          )}
         </div>
       )}
 

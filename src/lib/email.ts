@@ -71,6 +71,121 @@ function otpEmailHtml(name: string, otp: string): string {
 </html>`;
 }
 
+function inviteEmailHtml(inviterName: string, businessName: string, role: string, inviteLink: string): string {
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>You've been invited to ${businessName}</title>
+</head>
+<body style="margin:0;padding:0;background:#f4f4f5;font-family:'Segoe UI',Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f5;padding:40px 0;">
+    <tr>
+      <td align="center">
+        <table width="480" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
+
+          <!-- Header -->
+          <tr>
+            <td style="background:#0A0A0A;padding:28px 32px;text-align:center;">
+              <span style="color:#F2FF66;font-size:22px;font-weight:800;letter-spacing:2px;text-transform:uppercase;">BLACKBOX</span>
+              <span style="color:#ffffff;font-size:22px;font-weight:300;margin-left:6px;letter-spacing:1px;">LOGISTICS</span>
+            </td>
+          </tr>
+
+          <!-- Body -->
+          <tr>
+            <td style="padding:36px 32px 24px;">
+              <p style="color:#111827;font-size:18px;font-weight:600;margin:0 0 8px;">You've been invited!</p>
+              <p style="color:#6b7280;font-size:15px;line-height:1.6;margin:0 0 24px;">
+                <strong>${inviterName}</strong> has invited you to join <strong>${businessName}</strong> on BlackBox Logistics as a <strong>${role}</strong> user.
+              </p>
+
+              <!-- Business Info Box -->
+              <div style="background:#0A0A0A;border-radius:12px;padding:24px 20px;text-align:center;margin-bottom:28px;">
+                <div style="color:#F2FF66;font-size:20px;font-weight:800;letter-spacing:1px;">
+                  ${businessName}
+                </div>
+                <p style="color:#9ca3af;font-size:13px;margin:8px 0 0;">Role: <span style="color:#F2FF66;font-weight:600;text-transform:capitalize;">${role}</span></p>
+              </div>
+
+              <!-- CTA Button -->
+              <div style="text-align:center;margin-bottom:28px;">
+                <a href="${inviteLink}" style="display:inline-block;background:#F2FF66;color:#0A0A0A;font-size:15px;font-weight:800;padding:14px 36px;border-radius:10px;text-decoration:none;letter-spacing:0.5px;">
+                  Accept Invitation
+                </a>
+              </div>
+
+              <p style="color:#9ca3af;font-size:13px;line-height:1.6;margin:0;">
+                This invitation expires in 7 days. If you didn&apos;t expect this invite, you can safely ignore this email.
+              </p>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="background:#f9fafb;border-top:1px solid #e5e7eb;padding:20px 32px;text-align:center;">
+              <p style="color:#9ca3af;font-size:12px;margin:0;">
+                &copy; ${new Date().getFullYear()} BlackBox Logistics &mdash; Lagos, Nigeria
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+}
+
+export async function sendInviteEmail(
+  to: string,
+  inviterName: string,
+  businessName: string,
+  role: string,
+  inviteLink: string
+): Promise<boolean> {
+  const resendKey = process.env.RESEND_API_KEY;
+
+  if (!resendKey) {
+    console.log(`\n========================================`);
+    console.log(`  Invite for ${to}: ${inviteLink}`);
+    console.log(`  (Configure RESEND_API_KEY to send real emails)`);
+    console.log(`========================================\n`);
+    return true;
+  }
+
+  try {
+    const from = process.env.EMAIL_FROM || 'BlackBox Logistics <onboarding@resend.dev>';
+
+    const res = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${resendKey}`,
+      },
+      body: JSON.stringify({
+        from,
+        to: [to],
+        subject: `You've been invited to join ${businessName} on BlackBox Logistics`,
+        html: inviteEmailHtml(inviterName, businessName, role, inviteLink),
+      }),
+    });
+
+    if (!res.ok) {
+      const body = await res.text();
+      console.error('Resend error:', res.status, body);
+      return false;
+    }
+
+    return true;
+  } catch (err) {
+    console.error('Failed to send invite email:', err);
+    return false;
+  }
+}
+
 export async function sendOTPEmail(to: string, otp: string, name: string): Promise<boolean> {
   const resendKey = process.env.RESEND_API_KEY;
 

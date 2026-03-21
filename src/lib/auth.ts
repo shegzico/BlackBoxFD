@@ -6,6 +6,9 @@ export interface TokenPayload {
   id: number;
   role: 'admin' | 'rider' | 'customer';
   name: string;
+  business_id?: number;
+  business_role?: 'admin' | 'basic';
+  account_type?: 'individual' | 'business';
 }
 
 export function signToken(payload: TokenPayload): string {
