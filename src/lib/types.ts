@@ -52,9 +52,11 @@ export interface Delivery {
   pickup_address: string;
   recipient_name: string;
   recipient_phone: string;
+  recipient_email?: string | null;
   dropoff_area: string;
   dropoff_address: string;
   package_description: string | null;
+  package_weight?: number | null;
   payment_method: PaymentMethod;
   is_express: boolean;
   fee: number | null;
