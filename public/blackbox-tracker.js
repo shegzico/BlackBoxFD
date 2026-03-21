@@ -1,10 +1,15 @@
 /**
- * BlackBox Logistics — Package Tracking Widget
+ * BlackBox Logistics — Package Tracking Widget v2
  * Drop onto any website: <div id="blackbox-tracker"></div><script src="...blackbox-tracker.js"></script>
+ *
  * Config via data attributes on the container div:
- *   data-theme="dark|light"          (default: dark)
- *   data-prefill="BB-XXXXXX"         (pre-fills tracking ID)
- *   data-label="Track your parcel"   (custom heading)
+ *   data-theme="dark|light"              (default: dark)
+ *   data-prefill="BB-XXXXXX"             (pre-fills tracking ID)
+ *   data-heading="Track your package"    (custom heading text)
+ *   data-show-heading="true|false"       (show/hide heading, default: true)
+ *   data-sub="Enter your tracking ID…"  (custom sub text)
+ *   data-show-sub="true|false"           (show/hide sub, default: true)
+ *   data-btn-position="below|beside"     (button below or beside input, default: below)
  */
 (function () {
   'use strict';
@@ -36,44 +41,57 @@
   // ── Theme definitions ────────────────────────────────────────
   var THEMES = {
     dark: {
-      bg: '#0A0A0A',
       surface: '#191314',
-      surface2: '#111111',
       border: '#2A2A2A',
       text: '#FAFAFA',
       textMuted: '#888888',
       textDim: '#555555',
       accent: '#F2FF66',
       accentText: '#0A0A0A',
-      inputBg: '#232023',
-      inputBorder: '#3A3A3A',
       errorBg: 'rgba(239,68,68,0.1)',
       errorBorder: 'rgba(239,68,68,0.3)',
       errorText: '#f87171',
-      shadow: '0 4px 32px rgba(0,0,0,0.5)',
       progressTrack: '#2A2A2A',
+      progressDone: 'rgba(255,255,255,0.6)',
+      progressActive: 'rgba(255,255,255,0.9)',
+      progressLine: 'rgba(255,255,255,0.15)',
+      progressLineDone: 'rgba(255,255,255,0.5)',
+      iconBg: 'rgba(255,255,255,0.07)',
+      iconColor: 'rgba(255,255,255,0.75)',
     },
     light: {
-      bg: '#ffffff',
       surface: '#f9fafb',
-      surface2: '#f3f4f6',
       border: '#e5e7eb',
       text: '#111827',
       textMuted: '#6b7280',
       textDim: '#9ca3af',
       accent: '#0A0A0A',
       accentText: '#F2FF66',
-      inputBg: '#ffffff',
-      inputBorder: '#d1d5db',
       errorBg: 'rgba(239,68,68,0.05)',
       errorBorder: 'rgba(239,68,68,0.3)',
       errorText: '#dc2626',
-      shadow: '0 4px 32px rgba(0,0,0,0.08)',
       progressTrack: '#e5e7eb',
+      progressDone: 'rgba(0,0,0,0.5)',
+      progressActive: 'rgba(0,0,0,0.85)',
+      progressLine: 'rgba(0,0,0,0.1)',
+      progressLineDone: 'rgba(0,0,0,0.35)',
+      iconBg: 'rgba(0,0,0,0.06)',
+      iconColor: 'rgba(0,0,0,0.6)',
     },
   };
 
   // ── Helpers ──────────────────────────────────────────────────
+  function attr(el, name, def) {
+    var v = el.getAttribute(name);
+    return (v !== null && v !== '') ? v : def;
+  }
+
+  function boolAttr(el, name, def) {
+    var v = el.getAttribute(name);
+    if (v === null || v === '') return def;
+    return v !== 'false';
+  }
+
   function fmtDate(iso) {
     if (!iso) return '';
     var d = new Date(iso);
@@ -88,6 +106,10 @@
 
   function esc(str) {
     return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  function unesc(str) {
+    return String(str || '').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"');
   }
 
   function el(tag, attrs, inner) {
@@ -106,31 +128,25 @@
     if (document.getElementById('bbx-styles')) return;
     var css = [
       '.bbx-widget *{box-sizing:border-box;margin:0;padding:0;}',
-      '.bbx-widget{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;border-radius:16px;overflow:hidden;transition:all .3s;}',
-      '.bbx-inner{padding:28px 24px;}',
-      '.bbx-logo{display:flex;align-items:center;gap:8px;margin-bottom:20px;}',
-      '.bbx-logo-mark{width:32px;height:32px;background:#F2FF66;border-radius:8px;display:flex;align-items:center;justify-content:center;}',
-      '.bbx-logo-mark svg{width:18px;height:18px;}',
-      '.bbx-logo-name{font-size:13px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;}',
-      '.bbx-logo-sub{font-size:10px;letter-spacing:0.5px;opacity:.5;text-transform:uppercase;}',
+      '.bbx-widget{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;}',
+      '.bbx-inner{padding:0;}',
+      /* Heading / sub — styled but invisible if hidden */
       '.bbx-heading{font-size:20px;font-weight:700;line-height:1.2;margin-bottom:6px;}',
-      '.bbx-sub{font-size:13px;opacity:.5;margin-bottom:20px;}',
-      '.bbx-form-row{display:flex;gap:8px;}',
-      '.bbx-input{flex:1;border-radius:10px;border:1.5px solid;padding:12px 14px;font-size:14px;font-family:inherit;outline:none;transition:border-color .2s,box-shadow .2s;letter-spacing:.5px;}',
-      '.bbx-input:focus{box-shadow:0 0 0 3px rgba(242,255,102,.15);}',
-      '.bbx-btn{border:none;border-radius:10px;padding:12px 20px;font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;white-space:nowrap;display:flex;align-items:center;gap:6px;letter-spacing:.3px;}',
-      '.bbx-btn:active{transform:scale(.97);}',
-      '.bbx-btn:disabled{opacity:.55;cursor:not-allowed;transform:none!important;}',
-      '.bbx-btn-ghost{background:transparent;border:1.5px solid;padding:8px 14px;font-size:12px;}',
-      '.bbx-error{border-radius:10px;padding:10px 14px;font-size:13px;margin-top:12px;display:none;}',
+      '.bbx-sub{font-size:13px;opacity:.5;margin-bottom:16px;}',
+      /* Field wrapper — layout only, no visual styles */
+      '.bbx-field-below{display:flex;flex-direction:column;gap:8px;}',
+      '.bbx-field-beside{display:flex;flex-direction:row;gap:8px;align-items:stretch;}',
+      '.bbx-field-beside .bbx-input-wrap{flex:1;}',
+      /* Error */
+      '.bbx-error{border-radius:10px;padding:10px 14px;font-size:13px;margin-top:10px;display:none;}',
+      /* Result panel */
       '.bbx-result{display:none;}',
       /* Progress */
       '.bbx-progress-wrap{border-radius:12px;padding:16px;margin-bottom:12px;}',
-      '.bbx-progress-steps{display:flex;align-items:center;}',
-      '.bbx-step{display:flex;flex-direction:column;align-items:center;position:relative;flex:1;}',
-      '.bbx-step:last-child{flex:0;}',
-      '.bbx-step-dot{width:12px;height:12px;border-radius:50%;border:2px solid;flex-shrink:0;position:relative;z-index:1;transition:all .3s;}',
-      '.bbx-step-line{flex:1;height:2px;margin:0 2px;transition:background .3s;}',
+      '.bbx-progress-steps{display:flex;align-items:flex-start;}',
+      '.bbx-step{display:flex;flex-direction:column;align-items:center;}',
+      '.bbx-step-dot{width:18px;height:18px;border-radius:50%;border:2px solid;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .3s;}',
+      '.bbx-step-dot svg{width:10px;height:10px;}',
       '.bbx-step-label{font-size:9px;margin-top:5px;font-weight:600;text-align:center;white-space:nowrap;letter-spacing:.3px;}',
       /* Header */
       '.bbx-result-header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:16px;}',
@@ -147,8 +163,12 @@
       '.bbx-card-label{font-size:10px;font-weight:500;letter-spacing:.4px;text-transform:uppercase;margin-bottom:2px;}',
       '.bbx-card-value{font-size:13px;font-weight:600;}',
       '.bbx-card-sub{font-size:11px;margin-top:1px;}',
-      /* Timeline */
-      '.bbx-timeline-head{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:12px;}',
+      /* Timeline toggle button */
+      '.bbx-tl-toggle{display:flex;align-items:center;gap:6px;background:none;border:none;padding:0;cursor:pointer;font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;}',
+      '.bbx-tl-toggle svg{width:12px;height:12px;transition:transform .2s;}',
+      '.bbx-tl-toggle.open svg{transform:rotate(180deg);}',
+      /* Timeline events */
+      '.bbx-tl-events{margin-top:12px;display:none;}',
       '.bbx-events{display:flex;flex-direction:column;gap:0;}',
       '.bbx-event{display:flex;gap:12px;position:relative;}',
       '.bbx-event-left{display:flex;flex-direction:column;align-items:center;width:16px;flex-shrink:0;}',
@@ -161,15 +181,13 @@
       '.bbx-event-time{font-size:10px;margin-top:3px;}',
       /* Actions */
       '.bbx-actions{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap;}',
+      '.bbx-btn-ghost{background:transparent;border:1.5px solid;border-radius:10px;padding:8px 14px;font-size:12px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px;letter-spacing:.3px;font-family:inherit;}',
+      '.bbx-btn-ghost:active{transform:scale(.97);}',
       /* Spinner */
       '@keyframes bbx-spin{to{transform:rotate(360deg)}}',
-      '.bbx-spinner{width:16px;height:16px;border-radius:50%;border:2px solid rgba(10,10,10,.3);border-top-color:#0A0A0A;animation:bbx-spin .7s linear infinite;}',
-      '.bbx-spinner-light{border:2px solid rgba(255,255,255,.3);border-top-color:#fff;}',
+      '.bbx-spinner{width:14px;height:14px;border-radius:50%;border:2px solid transparent;animation:bbx-spin .7s linear infinite;flex-shrink:0;}',
       /* Divider */
       '.bbx-divider{height:1px;margin:16px 0;}',
-      /* Branding footer */
-      '.bbx-powered{text-align:center;padding:12px;font-size:10px;letter-spacing:.3px;border-top:1px solid;}',
-      '.bbx-powered a{font-weight:700;text-decoration:none;}',
     ].join('');
     var s = document.createElement('style');
     s.id = 'bbx-styles';
@@ -189,144 +207,116 @@
     bolt: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>',
     share: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13"/></svg>',
     refresh: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M1 4v6h6M23 20v-6h-6"/><path stroke-linecap="round" d="M20.49 9A9 9 0 005.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 013.51 15"/></svg>',
+    check: '<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="1.5,6 4.5,9 10.5,3"/></svg>',
+    chevDown: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="4,6 8,10 12,6"/></svg>',
   };
 
   // ── Widget class ─────────────────────────────────────────────
   function BlackBoxTracker(container) {
-    this.container = container;
-    this.theme = (container.getAttribute('data-theme') || 'dark').toLowerCase();
+    this.container    = container;
+    this.theme        = (attr(container, 'data-theme', 'dark')).toLowerCase();
     if (this.theme !== 'light') this.theme = 'dark';
-    this.prefill = container.getAttribute('data-prefill') || '';
-    this.label = container.getAttribute('data-label') || 'Track your package';
-    this.t = THEMES[this.theme];
+    this.prefill      = attr(container, 'data-prefill', '');
+    this.showHeading  = boolAttr(container, 'data-show-heading', true);
+    this.headingText  = attr(container, 'data-heading', 'Track your package');
+    this.showSub      = boolAttr(container, 'data-show-sub', true);
+    this.subText      = attr(container, 'data-sub', 'Enter your BlackBox tracking ID to see real-time status');
+    this.btnPos       = attr(container, 'data-btn-position', 'below') === 'beside' ? 'beside' : 'below';
+    this.t            = THEMES[this.theme];
     this._build();
   }
-
-  BlackBoxTracker.prototype._applyTheme = function (widget) {
-    var t = this.t;
-    widget.style.background = t.bg;
-    widget.style.color = t.text;
-    widget.style.boxShadow = t.shadow;
-    widget.style.border = '1px solid ' + t.border;
-  };
 
   BlackBoxTracker.prototype._build = function () {
     var self = this;
     var t = this.t;
 
-    // Root widget
+    // Root widget — no background, no border, no shadow
     var widget = el('div', { class: 'bbx-widget' });
-    this._applyTheme(widget);
     var inner = el('div', { class: 'bbx-inner' });
 
-    // Logo
-    var logo = el('div', { class: 'bbx-logo' });
-    var logoMark = el('div', { class: 'bbx-logo-mark' }, ICONS.box);
-    var logoText = el('div');
-    var logoName = el('div', { class: 'bbx-logo-name', style: { color: t.text } }, 'BlackBox');
-    var logoSub = el('div', { class: 'bbx-logo-sub', style: { color: t.textMuted } }, 'Logistics');
-    logoText.appendChild(logoName);
-    logoText.appendChild(logoSub);
-    logo.appendChild(logoMark);
-    logo.appendChild(logoText);
-
     // Heading
-    var heading = el('h2', { class: 'bbx-heading', style: { color: t.text } }, esc(this.label));
-    var sub = el('p', { class: 'bbx-sub', style: { color: t.textMuted } }, 'Enter your tracking ID to see real-time status');
+    if (this.showHeading) {
+      var heading = el('h2', { class: 'bbx-heading', style: { color: t.text } }, esc(this.headingText));
+      inner.appendChild(heading);
+    }
 
-    // Form
-    var formRow = el('div', { class: 'bbx-form-row' });
+    // Sub
+    if (this.showSub) {
+      var sub = el('p', { class: 'bbx-sub', style: { color: t.textMuted } }, esc(this.subText));
+      inner.appendChild(sub);
+    }
+
+    // Field wrapper — layout driven by btn-position, no visual styles on input/button
+    var fieldWrap = el('div', { class: this.btnPos === 'beside' ? 'bbx-field-beside' : 'bbx-field-below' });
+    var inputWrap = el('div', { class: 'bbx-input-wrap' });
     var input = el('input', {
-      class: 'bbx-input',
       type: 'text',
       placeholder: 'e.g. BB-A1B2C3',
       maxlength: '20',
       autocomplete: 'off',
       spellcheck: 'false',
-      style: {
-        background: t.inputBg,
-        borderColor: t.inputBorder,
-        color: t.text,
-      },
     });
     if (this.prefill) input.value = this.prefill.toUpperCase();
 
-    input.addEventListener('focus', function () {
-      input.style.borderColor = t.accent;
-    });
-    input.addEventListener('blur', function () {
-      input.style.borderColor = t.inputBorder;
-    });
     input.addEventListener('input', function () {
       input.value = input.value.toUpperCase();
       errorDiv.style.display = 'none';
     });
 
-    var trackBtn = el('button', {
-      class: 'bbx-btn',
-      type: 'button',
-      style: { background: t.accent, color: t.accentText },
-    });
+    var trackBtn = el('button', { type: 'button' });
     var btnLabel = el('span', null, 'Track');
-    trackBtn.appendChild(el('span', { style: { display: 'flex' } }, ICONS.search));
+    var btnIcon = el('span', { style: { display: 'inline-flex', verticalAlign: 'middle', marginRight: '4px' } }, ICONS.search);
+    trackBtn.appendChild(btnIcon);
     trackBtn.appendChild(btnLabel);
 
-    formRow.appendChild(input);
-    formRow.appendChild(trackBtn);
+    inputWrap.appendChild(input);
+    fieldWrap.appendChild(inputWrap);
+    fieldWrap.appendChild(trackBtn);
+    inner.appendChild(fieldWrap);
 
-    var errorDiv = el('div', { class: 'bbx-error', style: { background: t.errorBg, border: '1px solid ' + t.errorBorder, color: t.errorText } });
+    var errorDiv = el('div', {
+      class: 'bbx-error',
+      style: { background: t.errorBg, border: '1px solid ' + t.errorBorder, color: t.errorText },
+    });
+    inner.appendChild(errorDiv);
 
     // Result area
     var resultDiv = el('div', { class: 'bbx-result' });
-    this._resultDiv = resultDiv;
-
-    // Assemble form section
-    inner.appendChild(logo);
-    inner.appendChild(heading);
-    inner.appendChild(sub);
-    inner.appendChild(formRow);
-    inner.appendChild(errorDiv);
     inner.appendChild(resultDiv);
+
     widget.appendChild(inner);
-
-    // Powered by footer
-    var footer = el('div', {
-      class: 'bbx-powered',
-      style: { color: t.textDim, borderColor: t.border },
-    });
-    footer.innerHTML = 'Powered by <a href="https://black-box-fd.vercel.app" target="_blank" rel="noopener" style="color:' + t.accent + '">BlackBox Logistics</a>';
-    widget.appendChild(footer);
-
     this.container.innerHTML = '';
     this.container.appendChild(widget);
-    this._input = input;
+
+    this._input    = input;
     this._errorDiv = errorDiv;
     this._trackBtn = trackBtn;
     this._btnLabel = btnLabel;
+    this._btnIcon  = btnIcon;
+    this._resultDiv = resultDiv;
 
-    // Event listeners
     trackBtn.addEventListener('click', function () { self._track(); });
     input.addEventListener('keydown', function (e) { if (e.key === 'Enter') self._track(); });
 
-    // Auto-track if prefilled
     if (this.prefill) {
       setTimeout(function () { self._track(); }, 120);
     }
   };
 
   BlackBoxTracker.prototype._setLoading = function (on) {
-    var t = this.t;
     this._trackBtn.disabled = on;
     this._input.disabled = on;
     this._btnLabel.textContent = on ? 'Tracking…' : 'Track';
     var spinner = this._trackBtn.querySelector('.bbx-spinner');
     if (on && !spinner) {
-      var s = el('span', { class: 'bbx-spinner' + (this.theme === 'light' ? '' : '') });
-      s.style.borderTopColor = this.t.accentText;
-      s.style.borderColor = this.t.accentText + '33';
-      this._trackBtn.insertBefore(s, this._trackBtn.firstChild);
-    } else if (!on && spinner) {
-      spinner.remove();
+      var s = el('span', { class: 'bbx-spinner' });
+      s.style.borderTopColor = 'currentColor';
+      s.style.borderColor = 'rgba(128,128,128,0.3)';
+      s.style.borderTopColor = 'currentColor';
+      this._btnIcon.innerHTML = '';
+      this._btnIcon.appendChild(s);
+    } else if (!on) {
+      this._btnIcon.innerHTML = ICONS.search;
     }
   };
 
@@ -339,10 +329,7 @@
   BlackBoxTracker.prototype._track = function () {
     var self = this;
     var id = (this._input.value || '').trim().toUpperCase();
-    if (!id) {
-      this._showError('Please enter a tracking ID.');
-      return;
-    }
+    if (!id) { this._showError('Please enter a tracking ID.'); return; }
     if (!/^BB-[A-Z0-9]{4,10}$/.test(id)) {
       this._showError('Invalid tracking ID format. It should look like BB-A1B2C3.');
       return;
@@ -381,146 +368,132 @@
     var statusIdx = STATUS_ORDER.indexOf(d.status);
 
     // Divider
-    var divider = el('div', { class: 'bbx-divider', style: { background: t.border } });
-    result.appendChild(divider);
+    result.appendChild(el('div', { class: 'bbx-divider', style: { background: t.border } }));
 
-    // Header row: tracking ID + status badge
+    // Header: tracking ID + status badge
     var header = el('div', { class: 'bbx-result-header' });
     var headerLeft = el('div');
     var tidLabel = el('div', { class: 'bbx-tid-label', style: { color: t.textDim } }, 'Tracking ID');
-    var tid = el('div', { class: 'bbx-tid', style: { color: t.accent } }, esc(d.id));
-    if (d.is_express) {
-      var exp = el('span', { class: 'bbx-express' }, ICONS.bolt + ' Express');
-      tid.appendChild(exp);
-    }
+    var tid = el('div', { class: 'bbx-tid', style: { color: t.text } }, esc(d.id));
+    if (d.is_express) tid.appendChild(el('span', { class: 'bbx-express' }, ICONS.bolt + ' Express'));
     headerLeft.appendChild(tidLabel);
     headerLeft.appendChild(tid);
 
     var badge = el('div', {
       class: 'bbx-badge',
-      style: {
-        background: statusColor + '1A',
-        color: statusColor,
-        border: '1px solid ' + statusColor + '40',
-      },
+      style: { background: statusColor + '1A', color: statusColor, border: '1px solid ' + statusColor + '40' },
     }, esc(STATUS_LABELS[d.status] || d.status));
 
     header.appendChild(headerLeft);
     header.appendChild(badge);
     result.appendChild(header);
 
-    // Progress bar (not shown if cancelled)
+    // ── Progress bar (neutral, with checkmarks) ───────────────
     if (!isCancelled) {
-      var progressWrap = el('div', { class: 'bbx-progress-wrap', style: { background: t.surface, border: '1px solid ' + t.border } });
-      var stepsWrap = el('div', { class: 'bbx-progress-steps' });
-
-      STATUS_ORDER.forEach(function (s, i) {
-        var reached = statusIdx >= i;
-        var isActive = statusIdx === i;
-        var sColor = reached ? statusColor : t.progressTrack;
-        var dotBg = reached ? statusColor : 'transparent';
-
-        var step = el('div', { class: 'bbx-step' });
-        var dot = el('div', { class: 'bbx-step-dot', style: { borderColor: sColor, background: dotBg } });
-        if (isActive) {
-          dot.style.boxShadow = '0 0 0 3px ' + statusColor + '33';
-          dot.style.transform = 'scale(1.2)';
-        }
-
-        var labelEl = el('div', { class: 'bbx-step-label', style: { color: reached ? t.text : t.textDim } },
-          STATUS_LABELS[s].replace(' ', '<br>'));
-
-        step.appendChild(dot);
-        step.appendChild(labelEl);
-        stepsWrap.appendChild(step);
-
-        if (i < STATUS_ORDER.length - 1) {
-          var line = el('div', { class: 'bbx-step-line', style: { background: statusIdx > i ? statusColor : t.progressTrack } });
-          stepsWrap.insertBefore(line, step);
-          step.style.flexDirection = 'column';
-          // Re-structure: line is between dots, not inside step
-          // Fix: steps wrap as flex row with alternating dot + line
-        }
+      var progressWrap = el('div', {
+        class: 'bbx-progress-wrap',
+        style: { background: t.surface, border: '1px solid ' + t.border },
       });
+      var stepsWrap = el('div', { class: 'bbx-progress-steps' });
+      stepsWrap.style.cssText = 'display:flex;align-items:flex-start;';
 
-      // Rebuild cleaner: flat flex row with dots and lines
-      stepsWrap.innerHTML = '';
       STATUS_ORDER.forEach(function (s, i) {
-        var reached = statusIdx >= i;
+        var isDone   = statusIdx > i;
         var isActive = statusIdx === i;
-        var sColor = reached ? statusColor : t.progressTrack;
+        var isFuture = statusIdx < i;
 
-        var dot = el('div', { class: 'bbx-step-dot', style: { borderColor: sColor, background: reached ? statusColor : 'transparent' } });
-        if (isActive) { dot.style.boxShadow = '0 0 0 3px ' + statusColor + '33'; dot.style.transform = 'scale(1.15)'; }
+        // Dot
+        var dot = el('div', { class: 'bbx-step-dot' });
+        if (isDone) {
+          // Filled + checkmark
+          dot.style.background = t.progressDone;
+          dot.style.borderColor = t.progressDone;
+          dot.innerHTML = ICONS.check;
+          dot.querySelector('svg').style.color = (self.theme === 'dark') ? '#0A0A0A' : '#ffffff';
+        } else if (isActive) {
+          // Outlined, filled center
+          dot.style.background = t.progressActive;
+          dot.style.borderColor = t.progressActive;
+          dot.style.boxShadow = '0 0 0 3px ' + (self.theme === 'dark' ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.12)');
+        } else {
+          // Empty future
+          dot.style.background = 'transparent';
+          dot.style.borderColor = t.progressLine;
+        }
 
-        var label = el('div', { class: 'bbx-step-label', style: { color: reached ? t.text : t.textDim } },
-          STATUS_LABELS[s].replace(' ', '<br>'));
+        var label = el('div', {
+          class: 'bbx-step-label',
+          style: { color: (isDone || isActive) ? t.text : t.textDim },
+        }, STATUS_LABELS[s].replace(' ', '<br>'));
 
         var stepEl = el('div', { class: 'bbx-step' });
         stepEl.appendChild(dot);
         stepEl.appendChild(label);
         stepsWrap.appendChild(stepEl);
 
+        // Connector line between steps
         if (i < STATUS_ORDER.length - 1) {
-          var line = el('div', { style: { flex: '1', height: '2px', background: statusIdx > i ? statusColor : t.progressTrack, alignSelf: 'flex-start', marginTop: '5px', transition: 'background .3s' } });
+          var line = el('div');
+          line.style.cssText = 'flex:1;height:2px;margin-top:8px;transition:background .3s;background:' +
+            (isDone ? t.progressLineDone : t.progressLine) + ';';
           stepsWrap.appendChild(line);
         }
       });
-      stepsWrap.style.display = 'flex';
-      stepsWrap.style.alignItems = 'flex-start';
 
       progressWrap.appendChild(stepsWrap);
       result.appendChild(progressWrap);
     }
 
-    // Info cards
+    // ── Info cards ────────────────────────────────────────────
     var cards = el('div', { class: 'bbx-cards' });
     var cardDefs = [
-      { label: 'From', value: esc(d.sender_name), sub: esc(d.pickup_area), icon: ICONS.user, iconColor: '#3b82f6' },
-      { label: 'To', value: esc(d.recipient_name), sub: esc(d.dropoff_area), icon: ICONS.pin, iconColor: '#f97316' },
-      { label: 'Rider', value: esc(d.rider_name || 'Not yet assigned'), icon: ICONS.bike, iconColor: '#8b5cf6' },
+      { label: 'From',  value: d.sender_name,                         sub: d.pickup_area,  icon: ICONS.user },
+      { label: 'To',    value: d.recipient_name,                       sub: d.dropoff_area, icon: ICONS.pin  },
+      { label: 'Rider', value: d.rider_name || 'Not yet assigned',     sub: null,           icon: ICONS.bike },
     ];
-    if (d.pickup_date) {
-      cardDefs.push({ label: 'Pickup Date', value: fmtDate(d.pickup_date), icon: ICONS.cal, iconColor: '#22c55e' });
-    }
-    if (d.package_description) {
-      cardDefs.push({ label: 'Package', value: esc(d.package_description), icon: ICONS.pkg, iconColor: '#f59e0b' });
-    }
+    if (d.pickup_date)          cardDefs.push({ label: 'Pickup Date', value: fmtDate(d.pickup_date),      icon: ICONS.cal });
+    if (d.package_description)  cardDefs.push({ label: 'Package',     value: d.package_description,       icon: ICONS.pkg });
 
     cardDefs.forEach(function (c) {
       var card = el('div', { class: 'bbx-card', style: { background: t.surface, borderColor: t.border } });
-      var iconWrap = el('div', { class: 'bbx-card-icon', style: { background: c.iconColor + '1A', color: c.iconColor } }, c.icon);
-      var cardBody = el('div', { style: { minWidth: '0', flex: '1' } });
-      var cardLabel = el('div', { class: 'bbx-card-label', style: { color: t.textDim } }, c.label);
-      var cardValue = el('div', { class: 'bbx-card-value', style: { color: t.text } });
-      cardValue.textContent = c.value.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>');
-      cardBody.appendChild(cardLabel);
-      cardBody.appendChild(cardValue);
+      var iconWrap = el('div', { class: 'bbx-card-icon', style: { background: t.iconBg, color: t.iconColor } }, c.icon);
+      var body = el('div', { style: { minWidth: '0', flex: '1' } });
+      var lbl  = el('div', { class: 'bbx-card-label', style: { color: t.textDim } }, c.label);
+      var val  = el('div', { class: 'bbx-card-value', style: { color: t.text } });
+      val.textContent = c.value || '';
+      body.appendChild(lbl);
+      body.appendChild(val);
       if (c.sub) {
-        var cardSub = el('div', { class: 'bbx-card-sub', style: { color: t.textMuted } });
-        cardSub.textContent = c.sub.replace(/&amp;/g, '&');
-        cardBody.appendChild(cardSub);
+        var sub = el('div', { class: 'bbx-card-sub', style: { color: t.textMuted } });
+        sub.textContent = c.sub;
+        body.appendChild(sub);
       }
       card.appendChild(iconWrap);
-      card.appendChild(cardBody);
+      card.appendChild(body);
       cards.appendChild(card);
     });
     result.appendChild(cards);
 
-    // Timeline
+    // ── Timeline (collapsed by default) ───────────────────────
     if (d.history && d.history.length > 0) {
-      var timelineDivider = el('div', { class: 'bbx-divider', style: { background: t.border } });
-      result.appendChild(timelineDivider);
+      result.appendChild(el('div', { class: 'bbx-divider', style: { background: t.border } }));
 
-      var tlHead = el('div', { class: 'bbx-timeline-head', style: { color: t.textDim } }, 'Delivery History');
-      result.appendChild(tlHead);
+      var tlOpen = false;
 
+      var tlToggle = el('button', { class: 'bbx-tl-toggle', type: 'button', style: { color: t.textDim } });
+      tlToggle.innerHTML = 'Delivery history (' + d.history.length + ')';
+      var chevWrap = el('span', { style: { display: 'inline-flex', marginLeft: '4px', color: t.textDim } }, ICONS.chevDown);
+      tlToggle.appendChild(chevWrap);
+      result.appendChild(tlToggle);
+
+      var tlEvents = el('div', { class: 'bbx-tl-events' });
       var events = el('div', { class: 'bbx-events' });
-      d.history.forEach(function (h, i) {
+
+      d.history.forEach(function (h) {
         var hColor = STATUS_COLORS[h.status] || t.textMuted;
         var evnt = el('div', { class: 'bbx-event' });
         var left = el('div', { class: 'bbx-event-left' });
-        var dot = el('div', { class: 'bbx-event-dot', style: { background: hColor } });
+        var dot  = el('div', { class: 'bbx-event-dot',  style: { background: hColor } });
         var line = el('div', { class: 'bbx-event-line', style: { background: t.border } });
         left.appendChild(dot);
         left.appendChild(line);
@@ -540,16 +513,24 @@
         evnt.appendChild(body);
         events.appendChild(evnt);
       });
-      result.appendChild(events);
+
+      tlEvents.appendChild(events);
+      result.appendChild(tlEvents);
+
+      tlToggle.addEventListener('click', function () {
+        tlOpen = !tlOpen;
+        tlEvents.style.display = tlOpen ? 'block' : 'none';
+        tlToggle.classList.toggle('open', tlOpen);
+      });
     }
 
-    // Action buttons
+    // ── Action buttons ────────────────────────────────────────
     var actions = el('div', { class: 'bbx-actions' });
 
     var resetBtn = el('button', {
-      class: 'bbx-btn bbx-btn-ghost',
+      class: 'bbx-btn-ghost',
       type: 'button',
-      style: { color: t.textMuted, borderColor: t.border, background: 'transparent' },
+      style: { color: t.textMuted, borderColor: t.border },
     });
     resetBtn.innerHTML = ICONS.refresh + '<span>Track another</span>';
     resetBtn.addEventListener('click', function () {
@@ -560,9 +541,9 @@
     });
 
     var viewBtn = el('button', {
-      class: 'bbx-btn bbx-btn-ghost',
+      class: 'bbx-btn-ghost',
       type: 'button',
-      style: { color: t.accent, borderColor: t.accent + '60', background: 'transparent' },
+      style: { color: t.textMuted, borderColor: t.border },
     });
     viewBtn.innerHTML = ICONS.share + '<span>Full details</span>';
     viewBtn.addEventListener('click', function () {
