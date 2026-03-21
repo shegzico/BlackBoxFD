@@ -16,17 +16,20 @@ export async function GET(request: NextRequest) {
     }
 
     const { searchParams } = new URL(request.url);
-    const days = parseInt(searchParams.get('days') || '0');
+    const from = searchParams.get('from');
+    const to = searchParams.get('to');
 
     let query = supabase
       .from('deliveries')
       .select('status')
       .eq('customer_id', payload.id);
 
-    if (days > 0) {
-      const since = new Date();
-      since.setDate(since.getDate() - days);
-      query = query.gte('created_at', since.toISOString());
+    if (from) query = query.gte('created_at', new Date(from).toISOString());
+    if (to) {
+      // Include the full end date (set time to end of day)
+      const endDate = new Date(to);
+      endDate.setHours(23, 59, 59, 999);
+      query = query.lte('created_at', endDate.toISOString());
     }
 
     const { data: deliveries, error } = await query;
