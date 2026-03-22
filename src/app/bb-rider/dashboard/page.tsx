@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Navbar from '@/components/Navbar';
 import StatusBadge from '@/components/StatusBadge';
 import { Delivery, DeliveryStatus, PAYMENT_LABELS } from '@/lib/types';
+import { LogoutCurve, Location, Refresh2, Box, ArrowDown2, Call } from 'iconsax-react';
 
 interface RiderInfo {
   id: number;
@@ -42,9 +43,7 @@ function RiderNavbar({ riderName, onLogout }: { riderName: string; onLogout: () 
           "
           aria-label="Logout"
         >
-          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-          </svg>
+          <LogoutCurve size={14} color="currentColor" />
           Logout
         </button>
       </div>
@@ -69,9 +68,7 @@ function PhoneLink({ phone, label }: { phone: string; label: string }) {
       href={`tel:${phone}`}
       className="flex items-center gap-1.5 text-[#F2FF66] hover:text-[#e8f55c] text-sm font-medium transition-colors"
     >
-      <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 7V5z" />
-      </svg>
+      <Call size={14} color="currentColor" className="flex-shrink-0" />
       <span className="truncate">{label}: {phone}</span>
     </a>
   );
@@ -114,10 +111,7 @@ function ActiveDeliveryCard({
       {/* Pickup */}
       <div className="flex flex-col gap-0.5">
         <span className="text-[#a1a4a5] text-xs font-medium uppercase tracking-wider flex items-center gap-1">
-          <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <circle cx="12" cy="12" r="3" />
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 2v2m0 16v2M2 12h2m16 0h2" />
-          </svg>
+          <Location size={12} color="currentColor" />
           Pickup
         </span>
         <span className="text-[#f0f0f0] text-sm font-semibold">{delivery.pickup_area}</span>
@@ -127,10 +121,7 @@ function ActiveDeliveryCard({
       {/* Dropoff */}
       <div className="flex flex-col gap-0.5">
         <span className="text-[#a1a4a5] text-xs font-medium uppercase tracking-wider flex items-center gap-1">
-          <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-            <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-          </svg>
+          <Location size={12} color="currentColor" />
           Dropoff
         </span>
         <span className="text-[#f0f0f0] text-sm font-semibold">{delivery.dropoff_area}</span>
@@ -176,10 +167,7 @@ function ActiveDeliveryCard({
         >
           {updating ? (
             <>
-              <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
-              </svg>
+              <Refresh2 size={16} className="animate-spin" />
               Updating...
             </>
           ) : (
@@ -356,15 +344,10 @@ export default function RiderDashboardPage() {
               disabled:opacity-50 disabled:cursor-not-allowed
             "
           >
-            <svg
-              className={`w-3.5 h-3.5 ${refreshing ? 'animate-spin' : ''}`}
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={2}
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-            </svg>
+            <Refresh2
+              size={14}
+              className={refreshing ? 'animate-spin' : ''}
+            />
             Refresh
           </button>
         </div>
@@ -397,9 +380,7 @@ export default function RiderDashboardPage() {
             </div>
           ) : activeDeliveries.length === 0 ? (
             <div className="bg-[#070707] border border-[rgba(255,255,255,0.08)] rounded-2xl p-8 flex flex-col items-center gap-2 text-center">
-              <svg className="w-10 h-10 text-[#333333]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-              </svg>
+              <Box size={40} color="#333333" />
               <p className="text-[#a1a4a5] text-sm">No active deliveries right now</p>
               <p className="text-[#555555] text-xs">New assignments will appear here automatically</p>
             </div>
@@ -433,15 +414,11 @@ export default function RiderDashboardPage() {
                 </span>
               )}
             </span>
-            <svg
-              className={`w-4 h-4 text-[#a1a4a5] transition-transform duration-200 ${completedOpen ? 'rotate-180' : ''}`}
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={2}
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-            </svg>
+            <ArrowDown2
+              size={16}
+              color="#a1a4a5"
+              className={`transition-transform duration-200 ${completedOpen ? 'rotate-180' : ''}`}
+            />
           </button>
 
           {completedOpen && (

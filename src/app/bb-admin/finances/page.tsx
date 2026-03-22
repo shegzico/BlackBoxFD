@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { Delivery, PAYMENT_LABELS, PaymentMethod } from '@/lib/types';
+import { Refresh2, DocumentDownload, Calendar, CalendarEdit, Money } from 'iconsax-react';
 
 type DateFilter = 'today' | 'week' | 'month' | 'all';
 
@@ -166,9 +167,9 @@ export default function AdminFinancesPage() {
   }
 
   const revenueCards = [
-    { label: 'Daily', value: statsLoading ? null : (stats?.daily ?? 0), icon: '📅' },
-    { label: 'Weekly', value: statsLoading ? null : (stats?.weekly ?? 0), icon: '📆' },
-    { label: 'Monthly', value: statsLoading ? null : (stats?.monthly ?? 0), icon: '🗓️' },
+    { label: 'Daily', value: statsLoading ? null : (stats?.daily ?? 0), icon: <Calendar size={20} color="currentColor" /> },
+    { label: 'Weekly', value: statsLoading ? null : (stats?.weekly ?? 0), icon: <CalendarEdit size={20} color="currentColor" /> },
+    { label: 'Monthly', value: statsLoading ? null : (stats?.monthly ?? 0), icon: <Money size={20} color="currentColor" /> },
   ];
 
   return (
@@ -190,14 +191,11 @@ export default function AdminFinancesPage() {
         >
           {exportLoading ? (
             <>
-              <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
-              </svg>
+              <Refresh2 size={16} className="animate-spin" />
               Exporting...
             </>
           ) : (
-            <>⬇️ Export CSV</>
+            <><DocumentDownload size={16} color="currentColor" /> Export CSV</>
           )}
         </button>
       </div>
@@ -214,7 +212,7 @@ export default function AdminFinancesPage() {
               </div>
             ) : (
               <>
-                <span className="text-xl leading-none">{card.icon}</span>
+                <span className="flex items-center">{card.icon}</span>
                 <p className="text-lg md:text-2xl font-bold text-[#f0f0f0] mt-2 leading-none break-all">
                   {formatNaira(card.value)}
                 </p>

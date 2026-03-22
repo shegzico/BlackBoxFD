@@ -4,6 +4,7 @@ import { Suspense, useState } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import Navbar from '@/components/Navbar';
+import { TickCircle, Copy } from 'iconsax-react';
 
 const APP_URL =
   process.env.NEXT_PUBLIC_APP_URL ||
@@ -42,15 +43,7 @@ function ConfirmationContent() {
       {/* Success Icon */}
       <div className="flex flex-col items-center gap-4 text-center">
         <div className="w-20 h-20 rounded-full bg-[#F2FF66]/10 border-2 border-[#F2FF66] flex items-center justify-center">
-          <svg
-            className="w-10 h-10 text-[#F2FF66]"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={2.5}
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-          </svg>
+          <TickCircle size={40} color="#F2FF66" variant="Bold" />
         </div>
         <div>
           <h1 className="text-2xl font-bold text-[#f0f0f0]">Order Confirmed!</h1>
@@ -79,16 +72,12 @@ function ConfirmationContent() {
         >
           {copied ? (
             <>
-              <svg className="w-4 h-4 text-[#a1a4a5]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-              </svg>
+              <TickCircle size={16} color="#a1a4a5" />
               Copied!
             </>
           ) : (
             <>
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-              </svg>
+              <Copy size={16} color="currentColor" />
               Copy ID
             </>
           )}

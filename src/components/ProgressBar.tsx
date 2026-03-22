@@ -1,5 +1,6 @@
 'use client';
 import { DeliveryStatus, STATUS_ORDER, STATUS_LABELS } from '@/lib/types';
+import { TickCircle } from 'iconsax-react';
 
 export default function ProgressBar({ status }: { status: DeliveryStatus }) {
   const currentIndex = STATUS_ORDER.indexOf(status);
@@ -42,15 +43,7 @@ export default function ProgressBar({ status }: { status: DeliveryStatus }) {
                 }`}
               >
                 {isCompleted ? (
-                  <svg
-                    className="w-4 h-4 text-black"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth={3}
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                  </svg>
+                  <TickCircle size={16} color="currentColor" variant="Bold" />
                 ) : isCurrent ? (
                   <div className="w-2.5 h-2.5 rounded-full bg-[#F2FF66]" />
                 ) : (

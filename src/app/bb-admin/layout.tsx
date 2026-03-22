@@ -4,14 +4,15 @@ import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import Logo from '@/components/Logo';
+import { Category, Box, Routing2, People, DollarCircle, Wallet2, LogoutCurve } from 'iconsax-react';
 
 const NAV_TABS = [
-  { href: '/bb-admin/dashboard', icon: '📊', label: 'Dashboard' },
-  { href: '/bb-admin/orders', icon: '📦', label: 'Orders' },
-  { href: '/bb-admin/riders', icon: '🏍️', label: 'Riders' },
-  { href: '/bb-admin/customers', icon: '👥', label: 'Customers' },
-  { href: '/bb-admin/pricing', icon: '💲', label: 'Pricing' },
-  { href: '/bb-admin/finances', icon: '💰', label: 'Finances' },
+  { href: '/bb-admin/dashboard', Icon: Category, label: 'Dashboard' },
+  { href: '/bb-admin/orders', Icon: Box, label: 'Orders' },
+  { href: '/bb-admin/riders', Icon: Routing2, label: 'Riders' },
+  { href: '/bb-admin/customers', Icon: People, label: 'Customers' },
+  { href: '/bb-admin/pricing', Icon: DollarCircle, label: 'Pricing' },
+  { href: '/bb-admin/finances', Icon: Wallet2, label: 'Finances' },
 ];
 
 function AdminShell({ children }: { children: React.ReactNode }) {
@@ -53,6 +54,7 @@ function AdminShell({ children }: { children: React.ReactNode }) {
         <nav className="flex-1 flex flex-col gap-1 px-3 py-4">
           {NAV_TABS.map((tab) => {
             const isActive = pathname === tab.href;
+            const NavIcon = tab.Icon;
             return (
               <Link
                 key={tab.href}
@@ -66,7 +68,7 @@ function AdminShell({ children }: { children: React.ReactNode }) {
                   }
                 `}
               >
-                <span className="text-base leading-none">{tab.icon}</span>
+                <NavIcon size={18} color="currentColor" />
                 {tab.label}
               </Link>
             );
@@ -86,7 +88,7 @@ function AdminShell({ children }: { children: React.ReactNode }) {
               transition-colors duration-150
             "
           >
-            <span>🚪</span>
+            <LogoutCurve size={18} color="currentColor" />
             Logout
           </button>
         </div>
@@ -117,9 +119,9 @@ function AdminShell({ children }: { children: React.ReactNode }) {
           </div>
           <button
             onClick={handleLogout}
-            className="text-[#a1a4a5] hover:text-[#a85858] transition-colors text-sm px-3 py-1.5 rounded-lg border border-[rgba(255,255,255,0.08)]"
+            className="flex items-center gap-1.5 text-[#a1a4a5] hover:text-[#a85858] transition-colors text-sm px-3 py-1.5 rounded-lg border border-[rgba(255,255,255,0.08)]"
           >
-            🚪 Logout
+            <LogoutCurve size={18} color="currentColor" /> Logout
           </button>
         </header>
 
@@ -133,6 +135,7 @@ function AdminShell({ children }: { children: React.ReactNode }) {
       <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#070707] border-t border-[rgba(255,255,255,0.08)] flex">
         {NAV_TABS.map((tab) => {
           const isActive = pathname === tab.href;
+          const NavIcon = tab.Icon;
           return (
             <Link
               key={tab.href}
@@ -143,7 +146,7 @@ function AdminShell({ children }: { children: React.ReactNode }) {
                 ${isActive ? 'text-[#f0f0f0]' : 'text-[#a1a4a5]'}
               `}
             >
-              <span className="text-xl leading-none">{tab.icon}</span>
+              <NavIcon size={22} color="currentColor" />
               <span className={`text-[10px] font-medium ${isActive ? 'text-[#f0f0f0]' : 'text-[#a1a4a5]'}`}>
                 {tab.label}
               </span>

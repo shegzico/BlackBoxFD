@@ -3,6 +3,7 @@
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Suspense } from 'react';
+import { TickCircle } from 'iconsax-react';
 
 function ConfirmationContent() {
   const searchParams = useSearchParams();
@@ -25,16 +26,7 @@ function ConfirmationContent() {
           className="w-24 h-24 rounded-full bg-[#1e5030]/20 flex items-center justify-center mb-6"
           style={{ animation: 'scaleIn 0.4s ease-out' }}
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="w-12 h-12 text-[#3d8050]"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={2.5}
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-          </svg>
+          <TickCircle size={48} color="#3d8050" variant="Bold" />
         </div>
 
         {/* Order number */}

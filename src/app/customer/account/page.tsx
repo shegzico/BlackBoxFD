@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { LAGOS_ZONES } from '@/lib/types';
 import AddressInput from '@/components/AddressInput';
+import { Refresh2, TickCircle, CloseCircle, Add } from 'iconsax-react';
 
 type Tab = 'profile' | 'security' | 'location' | 'team';
 
@@ -149,9 +150,7 @@ function InviteModal({
         <div className="flex items-center justify-between mb-5">
           <h2 className="text-base font-bold text-[#f0f0f0]">Invite Team Member</h2>
           <button onClick={onClose} className="text-[#a1a4a5] hover:text-[#f0f0f0] transition-colors">
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
+            <CloseCircle size={20} color="currentColor" />
           </button>
         </div>
 
@@ -195,9 +194,7 @@ function InviteModal({
                 <ul className="space-y-1">
                   {['Create shipments', 'Edit orders', 'Manage users', 'Top-up wallets'].map((p) => (
                     <li key={p} className="flex items-center gap-1.5 text-xs text-[#a1a4a5]">
-                      <svg className="w-3 h-3 text-[#a1a4a5] flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                      </svg>
+                      <TickCircle size={12} color="#a1a4a5" variant="Bold" />
                       {p}
                     </li>
                   ))}
@@ -220,9 +217,7 @@ function InviteModal({
                 <ul className="space-y-1">
                   {['Create shipments'].map((p) => (
                     <li key={p} className="flex items-center gap-1.5 text-xs text-[#a1a4a5]">
-                      <svg className="w-3 h-3 text-[#a1a4a5] flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                      </svg>
+                      <TickCircle size={12} color="#a1a4a5" variant="Bold" />
                       {p}
                     </li>
                   ))}
@@ -238,10 +233,7 @@ function InviteModal({
           >
             {loading ? (
               <>
-                <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
-                </svg>
+                <Refresh2 size={16} className="animate-spin" />
                 Sending...
               </>
             ) : (
@@ -843,16 +835,6 @@ export default function CustomerAccount() {
               <label className={labelClass}>
                 <span className="flex items-center gap-1">
                   Email
-                  <svg
-                    className="w-3 h-3 text-[#a1a4a5]"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth={2}
-                  >
-                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-                    <path d="M7 11V7a5 5 0 0110 0v4" />
-                  </svg>
                 </span>
               </label>
               <p className="text-sm text-[#a1a4a5]">{profile?.email || '—'}</p>
@@ -1134,9 +1116,7 @@ export default function CustomerAccount() {
                       onClick={() => setShowInviteModal(true)}
                       className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 border border-[rgba(255,255,255,0.12)] text-[#f0f0f0] rounded-lg hover:bg-[rgba(255,255,255,0.05)] transition-colors"
                     >
-                      <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                      </svg>
+                      <Add size={14} color="currentColor" />
                       Invite User
                     </button>
                   )}
@@ -1179,9 +1159,7 @@ export default function CustomerAccount() {
                                 className="text-xs text-[#a85858] hover:text-red-300 transition-colors"
                                 title="Remove from business"
                               >
-                                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                                </svg>
+                                <CloseCircle size={16} color="currentColor" />
                               </button>
                             </div>
                           )}

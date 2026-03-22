@@ -5,6 +5,7 @@ import ProgressBar from '@/components/ProgressBar';
 import Timeline from '@/components/Timeline';
 import StatusBadge from '@/components/StatusBadge';
 import { Delivery, DeliveryHistory, PAYMENT_LABELS } from '@/lib/types';
+import { ExportSquare, CloseCircle } from 'iconsax-react';
 
 interface DeliveryWithHistory extends Delivery {
   history: DeliveryHistory[];
@@ -98,10 +99,10 @@ export default function DeliveryOverlay({ trackingId, onClose }: DeliveryOverlay
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 flex items-center justify-center rounded-lg text-[#a1a4a5] hover:text-[#f0f0f0] hover:bg-[rgba(255,255,255,0.08)] transition-colors text-lg leading-none"
+            className="w-8 h-8 flex items-center justify-center rounded-lg text-[#a1a4a5] hover:text-[#f0f0f0] hover:bg-[rgba(255,255,255,0.08)] transition-colors"
             aria-label="Close"
           >
-            &times;
+            <CloseCircle size={20} color="currentColor" />
           </button>
         </div>
 
@@ -146,9 +147,7 @@ export default function DeliveryOverlay({ trackingId, onClose }: DeliveryOverlay
                   className="text-[#F2FF66] text-xs font-medium hover:underline flex items-center gap-1"
                 >
                   Open full page
-                  <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                  </svg>
+                  <ExportSquare size={12} color="currentColor" />
                 </a>
               </div>
 

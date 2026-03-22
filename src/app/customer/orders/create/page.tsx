@@ -10,6 +10,7 @@ import {
   PaymentMethod,
   isValidNigerianPhone,
 } from '@/lib/types';
+import { DocumentDownload, Danger, CloseCircle, InfoCircle, ArrowLeft2 } from 'iconsax-react';
 
 /* ------------------------------------------------------------------ */
 /*  Styling constants                                                   */
@@ -327,20 +328,7 @@ function EstimateSummary({
 function EstimatePlaceholder() {
   return (
     <div className="rounded-xl border border-dashed border-[rgba(255,255,255,0.08)] bg-[#070707] p-8 flex flex-col items-center justify-center gap-3 text-center min-h-[200px]">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        className="w-10 h-10 text-gray-600"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-        strokeWidth={1.5}
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 11h.01M12 11h.01M15 11h.01M4 19h16a2 2 0 002-2V7a2 2 0 00-2-2H4a2 2 0 00-2 2v10a2 2 0 002 2z"
-        />
-      </svg>
+      <DocumentDownload size={40} color="#4b5563" />
       <p className="text-gray-500 text-sm">
         Fill in the form and click <span className="text-[#f0f0f0] underline">Estimate Cost</span> to see a
         price breakdown here.
@@ -502,9 +490,7 @@ function CompactDeliveryCard({
           title="Edit"
           className="p-1.5 rounded-lg text-gray-500 hover:text-[#F2FF66] hover:bg-[#F2FF66]/10 transition-colors"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536M9 13l6.586-6.586a2 2 0 112.828 2.828L11.828 15.828a2 2 0 01-1.414.586H9v-2a2 2 0 01.586-1.414z" />
-          </svg>
+          <CloseCircle size={16} color="currentColor" />
         </button>
         {/* Remove button */}
         {total > 1 && (
@@ -514,9 +500,7 @@ function CompactDeliveryCard({
             title="Remove"
             className="p-1.5 rounded-lg text-gray-500 hover:text-[#a85858] hover:bg-red-400/10 transition-colors"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-            </svg>
+            <Danger size={16} color="currentColor" />
           </button>
         )}
       </div>
@@ -566,9 +550,7 @@ function BulkUploadZone({ onFile, onDownloadTemplate }: BulkUploadZoneProps) {
           isDragging ? 'border-[#F2FF66] bg-[#F2FF66]/5' : 'border-[rgba(255,255,255,0.08)] bg-[#000000] hover:border-gray-600'
         }`}
       >
-        <svg xmlns="http://www.w3.org/2000/svg" className={`w-8 h-8 ${isDragging ? 'text-[#F2FF66]' : 'text-gray-600'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-        </svg>
+        <DocumentDownload size={32} color={isDragging ? '#F2FF66' : '#4b5563'} />
         <p className="text-gray-300 text-sm font-medium">
           Drop your file here or <span className="text-[#a1a4a5] underline">Browse</span>
         </p>
@@ -579,9 +561,7 @@ function BulkUploadZone({ onFile, onDownloadTemplate }: BulkUploadZoneProps) {
       {/* Document sample row */}
       <div className="flex items-center justify-between bg-[#000000] border border-[rgba(255,255,255,0.08)] rounded-xl px-4 py-3">
         <div className="flex items-center gap-2">
-          <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-          </svg>
+          <DocumentDownload size={16} color="#6b7280" />
           <div>
             <p className="text-[#f0f0f0] text-xs font-semibold">Document Sample</p>
             <p className="text-gray-500 text-[10px]">Download the template and use it as a guide to create yours.</p>
@@ -693,9 +673,7 @@ function BulkPreviewCards({
           onClick={() => onRemoveAll(activeTab)}
           className="flex items-center gap-1.5 text-xs text-[#a85858] hover:text-red-300 border border-red-800/40 hover:border-red-600/40 px-3 py-1.5 rounded-lg transition-colors"
         >
-          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-          </svg>
+          <Danger size={14} color="currentColor" />
           Remove all
         </button>
       </div>
@@ -745,9 +723,7 @@ function BulkPreviewCards({
                         title="Edit"
                         className="p-1.5 text-[#a1a4a5] hover:text-[#f0f0f0] hover:bg-[rgba(255,255,255,0.06)] rounded-lg transition-colors"
                       >
-                        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536M9 13l6.586-6.586a2 2 0 112.828 2.828L11.828 15.828a2 2 0 01-1.414.586H9v-2a2 2 0 01.586-1.414z" />
-                        </svg>
+                        <CloseCircle size={14} color="currentColor" />
                       </button>
                       <button
                         type="button"
@@ -755,9 +731,7 @@ function BulkPreviewCards({
                         title="Remove"
                         className="p-1.5 text-red-500/60 hover:text-[#a85858] hover:bg-red-400/10 rounded-lg transition-colors"
                       >
-                        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                        </svg>
+                        <Danger size={14} color="currentColor" />
                       </button>
                     </div>
                   </td>
@@ -798,9 +772,7 @@ function BulkPreviewCards({
                 onClick={() => onSetEditing(null)}
                 className="text-gray-500 hover:text-[#f0f0f0] transition-colors"
               >
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
+                <CloseCircle size={20} color="currentColor" />
               </button>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -1507,9 +1479,7 @@ function CreateOrderPageContent() {
         {/* Draft order banner */}
         {draftOrderNumber && (
           <div className="mb-6 rounded-xl border border-[rgba(130,85,25,0.25)] bg-[rgba(80,50,15,0.15)] px-4 py-3 flex items-center gap-3">
-            <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-[#aa8040] flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
+            <InfoCircle size={20} color="#aa8040" className="flex-shrink-0" />
             <p className="text-[#b89050] text-sm">
               Editing draft order <span className="font-bold">{draftOrderNumber}</span>
             </p>
@@ -1708,9 +1678,7 @@ function CreateOrderPageContent() {
               onClick={() => setShowMobileEstimate(false)}
               className="flex items-center gap-1.5 text-gray-400 hover:text-[#f0f0f0] text-sm transition-colors"
             >
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-              </svg>
+              <ArrowLeft2 size={16} color="currentColor" />
               Go Back
             </button>
           </div>

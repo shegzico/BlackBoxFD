@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Logo from '@/components/Logo';
+import { Refresh2 } from 'iconsax-react';
 
 function VerifyForm() {
   const router = useRouter();
@@ -160,10 +161,7 @@ function VerifyForm() {
             >
               {loading ? (
                 <>
-                  <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
-                  </svg>
+                  <Refresh2 size={16} className="animate-spin" />
                   Verifying...
                 </>
               ) : (
@@ -197,10 +195,7 @@ export default function CustomerVerifyPage() {
     <Suspense
       fallback={
         <div className="min-h-screen bg-[#000000] flex items-center justify-center">
-          <svg className="animate-spin w-6 h-6 text-[#F2FF66]" viewBox="0 0 24 24" fill="none">
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
-          </svg>
+          <Refresh2 size={24} color="#F2FF66" className="animate-spin" />
         </div>
       }
     >

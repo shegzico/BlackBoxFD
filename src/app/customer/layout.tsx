@@ -4,11 +4,12 @@ import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import Logo from '@/components/Logo';
+import { Category, Box, Profile, LogoutCurve } from 'iconsax-react';
 
 const NAV_TABS = [
-  { href: '/customer/dashboard', icon: '\u{1F4CA}', label: 'Dashboard' },
-  { href: '/customer/orders', icon: '\u{1F4E6}', label: 'Orders' },
-  { href: '/customer/account', icon: '\u{1F464}', label: 'Account' },
+  { href: '/customer/dashboard', Icon: Category, label: 'Dashboard' },
+  { href: '/customer/orders', Icon: Box, label: 'Orders' },
+  { href: '/customer/account', Icon: Profile, label: 'Account' },
 ];
 
 const AUTH_PATHS = ['/customer', '/customer/signup', '/customer/verify', '/signup'];
@@ -52,6 +53,7 @@ function CustomerShell({ children }: { children: React.ReactNode }) {
         <nav className="flex-1 flex flex-col gap-1 px-3 py-4">
           {NAV_TABS.map((tab) => {
             const isActive = pathname === tab.href || pathname.startsWith(tab.href + '/');
+            const NavIcon = tab.Icon;
             return (
               <Link
                 key={tab.href}
@@ -65,7 +67,7 @@ function CustomerShell({ children }: { children: React.ReactNode }) {
                   }
                 `}
               >
-                <span className="text-base leading-none">{tab.icon}</span>
+                <NavIcon size={18} color="currentColor" />
                 {tab.label}
               </Link>
             );
@@ -85,7 +87,7 @@ function CustomerShell({ children }: { children: React.ReactNode }) {
               transition-colors duration-150
             "
           >
-            <span>{'\u{1F6AA}'}</span>
+            <LogoutCurve size={18} color="currentColor" />
             Logout
           </button>
         </div>
@@ -116,9 +118,9 @@ function CustomerShell({ children }: { children: React.ReactNode }) {
           </div>
           <button
             onClick={handleLogout}
-            className="text-[#a1a4a5] hover:text-[#a85858] transition-colors text-sm px-3 py-1.5 rounded-lg border border-[rgba(255,255,255,0.08)]"
+            className="flex items-center gap-1.5 text-[#a1a4a5] hover:text-[#a85858] transition-colors text-sm px-3 py-1.5 rounded-lg border border-[rgba(255,255,255,0.08)]"
           >
-            {'\u{1F6AA}'} Logout
+            <LogoutCurve size={18} color="currentColor" /> Logout
           </button>
         </header>
 
@@ -132,6 +134,7 @@ function CustomerShell({ children }: { children: React.ReactNode }) {
       <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#070707] border-t border-[rgba(255,255,255,0.08)] flex">
         {NAV_TABS.map((tab) => {
           const isActive = pathname === tab.href || pathname.startsWith(tab.href + '/');
+          const NavIcon = tab.Icon;
           return (
             <Link
               key={tab.href}
@@ -142,7 +145,7 @@ function CustomerShell({ children }: { children: React.ReactNode }) {
                 ${isActive ? 'text-[#f0f0f0]' : 'text-[#a1a4a5]'}
               `}
             >
-              <span className="text-xl leading-none">{tab.icon}</span>
+              <NavIcon size={22} color="currentColor" />
               <span className={`text-[10px] font-medium ${isActive ? 'text-[#f0f0f0]' : 'text-[#a1a4a5]'}`}>
                 {tab.label}
               </span>

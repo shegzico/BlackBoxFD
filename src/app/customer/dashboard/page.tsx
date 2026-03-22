@@ -5,6 +5,7 @@ import Link from 'next/link';
 import DeliveryOverlay from '@/components/DeliveryOverlay';
 import { Delivery } from '@/lib/types';
 import StatusBadge from '@/components/StatusBadge';
+import { Calendar, ArrowDown2, TickCircle, Add, Location, Clock, InfoCircle, TruckFast, ArrowRotateLeft, Refresh2, Grid4, Box } from 'iconsax-react';
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                               */
@@ -97,14 +98,9 @@ function PeriodDropdown({
         onClick={() => setOpen((o) => !o)}
         className="flex items-center gap-2 bg-[#070707] border border-[rgba(255,255,255,0.08)] hover:border-[#212629] text-[#f0f0f0] text-xs font-medium px-3 py-2 rounded-lg transition-colors"
       >
-        <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 text-[#a1a4a5]" fill="none" stroke="currentColor" strokeWidth={2}>
-          <rect x="3" y="4" width="18" height="18" rx="2" />
-          <path strokeLinecap="round" d="M3 9h18M8 2v4M16 2v4" />
-        </svg>
+        <Calendar size={14} color="#a1a4a5" />
         {selectedLabel}
-        <svg viewBox="0 0 24 24" className={`w-3 h-3 text-[#a1a4a5] transition-transform ${open ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" strokeWidth={2.5}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M6 9l6 6 6-6" />
-        </svg>
+        <ArrowDown2 size={12} color="#a1a4a5" className={`transition-transform ${open ? 'rotate-180' : ''}`} />
       </button>
 
       {open && (
@@ -122,9 +118,7 @@ function PeriodDropdown({
             >
               {p.label}
               {selected === p.key && (
-                <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                </svg>
+                <TickCircle size={14} color="currentColor" variant="Bold" />
               )}
             </button>
           ))}
@@ -264,11 +258,7 @@ function QuickActions() {
       sub: 'Send a package',
       iconBg: 'bg-[#F2FF66]',
       iconColor: 'text-[#000000]',
-      icon: (
-        <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-        </svg>
-      ),
+      icon: <Add size={20} color="currentColor" />,
     },
     {
       href: '/customer/track',
@@ -276,12 +266,7 @@ function QuickActions() {
       sub: 'Live status',
       iconBg: 'bg-[#232023]',
       iconColor: 'text-[#f0f0f0]',
-      icon: (
-        <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.8}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-          <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-        </svg>
-      ),
+      icon: <Location size={20} color="currentColor" />,
     },
     {
       href: '/customer/orders?filter=pending',
@@ -289,11 +274,7 @@ function QuickActions() {
       sub: 'View pending',
       iconBg: 'bg-[#232023]',
       iconColor: 'text-[#f0f0f0]',
-      icon: (
-        <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.8}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-      ),
+      icon: <Clock size={20} color="currentColor" />,
     },
     {
       href: '/customer/support',
@@ -302,11 +283,7 @@ function QuickActions() {
       iconBg: 'bg-[#232023]',
       iconColor: 'text-[#f0f0f0]',
       disabled: true,
-      icon: (
-        <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.8}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" />
-        </svg>
-      ),
+      icon: <InfoCircle size={20} color="currentColor" />,
     },
   ];
 
@@ -480,49 +457,49 @@ export default function CustomerDashboard() {
       label: 'Pending pickup',
       value: stats.pending,
       accent: 'bg-[rgba(150,105,35,0.12)]',
-      icon: <svg viewBox="0 0 24 24" className="w-4.5 h-4.5 text-[#aa8040] w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>,
+      icon: <Clock size={20} color="currentColor" />,
     },
     {
       label: 'Picked up items',
       value: stats.picked_up,
       accent: 'bg-[rgba(110,85,160,0.12)]',
-      icon: <svg viewBox="0 0 24 24" className="w-5 h-5 text-[#8878b8]" fill="none" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10" /></svg>,
+      icon: <Box size={20} color="currentColor" />,
     },
     {
       label: 'Prepared for delivery',
       value: stats.assigned,
       accent: 'bg-[rgba(65,100,155,0.12)]',
-      icon: <svg viewBox="0 0 24 24" className="w-5 h-5 text-[#6a8fbf]" fill="none" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" /></svg>,
+      icon: <TickCircle size={20} color="currentColor" />,
     },
     {
       label: 'Delivery in progress',
       value: stats.in_transit,
       accent: 'bg-[rgba(145,80,35,0.12)]',
-      icon: <svg viewBox="0 0 24 24" className="w-5 h-5 text-[#a06530]" fill="none" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" /></svg>,
+      icon: <TruckFast size={20} color="currentColor" />,
     },
     {
       label: 'Delivered items',
       value: stats.delivered + stats.confirmed,
       accent: 'bg-[rgba(38,100,58,0.12)]',
-      icon: <svg viewBox="0 0 24 24" className="w-5 h-5 text-[#3d8050]" fill="none" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>,
+      icon: <TickCircle size={20} color="currentColor" />,
     },
     {
       label: 'In transit back to you',
       value: 0,
       accent: 'bg-[rgba(50,110,145,0.12)]',
-      icon: <svg viewBox="0 0 24 24" className="w-5 h-5 text-[#4888a0]" fill="none" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" /></svg>,
+      icon: <ArrowRotateLeft size={20} color="currentColor" />,
     },
     {
       label: 'Returned items',
       value: 0,
       accent: 'bg-[rgba(135,55,55,0.12)]',
-      icon: <svg viewBox="0 0 24 24" className="w-5 h-5 text-[#a85858]" fill="none" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M16 15v-1a4 4 0 00-4-4H8m0 0l3 3m-3-3l3-3m9 14V5a2 2 0 00-2-2H6a2 2 0 00-2 2v16l4-2 2 2 2-2 2 2 2-2 4 2z" /></svg>,
+      icon: <Refresh2 size={20} color="currentColor" />,
     },
     {
       label: 'Total shipment',
       value: stats.total,
       accent: 'bg-[#F2FF66]/8',
-      icon: <svg viewBox="0 0 24 24" className="w-5 h-5 text-[#a1a4a5]" fill="none" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 10h16M4 14h16M4 18h16" /></svg>,
+      icon: <Grid4 size={20} color="currentColor" />,
     },
   ];
 

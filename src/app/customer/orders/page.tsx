@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import StatusBadge from '@/components/StatusBadge';
 import AddressInput from '@/components/AddressInput';
 import { Delivery, DeliveryStatus, STATUS_LABELS, PAYMENT_LABELS, PaymentMethod } from '@/lib/types';
+import { CloseCircle, Eye, Edit2, Trash, Danger, SearchNormal1 } from 'iconsax-react';
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                               */
@@ -113,9 +114,7 @@ function ViewModal({ delivery, onClose }: { delivery: DeliveryWithHistory; onClo
             <p className="font-mono text-xs text-[#a1a4a5] mt-0.5">{d.id}</p>
           </div>
           <button onClick={onClose} className="text-[#a1a4a5] hover:text-[#f0f0f0] p-1.5 rounded-lg transition-colors">
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
+            <CloseCircle size={20} color="currentColor" />
           </button>
         </div>
 
@@ -241,9 +240,7 @@ function EditModal({
             <p className="font-mono text-xs text-[#a1a4a5] mt-0.5">{order.id}</p>
           </div>
           <button onClick={onClose} className="text-[#a1a4a5] hover:text-[#f0f0f0] p-1.5 rounded-lg transition-colors">
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
+            <CloseCircle size={20} color="currentColor" />
           </button>
         </div>
 
@@ -352,9 +349,7 @@ function CancelModal({
         onClick={(e) => e.stopPropagation()}
       >
         <div className="w-12 h-12 rounded-full bg-[rgba(135,55,55,0.12)] flex items-center justify-center mb-4">
-          <svg className="w-6 h-6 text-[#a85858]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-          </svg>
+          <Danger size={24} color="#a85858" />
         </div>
         <h3 className="text-[#f0f0f0] font-semibold text-base mb-1">Cancel Order?</h3>
         <p className="text-[#a1a4a5] text-sm mb-1">
@@ -419,9 +414,7 @@ function DeleteDraftModal({
         onClick={(e) => e.stopPropagation()}
       >
         <div className="w-12 h-12 rounded-full bg-[rgba(135,55,55,0.12)] flex items-center justify-center mb-4">
-          <svg className="w-6 h-6 text-[#a85858]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-          </svg>
+          <Danger size={24} color="#a85858" />
         </div>
         <h3 className="text-[#f0f0f0] font-semibold text-base mb-1">Delete Draft?</h3>
         <p className="text-[#a1a4a5] text-sm mb-5">
@@ -563,27 +556,10 @@ export default function CustomerOrders() {
   ];
 
   /* ---- Icons ---- */
-  const EyeIcon = (
-    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-      <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-    </svg>
-  );
-  const PencilIcon = (
-    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536M9 13l6.586-6.586a2 2 0 112.828 2.828L11.828 15.828a2 2 0 01-1.414.586H9v-2a2 2 0 01.586-1.414z" />
-    </svg>
-  );
-  const TrashIcon = (
-    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-    </svg>
-  );
-  const BanIcon = (
-    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
-    </svg>
-  );
+  const EyeIcon    = <Eye size={16} color="currentColor" />;
+  const PencilIcon = <Edit2 size={16} color="currentColor" />;
+  const BanIcon    = <Trash size={16} color="currentColor" />;
+  const TrashIcon  = <Trash size={16} color="currentColor" />;
 
   return (
     <div className="px-4 md:px-6 py-6 space-y-5 max-w-6xl mx-auto">
@@ -613,9 +589,9 @@ export default function CustomerOrders() {
       {/* Search + Date Range */}
       <div className="flex flex-col md:flex-row gap-3">
         <div className="relative flex-1">
-          <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#a1a4a5]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
+          <div className="absolute left-3 top-1/2 -translate-y-1/2 text-[#a1a4a5]">
+            <SearchNormal1 size={16} color="currentColor" />
+          </div>
           <input
             type="text"
             placeholder="Search by tracking ID or recipient..."

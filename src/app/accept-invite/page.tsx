@@ -4,6 +4,7 @@ import { Suspense, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Logo from '@/components/Logo';
 import { isValidNigerianPhone } from '@/lib/types';
+import { Refresh2, Danger } from 'iconsax-react';
 
 interface InviteDetails {
   valid: boolean;
@@ -94,10 +95,7 @@ function AcceptInviteContent() {
     return (
       <div className="min-h-screen bg-[#000000] text-[#f0f0f0] flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
-          <svg className="animate-spin w-8 h-8 text-[#F2FF66]" viewBox="0 0 24 24" fill="none">
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
-          </svg>
+          <Refresh2 size={32} color="#F2FF66" className="animate-spin" />
           <p className="text-[#a1a4a5] text-sm">Validating invite...</p>
         </div>
       </div>
@@ -110,9 +108,7 @@ function AcceptInviteContent() {
         <Logo size="large" />
         <div className="mt-8 w-full max-w-sm bg-[#070707] border border-[rgba(255,255,255,0.08)] rounded-2xl p-8 text-center">
           <div className="w-16 h-16 rounded-full bg-[rgba(135,55,55,0.12)] border border-red-500/20 flex items-center justify-center mx-auto mb-4">
-            <svg className="w-8 h-8 text-[#a85858]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
-            </svg>
+            <Danger size={32} color="#a85858" />
           </div>
           <h1 className="text-xl font-bold text-[#f0f0f0] mb-2">Invalid Invite</h1>
           <p className="text-[#a1a4a5] text-sm leading-relaxed">
@@ -237,10 +233,7 @@ function AcceptInviteContent() {
             >
               {loading ? (
                 <>
-                  <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
-                  </svg>
+                  <Refresh2 size={16} className="animate-spin" />
                   Joining...
                 </>
               ) : (
@@ -260,10 +253,7 @@ export default function AcceptInvitePage() {
       fallback={
         <div className="min-h-screen bg-[#000000] text-[#f0f0f0] flex items-center justify-center">
           <div className="flex flex-col items-center gap-4">
-            <svg className="animate-spin w-8 h-8 text-[#F2FF66]" viewBox="0 0 24 24" fill="none">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
-            </svg>
+            <Refresh2 size={32} color="#F2FF66" className="animate-spin" />
             <p className="text-[#a1a4a5] text-sm">Loading...</p>
           </div>
         </div>

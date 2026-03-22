@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Navbar from '@/components/Navbar';
+import { SearchNormal1 } from 'iconsax-react';
 
 export default function TrackPage() {
   const router = useRouter();
@@ -41,19 +42,7 @@ export default function TrackPage() {
           {/* Heading */}
           <div className="mb-8 text-center">
             <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-[#F2FF66]/10 mb-4">
-              <svg
-                className="w-7 h-7 text-[#F2FF66]"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={1.8}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"
-                />
-              </svg>
+              <SearchNormal1 size={28} color="#F2FF66" />
             </div>
             <h1 className="text-2xl font-bold text-[#f0f0f0] mb-1">Track your package</h1>
             <p className="text-sm text-gray-400">

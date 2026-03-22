@@ -1,6 +1,7 @@
 'use client';
 import Link from 'next/link';
 import Logo from './Logo';
+import { ArrowLeft2 } from 'iconsax-react';
 
 interface NavbarProps {
   showBack?: boolean;
@@ -17,15 +18,7 @@ export default function Navbar({ showBack = false, backHref = '/', title }: Navb
           className="flex items-center justify-center w-8 h-8 rounded-full bg-[#161616] hover:bg-gray-700 transition-colors text-white flex-shrink-0"
           aria-label="Go back"
         >
-          <svg
-            className="w-4 h-4"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={2}
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-          </svg>
+          <ArrowLeft2 size={16} color="currentColor" />
         </Link>
       )}
 
