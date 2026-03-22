@@ -10,11 +10,11 @@ interface NavbarProps {
 
 export default function Navbar({ showBack = false, backHref = '/', title }: NavbarProps) {
   return (
-    <nav className="w-full bg-[#191314] border-b border-gray-800 px-4 py-3 flex items-center gap-3 sticky top-0 z-50">
+    <nav className="w-full bg-[#070707] border-b border-[rgba(255,255,255,0.08)] px-4 py-3 flex items-center gap-3 sticky top-0 z-50">
       {showBack && (
         <Link
           href={backHref}
-          className="flex items-center justify-center w-8 h-8 rounded-full bg-gray-800 hover:bg-gray-700 transition-colors text-white flex-shrink-0"
+          className="flex items-center justify-center w-8 h-8 rounded-full bg-[#161616] hover:bg-gray-700 transition-colors text-white flex-shrink-0"
           aria-label="Go back"
         >
           <svg

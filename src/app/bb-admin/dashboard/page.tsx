@@ -15,12 +15,12 @@ interface Stats {
 
 const STAT_COLORS: Record<DeliveryStatus, string> = {
   pending: 'bg-gray-500',
-  assigned: 'bg-blue-500',
-  picked_up: 'bg-amber-500',
-  in_transit: 'bg-amber-600',
-  delivered: 'bg-green-500',
-  confirmed: 'bg-green-700',
-  cancelled: 'bg-red-600',
+  assigned: 'bg-[#2d5a8a]',
+  picked_up: 'bg-[#5a4018]',
+  in_transit: 'bg-[#4a3010]',
+  delivered: 'bg-[#1e5030]',
+  confirmed: 'bg-[#153820]',
+  cancelled: 'bg-[#6a2828]',
 };
 
 function formatNaira(amount: number | undefined | null): string {
@@ -107,17 +107,17 @@ export default function AdminDashboardPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-bold text-[#FAFAFA]">Dashboard</h1>
-          <p className="text-[#888888] text-xs mt-0.5">Live operations overview</p>
+          <h1 className="text-xl font-bold text-[#f0f0f0]">Dashboard</h1>
+          <p className="text-[#a1a4a5] text-xs mt-0.5">Live operations overview</p>
         </div>
-        <span className="text-[#888888] text-xs bg-[#191314] border border-[#2A2A2A] px-2.5 py-1 rounded-full flex items-center gap-1.5">
-          <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
+        <span className="text-[#a1a4a5] text-xs bg-[#070707] border border-[rgba(255,255,255,0.08)] px-2.5 py-1 rounded-full flex items-center gap-1.5">
+          <span className="w-1.5 h-1.5 bg-[#1e5030] rounded-full animate-pulse" />
           Auto-refresh 30s
         </span>
       </div>
 
       {error && (
-        <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm">{error}</div>
+        <div className="p-3 bg-[rgba(135,55,55,0.12)] border border-red-500/30 rounded-lg text-[#a85858] text-sm">{error}</div>
       )}
 
       {/* Stats Grid 2x2 */}
@@ -125,19 +125,19 @@ export default function AdminDashboardPage() {
         {statCards.map((card, i) => (
           <div
             key={i}
-            className="bg-[#191314] border border-[#2A2A2A] rounded-xl p-4 flex flex-col gap-2"
+            className="bg-[#070707] border border-[rgba(255,255,255,0.08)] rounded-xl p-4 flex flex-col gap-2"
           >
             {statsLoading || !card ? (
               <div className="space-y-2">
-                <div className="w-8 h-8 bg-[#2A2A2A] rounded-lg animate-pulse" />
-                <div className="w-16 h-6 bg-[#2A2A2A] rounded animate-pulse" />
-                <div className="w-20 h-3 bg-[#2A2A2A] rounded animate-pulse" />
+                <div className="w-8 h-8 bg-[rgba(255,255,255,0.08)] rounded-lg animate-pulse" />
+                <div className="w-16 h-6 bg-[rgba(255,255,255,0.08)] rounded animate-pulse" />
+                <div className="w-20 h-3 bg-[rgba(255,255,255,0.08)] rounded animate-pulse" />
               </div>
             ) : (
               <>
                 <span className="text-2xl leading-none">{card.icon}</span>
-                <p className="text-2xl font-bold text-[#FAFAFA] leading-none">{card.value}</p>
-                <p className="text-[#888888] text-xs">{card.label}</p>
+                <p className="text-2xl font-bold text-[#f0f0f0] leading-none">{card.value}</p>
+                <p className="text-[#a1a4a5] text-xs">{card.label}</p>
               </>
             )}
           </div>
@@ -146,8 +146,8 @@ export default function AdminDashboardPage() {
 
       {/* Status Breakdown */}
       {!statsLoading && stats && breakdownEntries.length > 0 && (
-        <div className="bg-[#191314] border border-[#2A2A2A] rounded-xl p-4">
-          <h2 className="text-sm font-semibold text-[#FAFAFA] mb-3">Status Breakdown</h2>
+        <div className="bg-[#070707] border border-[rgba(255,255,255,0.08)] rounded-xl p-4">
+          <h2 className="text-sm font-semibold text-[#f0f0f0] mb-3">Status Breakdown</h2>
           <div className="flex rounded-full overflow-hidden h-3 mb-3 gap-0.5">
             {breakdownEntries.map(([status, count]) => (
               <div
@@ -162,8 +162,8 @@ export default function AdminDashboardPage() {
             {breakdownEntries.map(([status, count]) => (
               <div key={status} className="flex items-center gap-1.5 text-xs">
                 <span className={`w-2 h-2 rounded-full ${STAT_COLORS[status]}`} />
-                <span className="text-[#888888]">{STATUS_LABELS[status]}</span>
-                <span className="text-[#FAFAFA] font-medium">{count}</span>
+                <span className="text-[#a1a4a5]">{STATUS_LABELS[status]}</span>
+                <span className="text-[#f0f0f0] font-medium">{count}</span>
               </div>
             ))}
           </div>
@@ -171,39 +171,39 @@ export default function AdminDashboardPage() {
       )}
 
       {/* Recent Activity */}
-      <div className="bg-[#191314] border border-[#2A2A2A] rounded-xl overflow-hidden">
-        <div className="px-4 py-3 border-b border-[#2A2A2A] flex items-center justify-between">
-          <h2 className="text-sm font-semibold text-[#FAFAFA]">Recent Activity</h2>
-          <span className="text-[#888888] text-xs">Last 10 orders</span>
+      <div className="bg-[#070707] border border-[rgba(255,255,255,0.08)] rounded-xl overflow-hidden">
+        <div className="px-4 py-3 border-b border-[rgba(255,255,255,0.08)] flex items-center justify-between">
+          <h2 className="text-sm font-semibold text-[#f0f0f0]">Recent Activity</h2>
+          <span className="text-[#a1a4a5] text-xs">Last 10 orders</span>
         </div>
 
         {recentLoading ? (
-          <div className="divide-y divide-[#2A2A2A]">
+          <div className="divide-y divide-[rgba(255,255,255,0.08)]">
             {Array(5).fill(null).map((_, i) => (
               <div key={i} className="px-4 py-3 flex items-center justify-between">
                 <div className="space-y-1.5">
-                  <div className="w-28 h-3.5 bg-[#2A2A2A] rounded animate-pulse" />
-                  <div className="w-40 h-3 bg-[#2A2A2A] rounded animate-pulse" />
+                  <div className="w-28 h-3.5 bg-[rgba(255,255,255,0.08)] rounded animate-pulse" />
+                  <div className="w-40 h-3 bg-[rgba(255,255,255,0.08)] rounded animate-pulse" />
                 </div>
-                <div className="w-20 h-6 bg-[#2A2A2A] rounded-full animate-pulse" />
+                <div className="w-20 h-6 bg-[rgba(255,255,255,0.08)] rounded-full animate-pulse" />
               </div>
             ))}
           </div>
         ) : recent.length === 0 ? (
-          <div className="px-4 py-8 text-center text-[#888888] text-sm">No recent activity</div>
+          <div className="px-4 py-8 text-center text-[#a1a4a5] text-sm">No recent activity</div>
         ) : (
-          <ul className="divide-y divide-[#2A2A2A]">
+          <ul className="divide-y divide-[rgba(255,255,255,0.08)]">
             {recent.map((d) => (
               <li key={d.id} className="px-4 py-3 flex items-center justify-between gap-3">
                 <div className="min-w-0">
-                  <p className="text-[#FAFAFA] text-sm font-mono font-medium truncate">{d.id}</p>
-                  <p className="text-[#888888] text-xs truncate">
+                  <p className="text-[#f0f0f0] text-sm font-mono font-medium truncate">{d.id}</p>
+                  <p className="text-[#a1a4a5] text-xs truncate">
                     {d.sender_name} → {d.recipient_name}
                   </p>
                 </div>
                 <div className="flex flex-col items-end gap-1 flex-shrink-0">
                   <StatusBadge status={d.status} />
-                  <span className="text-[#888888] text-xs">{timeAgo(d.created_at)}</span>
+                  <span className="text-[#a1a4a5] text-xs">{timeAgo(d.created_at)}</span>
                 </div>
               </li>
             ))}

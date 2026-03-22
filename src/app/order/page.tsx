@@ -56,7 +56,7 @@ function ZoneSelect({
       value={value}
       onChange={onChange}
       required={required}
-      className="w-full rounded-lg bg-[#232023] border border-gray-700 text-[#FAFAFA] px-3 py-3 text-sm focus:outline-none focus:border-[#F2FF66] focus:ring-1 focus:ring-[#F2FF66] transition-colors appearance-none"
+      className="w-full rounded-lg bg-[#232023] border border-[rgba(255,255,255,0.06)] text-[#f0f0f0] px-3 py-3 text-sm focus:outline-none focus:border-[#212629] focus:ring-1 focus:ring-[#212629] transition-colors appearance-none"
     >
       <option value="" disabled>
         Select an area
@@ -78,7 +78,7 @@ function ZoneSelect({
 
 function SectionHeading({ children }: { children: React.ReactNode }) {
   return (
-    <h2 className="text-[#F2FF66] font-semibold text-sm uppercase tracking-wider mb-4">
+    <h2 className="text-[#a1a4a5] font-semibold text-sm uppercase tracking-wider mb-4">
       {children}
     </h2>
   );
@@ -123,7 +123,7 @@ function PhoneInput({
   error?: string;
 }) {
   const inputClass =
-    'w-full rounded-lg bg-[#232023] border text-[#FAFAFA] px-3 py-3 text-sm placeholder-gray-600 focus:outline-none focus:ring-1 transition-colors';
+    'w-full rounded-lg bg-[#232023] border text-[#f0f0f0] px-3 py-3 text-sm placeholder-gray-600 focus:outline-none focus:ring-1 transition-colors';
 
   return (
     <div>
@@ -135,9 +135,9 @@ function PhoneInput({
         value={value}
         onChange={onChange}
         placeholder={placeholder}
-        className={`${inputClass} ${error ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : 'border-gray-700 focus:border-[#F2FF66] focus:ring-[#F2FF66]'}`}
+        className={`${inputClass} ${error ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : 'border-[rgba(255,255,255,0.06)] focus:border-[#212629] focus:ring-[#212629]'}`}
       />
-      {error && <p className="text-red-400 text-xs mt-1">{error}</p>}
+      {error && <p className="text-[#a85858] text-xs mt-1">{error}</p>}
     </div>
   );
 }
@@ -264,17 +264,17 @@ export default function OrderPage() {
   }
 
   const inputClass =
-    'w-full rounded-lg bg-[#232023] border border-gray-700 text-[#FAFAFA] px-3 py-3 text-sm placeholder-gray-600 focus:outline-none focus:border-[#F2FF66] focus:ring-1 focus:ring-[#F2FF66] transition-colors';
+    'w-full rounded-lg bg-[#232023] border border-[rgba(255,255,255,0.06)] text-[#f0f0f0] px-3 py-3 text-sm placeholder-gray-600 focus:outline-none focus:border-[#212629] focus:ring-1 focus:ring-[#212629] transition-colors';
 
   return (
-    <div className="min-h-screen bg-[#0A0A0A] text-[#FAFAFA]">
+    <div className="min-h-screen bg-[#000000] text-[#f0f0f0]">
       <Navbar showBack backHref="/" title="Place Order" />
 
       <main className="max-w-lg mx-auto px-4 py-6 pb-24">
         <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-8">
 
           {/* Sender Details */}
-          <section className="bg-[#191314] rounded-xl p-5 border border-gray-800 flex flex-col gap-4">
+          <section className="bg-[#070707] rounded-xl p-5 border border-[rgba(255,255,255,0.08)] flex flex-col gap-4">
             <SectionHeading>Sender Details</SectionHeading>
             <Field label="Full Name *" htmlFor="sender_name">
               <input
@@ -333,7 +333,7 @@ export default function OrderPage() {
           </section>
 
           {/* Recipient Details */}
-          <section className="bg-[#191314] rounded-xl p-5 border border-gray-800 flex flex-col gap-4">
+          <section className="bg-[#070707] rounded-xl p-5 border border-[rgba(255,255,255,0.08)] flex flex-col gap-4">
             <SectionHeading>Recipient Details</SectionHeading>
             <Field label="Full Name *" htmlFor="recipient_name">
               <input
@@ -381,7 +381,7 @@ export default function OrderPage() {
           </section>
 
           {/* Package & Payment */}
-          <section className="bg-[#191314] rounded-xl p-5 border border-gray-800 flex flex-col gap-4">
+          <section className="bg-[#070707] rounded-xl p-5 border border-[rgba(255,255,255,0.08)] flex flex-col gap-4">
             <SectionHeading>Package &amp; Payment</SectionHeading>
             <Field label="Package Description" htmlFor="package_description" optional>
               <textarea
@@ -401,7 +401,7 @@ export default function OrderPage() {
                 value={form.payment_method}
                 onChange={handleChange}
                 required
-                className="w-full rounded-lg bg-[#232023] border border-gray-700 text-[#FAFAFA] px-3 py-3 text-sm focus:outline-none focus:border-[#F2FF66] focus:ring-1 focus:ring-[#F2FF66] transition-colors appearance-none"
+                className="w-full rounded-lg bg-[#232023] border border-[rgba(255,255,255,0.06)] text-[#f0f0f0] px-3 py-3 text-sm focus:outline-none focus:border-[#212629] focus:ring-1 focus:ring-[#212629] transition-colors appearance-none"
               >
                 <option value="" disabled>
                   Select payment method
@@ -427,7 +427,7 @@ export default function OrderPage() {
                 className="mt-0.5 w-4 h-4 rounded border-gray-600 bg-[#232023] accent-[#F2FF66] cursor-pointer flex-shrink-0"
               />
               <div>
-                <span className="text-sm text-[#FAFAFA] font-medium">Express Delivery</span>
+                <span className="text-sm text-[#f0f0f0] font-medium">Express Delivery</span>
                 <p className="text-xs text-gray-500 mt-0.5">+50% surcharge for priority dispatch</p>
               </div>
             </label>
@@ -435,7 +435,7 @@ export default function OrderPage() {
 
           {/* Delivery Cost Display */}
           {pricingLoaded && deliveryFee !== null && (
-            <section className="bg-[#191314] rounded-xl p-5 border border-[#F2FF66]/30 flex flex-col gap-2">
+            <section className="bg-[#070707] rounded-xl p-5 border border-[#F2FF66]/30 flex flex-col gap-2">
               <div className="flex items-center justify-between">
                 <span className="text-gray-400 text-sm">Delivery Fee</span>
                 <span className="text-[#F2FF66] text-2xl font-bold">
@@ -444,7 +444,7 @@ export default function OrderPage() {
               </div>
               <div className="flex items-center justify-between text-xs text-gray-500">
                 <span>{form.pickup_area} → {form.dropoff_area}</span>
-                {form.is_express && <span className="text-amber-400">Express +50%</span>}
+                {form.is_express && <span className="text-[#aa8040]">Express +50%</span>}
               </div>
             </section>
           )}
@@ -462,7 +462,7 @@ export default function OrderPage() {
             disabled={loading}
             className="
               w-full py-4 rounded-xl font-bold text-base
-              bg-[#F2FF66] text-[#0A0A0A]
+              bg-[#F2FF66] text-[#000000]
               hover:bg-[#e8f550] active:scale-[0.98]
               disabled:opacity-60 disabled:cursor-not-allowed
               transition-all duration-150

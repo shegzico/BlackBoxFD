@@ -19,7 +19,7 @@ interface DeliveryWithHistory extends Delivery {
 // ────────────────────────────────────────────────────────────
 function Skeleton({ className }: { className?: string }) {
   return (
-    <div className={`animate-pulse rounded-lg bg-[#191314] ${className ?? ''}`} />
+    <div className={`animate-pulse rounded-lg bg-[#070707] ${className ?? ''}`} />
   );
 }
 
@@ -55,13 +55,13 @@ function InfoCard({
   icon: React.ReactNode;
 }) {
   return (
-    <div className="bg-[#191314] rounded-xl p-4 flex items-start gap-3">
-      <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-[#F2FF66]/10 flex items-center justify-center text-[#F2FF66]">
+    <div className="bg-[#070707] rounded-xl p-4 flex items-start gap-3">
+      <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-[rgba(255,255,255,0.06)] flex items-center justify-center text-[#a1a4a5]">
         {icon}
       </div>
       <div className="min-w-0">
         <p className="text-xs text-gray-500 mb-0.5">{label}</p>
-        <p className="text-sm font-medium text-[#FAFAFA] truncate">{value}</p>
+        <p className="text-sm font-medium text-[#f0f0f0] truncate">{value}</p>
         {sub && <p className="text-xs text-gray-400 mt-0.5 truncate">{sub}</p>}
       </div>
     </div>
@@ -208,7 +208,7 @@ export default function TrackDetailPage({ params }: { params: Promise<{ id: stri
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0A0A0A] text-[#FAFAFA] flex flex-col">
+      <div className="min-h-screen bg-[#000000] text-[#f0f0f0] flex flex-col">
         <Navbar showBack backHref="/track" title="Tracking Details" />
         <LoadingSkeleton />
       </div>
@@ -217,16 +217,16 @@ export default function TrackDetailPage({ params }: { params: Promise<{ id: stri
 
   if (notFound || !delivery) {
     return (
-      <div className="min-h-screen bg-[#0A0A0A] text-[#FAFAFA] flex flex-col">
+      <div className="min-h-screen bg-[#000000] text-[#f0f0f0] flex flex-col">
         <Navbar showBack backHref="/track" title="Tracking Details" />
         <div className="flex flex-1 flex-col items-center justify-center px-4 text-center gap-4">
-          <div className="w-16 h-16 rounded-2xl bg-[#191314] flex items-center justify-center">
+          <div className="w-16 h-16 rounded-2xl bg-[#070707] flex items-center justify-center">
             <svg className="w-8 h-8 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M9.172 16.172a4 4 0 0 1 5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" />
             </svg>
           </div>
           <div>
-            <h2 className="text-lg font-bold text-[#FAFAFA] mb-1">Delivery not found</h2>
+            <h2 className="text-lg font-bold text-[#f0f0f0] mb-1">Delivery not found</h2>
             <p className="text-sm text-gray-500 mb-4">
               We couldn&apos;t find a delivery with ID{' '}
               <span className="font-mono text-gray-300">{id}</span>.
@@ -250,7 +250,7 @@ export default function TrackDetailPage({ params }: { params: Promise<{ id: stri
   const isConfirmed = delivery.status === 'confirmed';
 
   return (
-    <div className="min-h-screen bg-[#0A0A0A] text-[#FAFAFA] flex flex-col">
+    <div className="min-h-screen bg-[#000000] text-[#f0f0f0] flex flex-col">
       <Navbar showBack backHref="/track" title="Tracking Details" />
 
       <main className="flex-1 w-full max-w-lg mx-auto px-4 py-6 space-y-6">
@@ -259,7 +259,7 @@ export default function TrackDetailPage({ params }: { params: Promise<{ id: stri
         <div className="flex items-start justify-between gap-3">
           <div>
             <p className="text-xs text-gray-500 mb-1">Tracking ID</p>
-            <h1 className="text-xl font-bold font-mono tracking-wider text-[#FAFAFA]">{id}</h1>
+            <h1 className="text-xl font-bold font-mono tracking-wider text-[#f0f0f0]">{id}</h1>
           </div>
           {isExpress && (
             <span className="flex-shrink-0 inline-flex items-center gap-1 bg-[#F2FF66] text-black text-xs font-bold px-2.5 py-1 rounded-full uppercase tracking-wide">
@@ -272,7 +272,7 @@ export default function TrackDetailPage({ params }: { params: Promise<{ id: stri
         </div>
 
         {/* ── Progress bar ─────────────────────────────────── */}
-        <div className="bg-[#191314] rounded-2xl px-3 py-4">
+        <div className="bg-[#070707] rounded-2xl px-3 py-4">
           <ProgressBar status={delivery.status} />
         </div>
 
@@ -311,7 +311,7 @@ export default function TrackDetailPage({ params }: { params: Promise<{ id: stri
 
         {/* ── Confirm Receipt (only when status is 'delivered') ── */}
         {isDelivered && !confirmed && (
-          <div className="bg-[#191314] rounded-2xl p-4 border border-[#F2FF66]/20">
+          <div className="bg-[#070707] rounded-2xl p-4 border border-[#F2FF66]/20">
             <p className="text-sm text-gray-300 mb-3">
               Has your package arrived? Confirm receipt to complete the delivery.
             </p>
@@ -338,7 +338,7 @@ export default function TrackDetailPage({ params }: { params: Promise<{ id: stri
         {/* ── Confirmed success note ───────────────────────── */}
         {(isConfirmed || confirmed) && (
           <div className="bg-green-950/40 border border-green-800 rounded-2xl px-4 py-3 flex items-center gap-3">
-            <svg className="w-5 h-5 text-green-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <svg className="w-5 h-5 text-[#3d8050] flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
             </svg>
             <p className="text-sm text-green-300 font-medium">Delivery confirmed. Thank you!</p>
@@ -356,7 +356,7 @@ export default function TrackDetailPage({ params }: { params: Promise<{ id: stri
         {/* ── Share button ─────────────────────────────────── */}
         <button
           onClick={handleShare}
-          className="w-full flex items-center justify-center gap-2 bg-[#191314] border border-gray-800 hover:border-[#F2FF66]/40 text-[#FAFAFA] text-sm font-medium py-3 rounded-xl transition-colors active:scale-[0.98]"
+          className="w-full flex items-center justify-center gap-2 bg-[#070707] border border-[rgba(255,255,255,0.08)] hover:border-[#212629] text-[#f0f0f0] text-sm font-medium py-3 rounded-xl transition-colors active:scale-[0.98]"
         >
           <ShareIcon />
           {copied ? 'Link copied!' : 'Share tracking link'}

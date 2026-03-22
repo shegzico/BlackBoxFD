@@ -18,16 +18,16 @@ function ConfirmationContent() {
   const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
 
   return (
-    <div className="min-h-screen bg-[#0A0A0A] text-[#FAFAFA] flex flex-col">
+    <div className="min-h-screen bg-[#000000] text-[#f0f0f0] flex flex-col">
       <main className="flex-1 flex flex-col items-center justify-center px-4 py-12">
         {/* Success icon */}
         <div
-          className="w-24 h-24 rounded-full bg-green-500/20 flex items-center justify-center mb-6"
+          className="w-24 h-24 rounded-full bg-[#1e5030]/20 flex items-center justify-center mb-6"
           style={{ animation: 'scaleIn 0.4s ease-out' }}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            className="w-12 h-12 text-green-400"
+            className="w-12 h-12 text-[#3d8050]"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -39,7 +39,7 @@ function ConfirmationContent() {
 
         {/* Order number */}
         {orderNumber && (
-          <div className="bg-[#191314] border border-[#2A2A2A] rounded-2xl px-6 py-5 mb-6 text-center w-full max-w-sm">
+          <div className="bg-[#070707] border border-[rgba(255,255,255,0.08)] rounded-2xl px-6 py-5 mb-6 text-center w-full max-w-sm">
             <p className="text-gray-400 text-xs font-medium uppercase tracking-wider mb-2">
               Order Number
             </p>
@@ -53,9 +53,9 @@ function ConfirmationContent() {
         {isSingle ? (
           <>
             <h1 className="text-2xl font-bold mb-2 text-center">Your order has been placed</h1>
-            <p className="text-[#888888] text-sm mb-6 text-center">
+            <p className="text-[#a1a4a5] text-sm mb-6 text-center">
               Your delivery is being processed under order{' '}
-              <span className="text-[#FAFAFA] font-mono">{orderNumber}</span>. You can track it
+              <span className="text-[#f0f0f0] font-mono">{orderNumber}</span>. You can track it
               from your orders list.
             </p>
           </>
@@ -64,9 +64,9 @@ function ConfirmationContent() {
             <h1 className="text-2xl font-bold mb-2 text-center">
               {count} deliveries placed successfully
             </h1>
-            <p className="text-[#888888] text-sm mb-6 text-center">
+            <p className="text-[#a1a4a5] text-sm mb-6 text-center">
               {count} deliveries created under order{' '}
-              <span className="text-[#FAFAFA] font-mono">{orderNumber}</span>. View them in your
+              <span className="text-[#f0f0f0] font-mono">{orderNumber}</span>. View them in your
               orders list.
             </p>
           </>
@@ -94,14 +94,14 @@ function ConfirmationContent() {
         <div className="w-full max-w-sm flex flex-col gap-3">
           <Link
             href="/customer/orders"
-            className="w-full flex items-center justify-center py-3.5 rounded-xl font-bold text-sm bg-[#F2FF66] text-[#0A0A0A] hover:bg-[#e8f550] transition-colors"
+            className="w-full flex items-center justify-center py-3.5 rounded-xl font-bold text-sm bg-[#F2FF66] text-[#000000] hover:bg-[#e8f550] transition-colors"
           >
             View Orders
           </Link>
 
           <Link
             href="/customer/orders/create"
-            className="w-full flex items-center justify-center py-3.5 rounded-xl text-sm text-[#888888] hover:text-[#F2FF66] transition-colors"
+            className="w-full flex items-center justify-center py-3.5 rounded-xl text-sm text-[#a1a4a5] hover:text-[#F2FF66] transition-colors"
           >
             Create Another Order
           </Link>
@@ -131,8 +131,8 @@ export default function ConfirmationPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center">
-          <span className="text-[#888888] text-sm">Loading…</span>
+        <div className="min-h-screen bg-[#000000] flex items-center justify-center">
+          <span className="text-[#a1a4a5] text-sm">Loading…</span>
         </div>
       }
     >

@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { LAGOS_ZONES } from '@/lib/types';
+import AddressInput from '@/components/AddressInput';
 
 type Tab = 'profile' | 'security' | 'location' | 'team';
 
@@ -97,8 +98,8 @@ function RoleBadge({ role }: { role: string }) {
     <span
       className={`px-2 py-0.5 rounded-full text-xs font-semibold capitalize ${
         isAdmin
-          ? 'bg-[#F2FF66]/15 text-[#F2FF66]'
-          : 'bg-[#2A2A2A] text-[#888888]'
+          ? 'bg-[rgba(100,145,190,0.15)] text-[#6a8fbf]'
+          : 'bg-[rgba(255,255,255,0.08)] text-[#a1a4a5]'
       }`}
     >
       {role}
@@ -144,10 +145,10 @@ function InviteModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center px-4" style={{ backdropFilter: 'blur(4px)', background: 'rgba(0,0,0,0.7)' }}>
-      <div className="w-full max-w-sm bg-[#191314] border border-[#2A2A2A] rounded-2xl p-6 shadow-2xl">
+      <div className="w-full max-w-sm bg-[#070707] border border-[rgba(255,255,255,0.08)] rounded-2xl p-6 shadow-2xl">
         <div className="flex items-center justify-between mb-5">
-          <h2 className="text-base font-bold text-[#FAFAFA]">Invite Team Member</h2>
-          <button onClick={onClose} className="text-[#888888] hover:text-[#FAFAFA] transition-colors">
+          <h2 className="text-base font-bold text-[#f0f0f0]">Invite Team Member</h2>
+          <button onClick={onClose} className="text-[#a1a4a5] hover:text-[#f0f0f0] transition-colors">
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -155,14 +156,14 @@ function InviteModal({
         </div>
 
         {error && (
-          <div className="mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm">
+          <div className="mb-4 p-3 bg-[rgba(135,55,55,0.12)] border border-red-500/30 rounded-lg text-[#a85858] text-sm">
             {error}
           </div>
         )}
 
         <form onSubmit={handleSend} className="space-y-4">
           <div>
-            <label className="block text-xs text-[#888888] mb-1.5">Email Address</label>
+            <label className="block text-xs text-[#a1a4a5] mb-1.5">Email Address</label>
             <input
               type="email"
               value={inviteEmail}
@@ -170,13 +171,13 @@ function InviteModal({
               placeholder="colleague@company.com"
               required
               disabled={loading}
-              className="w-full rounded-lg bg-[#232023] border border-gray-700 text-[#FAFAFA] px-3 py-3 text-sm placeholder-gray-600 focus:outline-none focus:border-[#F2FF66] focus:ring-1 focus:ring-[#F2FF66] transition-colors disabled:opacity-50"
+              className="w-full rounded-lg bg-[#232023] border border-[rgba(255,255,255,0.06)] text-[#f0f0f0] px-3 py-3 text-sm placeholder-gray-600 focus:outline-none focus:border-[#212629] focus:ring-1 focus:ring-[#212629] transition-colors disabled:opacity-50"
             />
           </div>
 
           {/* Role selector */}
           <div>
-            <label className="block text-xs text-[#888888] mb-2">Role</label>
+            <label className="block text-xs text-[#a1a4a5] mb-2">Role</label>
             <div className="flex gap-2">
               {/* Admin card */}
               <button
@@ -184,17 +185,17 @@ function InviteModal({
                 onClick={() => setInviteRole('admin')}
                 className={`flex-1 p-3 rounded-xl border-2 text-left transition-all ${
                   inviteRole === 'admin'
-                    ? 'border-[#F2FF66] bg-[#F2FF66]/5'
-                    : 'border-[#2A2A2A] bg-[#0A0A0A] hover:border-[#F2FF66]/40'
+                    ? 'border-[rgba(255,255,255,0.2)] bg-[rgba(255,255,255,0.04)]'
+                    : 'border-[rgba(255,255,255,0.08)] bg-[#000000] hover:border-[#212629]'
                 }`}
               >
-                <p className={`text-sm font-semibold mb-1.5 ${inviteRole === 'admin' ? 'text-[#F2FF66]' : 'text-[#FAFAFA]'}`}>
+                <p className={`text-sm font-semibold mb-1.5 ${inviteRole === 'admin' ? 'text-[#f0f0f0]' : 'text-[#f0f0f0]'}`}>
                   Admin
                 </p>
                 <ul className="space-y-1">
                   {['Create shipments', 'Edit orders', 'Manage users', 'Top-up wallets'].map((p) => (
-                    <li key={p} className="flex items-center gap-1.5 text-xs text-[#888888]">
-                      <svg className="w-3 h-3 text-[#F2FF66]/70 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                    <li key={p} className="flex items-center gap-1.5 text-xs text-[#a1a4a5]">
+                      <svg className="w-3 h-3 text-[#a1a4a5] flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                       </svg>
                       {p}
@@ -209,17 +210,17 @@ function InviteModal({
                 onClick={() => setInviteRole('basic')}
                 className={`flex-1 p-3 rounded-xl border-2 text-left transition-all ${
                   inviteRole === 'basic'
-                    ? 'border-[#F2FF66] bg-[#F2FF66]/5'
-                    : 'border-[#2A2A2A] bg-[#0A0A0A] hover:border-[#F2FF66]/40'
+                    ? 'border-[rgba(255,255,255,0.2)] bg-[rgba(255,255,255,0.04)]'
+                    : 'border-[rgba(255,255,255,0.08)] bg-[#000000] hover:border-[#212629]'
                 }`}
               >
-                <p className={`text-sm font-semibold mb-1.5 ${inviteRole === 'basic' ? 'text-[#F2FF66]' : 'text-[#FAFAFA]'}`}>
+                <p className={`text-sm font-semibold mb-1.5 ${inviteRole === 'basic' ? 'text-[#f0f0f0]' : 'text-[#f0f0f0]'}`}>
                   Basic
                 </p>
                 <ul className="space-y-1">
                   {['Create shipments'].map((p) => (
-                    <li key={p} className="flex items-center gap-1.5 text-xs text-[#888888]">
-                      <svg className="w-3 h-3 text-[#F2FF66]/70 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                    <li key={p} className="flex items-center gap-1.5 text-xs text-[#a1a4a5]">
+                      <svg className="w-3 h-3 text-[#a1a4a5] flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                       </svg>
                       {p}
@@ -233,7 +234,7 @@ function InviteModal({
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-[#F2FF66] text-[#0A0A0A] py-3 rounded-lg text-sm font-bold hover:bg-[#e8f55c] transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+            className="w-full bg-[#F2FF66] text-[#000000] py-3 rounded-lg text-sm font-bold hover:bg-[#e8f55c] transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
           >
             {loading ? (
               <>
@@ -666,8 +667,8 @@ export default function CustomerAccount() {
 
   // ---- Shared UI ----
   const inputClass =
-    'w-full bg-[#0A0A0A] border border-[#2A2A2A] rounded-lg px-3 py-2.5 text-sm text-[#FAFAFA] focus:outline-none focus:border-[#F2FF66]/50 transition-colors placeholder:text-[#555]';
-  const labelClass = 'block text-xs text-[#888888] mb-1.5';
+    'w-full bg-[#000000] border border-[rgba(255,255,255,0.08)] rounded-lg px-3 py-2.5 text-sm text-[#f0f0f0] focus:outline-none focus:border-[#212629] transition-colors placeholder:text-[#555]';
+  const labelClass = 'block text-xs text-[#a1a4a5] mb-1.5';
 
   const tabs: { id: Tab; label: string; visible: boolean }[] = [
     { id: 'profile', label: 'Profile', visible: true },
@@ -679,14 +680,14 @@ export default function CustomerAccount() {
   if (loading) {
     return (
       <div className="px-4 py-6 space-y-3 max-w-lg mx-auto">
-        <div className="bg-[#191314] border border-[#2A2A2A] rounded-xl p-6 animate-pulse h-10" />
-        <div className="bg-[#191314] border border-[#2A2A2A] rounded-xl p-6 animate-pulse h-56" />
+        <div className="bg-[#070707] border border-[rgba(255,255,255,0.08)] rounded-xl p-6 animate-pulse h-10" />
+        <div className="bg-[#070707] border border-[rgba(255,255,255,0.08)] rounded-xl p-6 animate-pulse h-56" />
       </div>
     );
   }
 
   return (
-    <div className="px-4 py-6 max-w-lg mx-auto space-y-4" style={{ background: '#0A0A0A', minHeight: '100vh' }}>
+    <div className="px-4 py-6 max-w-lg mx-auto space-y-4" style={{ background: '#000000', minHeight: '100vh' }}>
       {/* Invite modal */}
       {showInviteModal && (
         <InviteModal
@@ -700,18 +701,18 @@ export default function CustomerAccount() {
       )}
 
       {/* Page title */}
-      <h1 className="text-xl font-bold text-[#FAFAFA]">Account</h1>
+      <h1 className="text-xl font-bold text-[#f0f0f0]">Account</h1>
 
       {/* Tab bar */}
-      <div className="flex border-b border-[#2A2A2A]">
+      <div className="flex border-b border-[rgba(255,255,255,0.08)]">
         {tabs.filter((t) => t.visible).map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
             className={`flex-1 py-2.5 text-sm font-medium transition-colors border-b-2 -mb-px ${
               activeTab === tab.id
-                ? 'text-[#F2FF66] border-[#F2FF66]'
-                : 'text-[#888888] border-transparent hover:text-[#FAFAFA]'
+                ? 'text-[#f0f0f0] border-[rgba(255,255,255,0.4)]'
+                : 'text-[#a1a4a5] border-transparent hover:text-[#f0f0f0]'
             }`}
           >
             {tab.label}
@@ -728,7 +729,7 @@ export default function CustomerAccount() {
               {/* Avatar circle */}
               <div
                 className="w-20 h-20 rounded-full overflow-hidden flex items-center justify-center flex-shrink-0"
-                style={{ background: '#2A2A2A' }}
+                style={{ background: 'rgba(255,255,255,0.08)' }}
               >
                 {avatarPreview ? (
                   <img
@@ -749,7 +750,7 @@ export default function CustomerAccount() {
                   <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
-                    className="text-xs font-medium px-3 py-1 rounded-md border border-[#2A2A2A] text-[#F2FF66] hover:bg-[#1E1E1E] transition-colors"
+                    className="text-xs font-medium px-3 py-1 rounded-md border border-[rgba(255,255,255,0.08)] text-[#F2FF66] hover:bg-[#161616] transition-colors"
                   >
                     Change photo
                   </button>
@@ -776,14 +777,14 @@ export default function CustomerAccount() {
               <div className="flex gap-2">
                 <button
                   onClick={handleCancelEdit}
-                  className="text-sm font-medium text-[#888888] hover:text-[#FAFAFA] transition-colors"
+                  className="text-sm font-medium text-[#a1a4a5] hover:text-[#f0f0f0] transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleSaveProfile}
                   disabled={profileSaving}
-                  className="text-sm font-semibold px-4 py-1.5 rounded-lg bg-[#F2FF66] text-[#0A0A0A] hover:bg-[#E5F25E] transition-colors disabled:opacity-50"
+                  className="text-sm font-semibold px-4 py-1.5 rounded-lg bg-[#F2FF66] text-[#000000] hover:bg-[#E5F25E] transition-colors disabled:opacity-50"
                 >
                   {profileSaving ? 'Saving…' : 'Save'}
                 </button>
@@ -793,18 +794,18 @@ export default function CustomerAccount() {
 
           {/* Feedback */}
           {profileError && (
-            <div className="bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2.5 text-red-400 text-sm">
+            <div className="bg-[rgba(135,55,55,0.12)] border border-red-500/20 rounded-lg px-3 py-2.5 text-[#a85858] text-sm">
               {profileError}
             </div>
           )}
           {profileSuccess && (
-            <div className="bg-green-500/10 border border-green-500/20 rounded-lg px-3 py-2.5 text-green-400 text-sm">
+            <div className="bg-[rgba(38,100,58,0.12)] border border-green-500/20 rounded-lg px-3 py-2.5 text-[#3d8050] text-sm">
               {profileSuccess}
             </div>
           )}
 
           {/* Fields */}
-          <div className="bg-[#191314] border border-[#2A2A2A] rounded-xl p-5 space-y-4">
+          <div className="bg-[#070707] border border-[rgba(255,255,255,0.08)] rounded-xl p-5 space-y-4">
             {/* First Name */}
             <div>
               <label className={labelClass}>First Name</label>
@@ -817,7 +818,7 @@ export default function CustomerAccount() {
                   placeholder="First name"
                 />
               ) : (
-                <p className="text-sm text-[#FAFAFA]">{firstName || <span className="text-[#555]">—</span>}</p>
+                <p className="text-sm text-[#f0f0f0]">{firstName || <span className="text-[#555]">—</span>}</p>
               )}
             </div>
 
@@ -833,7 +834,7 @@ export default function CustomerAccount() {
                   placeholder="Last name"
                 />
               ) : (
-                <p className="text-sm text-[#FAFAFA]">{lastName || <span className="text-[#555]">—</span>}</p>
+                <p className="text-sm text-[#f0f0f0]">{lastName || <span className="text-[#555]">—</span>}</p>
               )}
             </div>
 
@@ -843,7 +844,7 @@ export default function CustomerAccount() {
                 <span className="flex items-center gap-1">
                   Email
                   <svg
-                    className="w-3 h-3 text-[#888888]"
+                    className="w-3 h-3 text-[#a1a4a5]"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -854,7 +855,7 @@ export default function CustomerAccount() {
                   </svg>
                 </span>
               </label>
-              <p className="text-sm text-[#888888]">{profile?.email || '—'}</p>
+              <p className="text-sm text-[#a1a4a5]">{profile?.email || '—'}</p>
             </div>
 
             {/* Phone */}
@@ -869,7 +870,7 @@ export default function CustomerAccount() {
                   placeholder="08012345678"
                 />
               ) : (
-                <p className="text-sm text-[#FAFAFA]">{phone || <span className="text-[#555]">—</span>}</p>
+                <p className="text-sm text-[#f0f0f0]">{phone || <span className="text-[#555]">—</span>}</p>
               )}
             </div>
           </div>
@@ -879,8 +880,8 @@ export default function CustomerAccount() {
       {/* ===== SECURITY TAB ===== */}
       {activeTab === 'security' && (
         <div className="space-y-4">
-          <div className="bg-[#191314] border border-[#2A2A2A] rounded-xl p-5">
-            <h2 className="text-sm font-semibold text-[#888888] uppercase tracking-wide mb-4">
+          <div className="bg-[#070707] border border-[rgba(255,255,255,0.08)] rounded-xl p-5">
+            <h2 className="text-sm font-semibold text-[#a1a4a5] uppercase tracking-wide mb-4">
               Change Password
             </h2>
 
@@ -923,12 +924,12 @@ export default function CustomerAccount() {
               </div>
 
               {securityError && (
-                <div className="bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2.5 text-red-400 text-sm">
+                <div className="bg-[rgba(135,55,55,0.12)] border border-red-500/20 rounded-lg px-3 py-2.5 text-[#a85858] text-sm">
                   {securityError}
                 </div>
               )}
               {securitySuccess && (
-                <div className="bg-green-500/10 border border-green-500/20 rounded-lg px-3 py-2.5 text-green-400 text-sm">
+                <div className="bg-[rgba(38,100,58,0.12)] border border-green-500/20 rounded-lg px-3 py-2.5 text-[#3d8050] text-sm">
                   {securitySuccess}
                 </div>
               )}
@@ -936,7 +937,7 @@ export default function CustomerAccount() {
               <button
                 type="submit"
                 disabled={securitySaving}
-                className="w-full bg-[#F2FF66] text-[#0A0A0A] py-2.5 rounded-lg text-sm font-semibold hover:bg-[#E5F25E] transition-colors disabled:opacity-50"
+                className="w-full bg-[#F2FF66] text-[#000000] py-2.5 rounded-lg text-sm font-semibold hover:bg-[#E5F25E] transition-colors disabled:opacity-50"
               >
                 {securitySaving ? 'Updating…' : 'Update Password'}
               </button>
@@ -948,11 +949,11 @@ export default function CustomerAccount() {
       {/* ===== LOCATION TAB ===== */}
       {activeTab === 'location' && (
         <div className="space-y-4">
-          <div className="bg-[#191314] border border-[#2A2A2A] rounded-xl p-5">
-            <h2 className="text-sm font-semibold text-[#888888] uppercase tracking-wide mb-1">
+          <div className="bg-[#070707] border border-[rgba(255,255,255,0.08)] rounded-xl p-5">
+            <h2 className="text-sm font-semibold text-[#a1a4a5] uppercase tracking-wide mb-1">
               Default Pickup Location
             </h2>
-            <p className="text-xs text-[#888888] mb-4">
+            <p className="text-xs text-[#a1a4a5] mb-4">
               Saved for pre-filling your order forms.
             </p>
 
@@ -989,12 +990,12 @@ export default function CustomerAccount() {
               </div>
 
               {locationError && (
-                <div className="bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2.5 text-red-400 text-sm">
+                <div className="bg-[rgba(135,55,55,0.12)] border border-red-500/20 rounded-lg px-3 py-2.5 text-[#a85858] text-sm">
                   {locationError}
                 </div>
               )}
               {locationSuccess && (
-                <div className="bg-green-500/10 border border-green-500/20 rounded-lg px-3 py-2.5 text-green-400 text-sm">
+                <div className="bg-[rgba(38,100,58,0.12)] border border-green-500/20 rounded-lg px-3 py-2.5 text-[#3d8050] text-sm">
                   {locationSuccess}
                 </div>
               )}
@@ -1002,7 +1003,7 @@ export default function CustomerAccount() {
               <button
                 type="submit"
                 disabled={locationSaving}
-                className="w-full bg-[#F2FF66] text-[#0A0A0A] py-2.5 rounded-lg text-sm font-semibold hover:bg-[#E5F25E] transition-colors disabled:opacity-50"
+                className="w-full bg-[#F2FF66] text-[#000000] py-2.5 rounded-lg text-sm font-semibold hover:bg-[#E5F25E] transition-colors disabled:opacity-50"
               >
                 {locationSaving ? 'Saving…' : 'Save Location'}
               </button>
@@ -1016,21 +1017,21 @@ export default function CustomerAccount() {
         <div className="space-y-5">
           {teamLoading ? (
             <div className="space-y-3">
-              <div className="bg-[#191314] border border-[#2A2A2A] rounded-xl p-5 animate-pulse h-32" />
-              <div className="bg-[#191314] border border-[#2A2A2A] rounded-xl p-5 animate-pulse h-48" />
+              <div className="bg-[#070707] border border-[rgba(255,255,255,0.08)] rounded-xl p-5 animate-pulse h-32" />
+              <div className="bg-[#070707] border border-[rgba(255,255,255,0.08)] rounded-xl p-5 animate-pulse h-48" />
             </div>
           ) : (
             <>
               {teamError && (
-                <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm">
+                <div className="p-3 bg-[rgba(135,55,55,0.12)] border border-red-500/30 rounded-lg text-[#a85858] text-sm">
                   {teamError}
                 </div>
               )}
 
               {/* Business Profile Section */}
-              <div className="bg-[#191314] border border-[#2A2A2A] rounded-xl p-5">
+              <div className="bg-[#070707] border border-[rgba(255,255,255,0.08)] rounded-xl p-5">
                 <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-sm font-semibold text-[#888888] uppercase tracking-wide">
+                  <h2 className="text-sm font-semibold text-[#a1a4a5] uppercase tracking-wide">
                     Business Profile
                   </h2>
                   {isAdmin && !editingBiz && (
@@ -1044,12 +1045,12 @@ export default function CustomerAccount() {
                 </div>
 
                 {bizError && (
-                  <div className="mb-3 p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm">
+                  <div className="mb-3 p-3 bg-[rgba(135,55,55,0.12)] border border-red-500/30 rounded-lg text-[#a85858] text-sm">
                     {bizError}
                   </div>
                 )}
                 {bizSuccess && (
-                  <div className="mb-3 p-3 bg-green-500/10 border border-green-500/20 rounded-lg text-green-400 text-sm">
+                  <div className="mb-3 p-3 bg-[rgba(38,100,58,0.12)] border border-green-500/20 rounded-lg text-[#3d8050] text-sm">
                     {bizSuccess}
                   </div>
                 )}
@@ -1070,7 +1071,7 @@ export default function CustomerAccount() {
                     </div>
                     <div>
                       <label className={labelClass}>Business Address</label>
-                      <input type="text" value={bizAddress} onChange={(e) => setBizAddress(e.target.value)} className={inputClass} placeholder="12 Admiralty Way, Lekki" />
+                      <AddressInput value={bizAddress} onChange={setBizAddress} placeholder="12 Admiralty Way, Lekki" className={inputClass} />
                     </div>
                     <div>
                       <label className={labelClass}>Business Type</label>
@@ -1083,14 +1084,14 @@ export default function CustomerAccount() {
                       <button
                         type="button"
                         onClick={() => { setEditingBiz(false); setBizError(''); }}
-                        className="flex-1 py-2 text-sm text-[#888888] border border-[#2A2A2A] rounded-lg hover:text-[#FAFAFA] transition-colors"
+                        className="flex-1 py-2 text-sm text-[#a1a4a5] border border-[rgba(255,255,255,0.08)] rounded-lg hover:text-[#f0f0f0] transition-colors"
                       >
                         Cancel
                       </button>
                       <button
                         type="submit"
                         disabled={bizSaving}
-                        className="flex-1 py-2 text-sm font-semibold bg-[#F2FF66] text-[#0A0A0A] rounded-lg hover:bg-[#E5F25E] transition-colors disabled:opacity-50"
+                        className="flex-1 py-2 text-sm font-semibold bg-[#F2FF66] text-[#000000] rounded-lg hover:bg-[#E5F25E] transition-colors disabled:opacity-50"
                       >
                         {bizSaving ? 'Saving…' : 'Save'}
                       </button>
@@ -1100,38 +1101,38 @@ export default function CustomerAccount() {
                   <div className="space-y-3">
                     <div>
                       <p className={labelClass}>Name</p>
-                      <p className="text-sm text-[#FAFAFA]">{business?.name || '—'}</p>
+                      <p className="text-sm text-[#f0f0f0]">{business?.name || '—'}</p>
                     </div>
                     <div>
                       <p className={labelClass}>Type</p>
-                      <p className="text-sm text-[#FAFAFA]">{business?.type || '—'}</p>
+                      <p className="text-sm text-[#f0f0f0]">{business?.type || '—'}</p>
                     </div>
                     <div>
                       <p className={labelClass}>Address</p>
-                      <p className="text-sm text-[#FAFAFA]">{business?.address || '—'}</p>
+                      <p className="text-sm text-[#f0f0f0]">{business?.address || '—'}</p>
                     </div>
                     <div>
                       <p className={labelClass}>Email</p>
-                      <p className="text-sm text-[#FAFAFA]">{business?.email || '—'}</p>
+                      <p className="text-sm text-[#f0f0f0]">{business?.email || '—'}</p>
                     </div>
                     <div>
                       <p className={labelClass}>Phone</p>
-                      <p className="text-sm text-[#FAFAFA]">{business?.phone || '—'}</p>
+                      <p className="text-sm text-[#f0f0f0]">{business?.phone || '—'}</p>
                     </div>
                   </div>
                 )}
               </div>
 
               {/* Team Members */}
-              <div className="bg-[#191314] border border-[#2A2A2A] rounded-xl p-5">
+              <div className="bg-[#070707] border border-[rgba(255,255,255,0.08)] rounded-xl p-5">
                 <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-sm font-semibold text-[#888888] uppercase tracking-wide">
+                  <h2 className="text-sm font-semibold text-[#a1a4a5] uppercase tracking-wide">
                     Team Members ({teamMembers.length})
                   </h2>
                   {isAdmin && (
                     <button
                       onClick={() => setShowInviteModal(true)}
-                      className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 bg-[#F2FF66] text-[#0A0A0A] rounded-lg hover:bg-[#E5F25E] transition-colors"
+                      className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 border border-[rgba(255,255,255,0.12)] text-[#f0f0f0] rounded-lg hover:bg-[rgba(255,255,255,0.05)] transition-colors"
                     >
                       <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
@@ -1150,17 +1151,17 @@ export default function CustomerAccount() {
                       return (
                         <div
                           key={member.id}
-                          className="flex items-center justify-between py-2 border-b border-[#2A2A2A] last:border-0"
+                          className="flex items-center justify-between py-2 border-b border-[rgba(255,255,255,0.08)] last:border-0"
                         >
                           <div className="min-w-0 flex-1">
                             <div className="flex items-center gap-2 flex-wrap">
-                              <p className="text-sm text-[#FAFAFA] font-medium truncate">{member.name}</p>
+                              <p className="text-sm text-[#f0f0f0] font-medium truncate">{member.name}</p>
                               {isSelf && (
-                                <span className="text-xs px-1.5 py-0.5 bg-[#2A2A2A] text-[#888888] rounded">You</span>
+                                <span className="text-xs px-1.5 py-0.5 bg-[rgba(255,255,255,0.08)] text-[#a1a4a5] rounded">You</span>
                               )}
                               <RoleBadge role={member.business_role} />
                             </div>
-                            <p className="text-xs text-[#888888] truncate mt-0.5">{member.email}</p>
+                            <p className="text-xs text-[#a1a4a5] truncate mt-0.5">{member.email}</p>
                           </div>
 
                           {isAdmin && !isSelf && (
@@ -1168,14 +1169,14 @@ export default function CustomerAccount() {
                               <select
                                 value={member.business_role}
                                 onChange={(e) => handleRoleChange(member.id, e.target.value)}
-                                className="text-xs bg-[#0A0A0A] border border-[#2A2A2A] text-[#FAFAFA] rounded px-2 py-1 focus:outline-none focus:border-[#F2FF66]/50"
+                                className="text-xs bg-[#000000] border border-[rgba(255,255,255,0.08)] text-[#f0f0f0] rounded px-2 py-1 focus:outline-none focus:border-[#212629]"
                               >
                                 <option value="admin">Admin</option>
                                 <option value="basic">Basic</option>
                               </select>
                               <button
                                 onClick={() => handleRemoveMember(member.id)}
-                                className="text-xs text-red-400 hover:text-red-300 transition-colors"
+                                className="text-xs text-[#a85858] hover:text-red-300 transition-colors"
                                 title="Remove from business"
                               >
                                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -1193,8 +1194,8 @@ export default function CustomerAccount() {
 
               {/* Pending Invites — admin only */}
               {isAdmin && (
-                <div className="bg-[#191314] border border-[#2A2A2A] rounded-xl p-5">
-                  <h2 className="text-sm font-semibold text-[#888888] uppercase tracking-wide mb-4">
+                <div className="bg-[#070707] border border-[rgba(255,255,255,0.08)] rounded-xl p-5">
+                  <h2 className="text-sm font-semibold text-[#a1a4a5] uppercase tracking-wide mb-4">
                     Pending Invites ({invites.filter((i) => i.status === 'pending').length})
                   </h2>
 
@@ -1207,20 +1208,20 @@ export default function CustomerAccount() {
                         .map((inv) => (
                           <div
                             key={inv.id}
-                            className="flex items-center justify-between py-2 border-b border-[#2A2A2A] last:border-0"
+                            className="flex items-center justify-between py-2 border-b border-[rgba(255,255,255,0.08)] last:border-0"
                           >
                             <div className="min-w-0 flex-1">
-                              <p className="text-sm text-[#FAFAFA] truncate">{inv.email}</p>
+                              <p className="text-sm text-[#f0f0f0] truncate">{inv.email}</p>
                               <div className="flex items-center gap-2 mt-0.5">
                                 <RoleBadge role={inv.role} />
-                                <span className="text-xs text-[#888888]">
+                                <span className="text-xs text-[#a1a4a5]">
                                   Sent {new Date(inv.created_at).toLocaleDateString()}
                                 </span>
                               </div>
                             </div>
                             <button
                               onClick={() => inv.token && handleCancelInvite(inv.token)}
-                              className="ml-3 text-xs text-red-400 hover:text-red-300 transition-colors flex-shrink-0"
+                              className="ml-3 text-xs text-[#a85858] hover:text-red-300 transition-colors flex-shrink-0"
                               title="Cancel invite"
                             >
                               Cancel
@@ -1240,7 +1241,7 @@ export default function CustomerAccount() {
       <div className="pt-2">
         <button
           onClick={handleLogout}
-          className="w-full bg-red-500/10 border border-red-500/20 text-red-400 py-2.5 rounded-lg text-sm font-medium hover:bg-red-500/20 transition-colors"
+          className="w-full bg-[rgba(135,55,55,0.12)] border border-red-500/20 text-[#a85858] py-2.5 rounded-lg text-sm font-medium hover:bg-red-500/20 transition-colors"
         >
           Logout
         </button>

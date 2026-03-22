@@ -28,8 +28,8 @@ const ZONE_CATEGORIES: ZoneCategory[] = [
 ];
 
 /* ─── shared styles ─── */
-const inputCls = `w-full bg-[#0A0A0A] border border-[#2A2A2A] rounded-lg px-3 py-2.5 text-[#FAFAFA] text-sm placeholder:text-[#888888] focus:outline-none focus:border-[#F2FF66] focus:ring-1 focus:ring-[#F2FF66]/20 transition-colors`;
-const labelCls = 'text-[#888888] text-xs font-medium uppercase tracking-wider mb-1 block';
+const inputCls = `w-full bg-[#000000] border border-[rgba(255,255,255,0.08)] rounded-lg px-3 py-2.5 text-[#f0f0f0] text-sm placeholder:text-[#a1a4a5] focus:outline-none focus:border-[#212629] focus:ring-1 focus:ring-[rgba(33,38,41,0.4)] transition-colors`;
+const labelCls = 'text-[#a1a4a5] text-xs font-medium uppercase tracking-wider mb-1 block';
 
 /* ─── helpers ─── */
 function formatNaira(amount: number): string {
@@ -179,14 +179,14 @@ export default function AdminPricingPage() {
 
   /* ─── render ─── */
   return (
-    <div className="min-h-screen bg-[#0A0A0A] text-[#FAFAFA]">
+    <div className="min-h-screen bg-[#000000] text-[#f0f0f0]">
       <div className="max-w-3xl mx-auto px-4 py-6 sm:px-6 sm:py-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-xl sm:text-2xl font-bold">Pricing</h1>
           <button
             onClick={() => setShowAdd(true)}
-            className="bg-[#F2FF66] text-[#0A0A0A] text-sm font-semibold px-4 py-2 rounded-lg hover:brightness-90 transition-all"
+            className="bg-[#F2FF66] text-[#000000] text-sm font-semibold px-4 py-2 rounded-lg hover:brightness-90 transition-all"
           >
             + Add Location
           </button>
@@ -195,14 +195,14 @@ export default function AdminPricingPage() {
         {/* Summary stats */}
         {!loading && (
           <div className="grid grid-cols-2 gap-3 mb-6">
-            <div className="bg-[#191314] border border-[#2A2A2A] rounded-xl p-4">
-              <p className="text-[#888888] text-xs uppercase tracking-wider mb-1">
+            <div className="bg-[#070707] border border-[rgba(255,255,255,0.08)] rounded-xl p-4">
+              <p className="text-[#a1a4a5] text-xs uppercase tracking-wider mb-1">
                 Total Locations
               </p>
               <p className="text-xl font-bold">{totalLocations}</p>
             </div>
-            <div className="bg-[#191314] border border-[#2A2A2A] rounded-xl p-4">
-              <p className="text-[#888888] text-xs uppercase tracking-wider mb-1">
+            <div className="bg-[#070707] border border-[rgba(255,255,255,0.08)] rounded-xl p-4">
+              <p className="text-[#a1a4a5] text-xs uppercase tracking-wider mb-1">
                 Average Price
               </p>
               <p className="text-xl font-bold">{formatNaira(avgPrice)}</p>
@@ -213,13 +213,13 @@ export default function AdminPricingPage() {
         {/* Loading */}
         {loading && (
           <div className="flex justify-center py-20">
-            <div className="w-8 h-8 border-2 border-[#2A2A2A] border-t-[#F2FF66] rounded-full animate-spin" />
+            <div className="w-8 h-8 border-2 border-[rgba(255,255,255,0.08)] border-t-[#F2FF66] rounded-full animate-spin" />
           </div>
         )}
 
         {/* Error */}
         {error && (
-          <div className="bg-red-500/10 border border-red-500/30 text-red-400 text-sm rounded-lg px-4 py-3 mb-4">
+          <div className="bg-[rgba(135,55,55,0.12)] border border-red-500/30 text-[#a85858] text-sm rounded-lg px-4 py-3 mb-4">
             {error}
           </div>
         )}
@@ -230,8 +230,8 @@ export default function AdminPricingPage() {
             <div key={zone} className="mb-6">
               {/* Zone header */}
               <div className="flex items-center gap-2 mb-3">
-                <h2 className="text-sm font-semibold text-[#FAFAFA]">{zone}</h2>
-                <span className="text-xs text-[#888888] bg-[#191314] border border-[#2A2A2A] rounded-full px-2 py-0.5">
+                <h2 className="text-sm font-semibold text-[#f0f0f0]">{zone}</h2>
+                <span className="text-xs text-[#a1a4a5] bg-[#070707] border border-[rgba(255,255,255,0.08)] rounded-full px-2 py-0.5">
                   {items.length}
                 </span>
               </div>
@@ -241,7 +241,7 @@ export default function AdminPricingPage() {
                 {items.map((loc) => (
                   <div
                     key={loc.id}
-                    className="bg-[#191314] border border-[#2A2A2A] rounded-xl overflow-hidden transition-colors"
+                    className="bg-[#070707] border border-[rgba(255,255,255,0.08)] rounded-xl overflow-hidden transition-colors"
                   >
                     {/* Card row */}
                     <button
@@ -255,8 +255,8 @@ export default function AdminPricingPage() {
                         <span
                           className={`shrink-0 text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${
                             loc.is_active
-                              ? 'bg-green-500/15 text-green-400'
-                              : 'bg-red-500/15 text-red-400'
+                              ? 'bg-[#1e5030]/15 text-[#3d8050]'
+                              : 'bg-red-500/15 text-[#a85858]'
                           }`}
                         >
                           {loc.is_active ? 'Active' : 'Inactive'}
@@ -269,7 +269,7 @@ export default function AdminPricingPage() {
 
                     {/* Expanded edit form */}
                     {expandedId === loc.id && (
-                      <div className="border-t border-[#2A2A2A] px-4 py-4 space-y-4">
+                      <div className="border-t border-[rgba(255,255,255,0.08)] px-4 py-4 space-y-4">
                         {/* Price */}
                         <div>
                           <label className={labelCls}>Price</label>
@@ -308,11 +308,11 @@ export default function AdminPricingPage() {
                           <button
                             onClick={() => setEditActive((v) => !v)}
                             className={`relative w-11 h-6 rounded-full transition-colors ${
-                              editActive ? 'bg-[#F2FF66]' : 'bg-[#2A2A2A]'
+                              editActive ? 'bg-[#F2FF66]' : 'bg-[rgba(255,255,255,0.08)]'
                             }`}
                           >
                             <span
-                              className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-[#0A0A0A] transition-transform ${
+                              className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-[#000000] transition-transform ${
                                 editActive ? 'translate-x-5' : 'translate-x-0'
                               }`}
                             />
@@ -323,7 +323,7 @@ export default function AdminPricingPage() {
                         <button
                           onClick={() => handleSave(loc.id)}
                           disabled={saving}
-                          className="w-full bg-[#F2FF66] text-[#0A0A0A] text-sm font-semibold py-2.5 rounded-lg hover:brightness-90 transition-all disabled:opacity-50"
+                          className="w-full bg-[#F2FF66] text-[#000000] text-sm font-semibold py-2.5 rounded-lg hover:brightness-90 transition-all disabled:opacity-50"
                         >
                           {saving ? 'Saving...' : 'Save Changes'}
                         </button>
@@ -337,7 +337,7 @@ export default function AdminPricingPage() {
 
         {/* Empty state */}
         {!loading && locations.length === 0 && !error && (
-          <div className="text-center py-20 text-[#888888]">
+          <div className="text-center py-20 text-[#a1a4a5]">
             <p className="text-sm">No locations found.</p>
             <p className="text-xs mt-1">Add your first delivery location above.</p>
           </div>
@@ -354,19 +354,19 @@ export default function AdminPricingPage() {
           />
 
           {/* Modal */}
-          <div className="relative w-full sm:max-w-md bg-[#191314] border border-[#2A2A2A] rounded-t-2xl sm:rounded-2xl p-6 space-y-5 animate-in slide-in-from-bottom duration-200">
+          <div className="relative w-full sm:max-w-md bg-[#070707] border border-[rgba(255,255,255,0.08)] rounded-t-2xl sm:rounded-2xl p-6 space-y-5 animate-in slide-in-from-bottom duration-200">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-bold">Add Location</h2>
               <button
                 onClick={() => setShowAdd(false)}
-                className="text-[#888888] hover:text-[#FAFAFA] transition-colors text-xl leading-none"
+                className="text-[#a1a4a5] hover:text-[#f0f0f0] transition-colors text-xl leading-none"
               >
                 &times;
               </button>
             </div>
 
             {addError && (
-              <div className="bg-red-500/10 border border-red-500/30 text-red-400 text-sm rounded-lg px-3 py-2">
+              <div className="bg-[rgba(135,55,55,0.12)] border border-red-500/30 text-[#a85858] text-sm rounded-lg px-3 py-2">
                 {addError}
               </div>
             )}
@@ -415,7 +415,7 @@ export default function AdminPricingPage() {
             <button
               onClick={handleAdd}
               disabled={addLoading || !addName.trim() || !addPrice.trim()}
-              className="w-full bg-[#F2FF66] text-[#0A0A0A] text-sm font-semibold py-2.5 rounded-lg hover:brightness-90 transition-all disabled:opacity-50"
+              className="w-full bg-[#F2FF66] text-[#000000] text-sm font-semibold py-2.5 rounded-lg hover:brightness-90 transition-all disabled:opacity-50"
             >
               {addLoading ? 'Adding...' : 'Add Location'}
             </button>

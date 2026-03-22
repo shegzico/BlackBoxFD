@@ -21,7 +21,7 @@ const BUSINESS_TYPES = [
 ];
 
 const inputClassName =
-  'w-full rounded-lg bg-[#232023] border border-gray-700 text-[#FAFAFA] px-3 py-3 text-sm placeholder-gray-600 focus:outline-none focus:border-[#F2FF66] focus:ring-1 focus:ring-[#F2FF66] transition-colors disabled:opacity-50';
+  'w-full rounded-lg bg-[#232023] border border-[rgba(255,255,255,0.06)] text-[#f0f0f0] px-3 py-3 text-sm placeholder-gray-600 focus:outline-none focus:border-[#212629] focus:ring-1 focus:ring-[#212629] transition-colors disabled:opacity-50';
 
 function PersonIcon({ selected }: { selected: boolean }) {
   return (
@@ -29,7 +29,7 @@ function PersonIcon({ selected }: { selected: boolean }) {
       className="w-8 h-8"
       fill="none"
       viewBox="0 0 24 24"
-      stroke={selected ? '#F2FF66' : '#888888'}
+      stroke={selected ? '#F2FF66' : '#a1a4a5'}
       strokeWidth={1.5}
     >
       <path
@@ -47,7 +47,7 @@ function BuildingIcon({ selected }: { selected: boolean }) {
       className="w-8 h-8"
       fill="none"
       viewBox="0 0 24 24"
-      stroke={selected ? '#F2FF66' : '#888888'}
+      stroke={selected ? '#F2FF66' : '#a1a4a5'}
       strokeWidth={1.5}
     >
       <path
@@ -64,7 +64,7 @@ function BackArrow({ onClick }: { onClick: () => void }) {
     <button
       type="button"
       onClick={onClick}
-      className="flex items-center gap-1.5 text-[#888888] hover:text-[#FAFAFA] transition-colors text-sm mb-4"
+      className="flex items-center gap-1.5 text-[#a1a4a5] hover:text-[#f0f0f0] transition-colors text-sm mb-4"
     >
       <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
@@ -81,11 +81,11 @@ function StepIndicator({ current, total }: { current: number; total: number }) {
         <div
           key={i}
           className={`h-1 rounded-full flex-1 transition-colors ${
-            i < current ? 'bg-[#F2FF66]' : i === current ? 'bg-[#F2FF66]/60' : 'bg-[#2A2A2A]'
+            i < current ? 'bg-[#F2FF66]' : i === current ? 'bg-[#F2FF66]/60' : 'bg-[rgba(255,255,255,0.08)]'
           }`}
         />
       ))}
-      <span className="text-xs text-[#888888] whitespace-nowrap ml-1">
+      <span className="text-xs text-[#a1a4a5] whitespace-nowrap ml-1">
         Step {current + 1} of {total}
       </span>
     </div>
@@ -195,53 +195,53 @@ export default function CustomerSignupPage() {
   // ===== Step 0: Account type selection =====
   if (step === 0) {
     return (
-      <div className="min-h-screen bg-[#0A0A0A] text-[#FAFAFA] flex flex-col">
+      <div className="min-h-screen bg-[#000000] text-[#f0f0f0] flex flex-col">
         <main className="flex-1 flex flex-col items-center justify-center px-4 py-12">
           <div className="mb-8 flex flex-col items-center gap-2">
             <Logo size="large" />
-            <p className="text-[#888888] text-sm tracking-widest uppercase">Customer Portal</p>
+            <p className="text-[#a1a4a5] text-sm tracking-widest uppercase">Customer Portal</p>
           </div>
 
           <div className="w-full max-w-sm">
-            <h1 className="text-xl font-bold text-[#FAFAFA] mb-1 text-center">Create Account</h1>
-            <p className="text-[#888888] text-sm mb-8 text-center">How will you use BlackBox?</p>
+            <h1 className="text-xl font-bold text-[#f0f0f0] mb-1 text-center">Create Account</h1>
+            <p className="text-[#a1a4a5] text-sm mb-8 text-center">How will you use BlackBox?</p>
 
             <div className="flex gap-3">
               {/* Individual Card */}
               <button
                 onClick={() => handleAccountTypeSelect('individual')}
-                className={`flex-1 flex flex-col items-center gap-3 p-5 rounded-2xl border-2 bg-[#191314] transition-all duration-200 hover:border-[#F2FF66]/60 ${
+                className={`flex-1 flex flex-col items-center gap-3 p-5 rounded-2xl border-2 bg-[#070707] transition-all duration-200 hover:border-[#212629]/60 ${
                   accountType === 'individual'
                     ? 'border-[#F2FF66]'
-                    : 'border-[#2A2A2A]'
+                    : 'border-[rgba(255,255,255,0.08)]'
                 }`}
               >
                 <PersonIcon selected={accountType === 'individual'} />
                 <div className="text-center">
-                  <p className="text-sm font-semibold text-[#FAFAFA]">Individual</p>
-                  <p className="text-xs text-[#888888] mt-0.5">For personal deliveries</p>
+                  <p className="text-sm font-semibold text-[#f0f0f0]">Individual</p>
+                  <p className="text-xs text-[#a1a4a5] mt-0.5">For personal deliveries</p>
                 </div>
               </button>
 
               {/* Business Card */}
               <button
                 onClick={() => handleAccountTypeSelect('business')}
-                className={`flex-1 flex flex-col items-center gap-3 p-5 rounded-2xl border-2 bg-[#191314] transition-all duration-200 hover:border-[#F2FF66]/60 ${
+                className={`flex-1 flex flex-col items-center gap-3 p-5 rounded-2xl border-2 bg-[#070707] transition-all duration-200 hover:border-[#212629]/60 ${
                   accountType === 'business'
                     ? 'border-[#F2FF66]'
-                    : 'border-[#2A2A2A]'
+                    : 'border-[rgba(255,255,255,0.08)]'
                 }`}
               >
                 <BuildingIcon selected={accountType === 'business'} />
                 <div className="text-center">
-                  <p className="text-sm font-semibold text-[#FAFAFA]">Business</p>
-                  <p className="text-xs text-[#888888] mt-0.5">For companies & teams</p>
+                  <p className="text-sm font-semibold text-[#f0f0f0]">Business</p>
+                  <p className="text-xs text-[#a1a4a5] mt-0.5">For companies & teams</p>
                 </div>
               </button>
             </div>
 
             <div className="mt-8 text-center">
-              <p className="text-[#888888] text-sm">
+              <p className="text-[#a1a4a5] text-sm">
                 Already have an account?{' '}
                 <Link href="/" className="text-[#F2FF66] hover:underline font-medium">
                   Log in
@@ -257,35 +257,35 @@ export default function CustomerSignupPage() {
   // ===== Step 1: Personal details =====
   if (step === 1) {
     return (
-      <div className="min-h-screen bg-[#0A0A0A] text-[#FAFAFA] flex flex-col">
+      <div className="min-h-screen bg-[#000000] text-[#f0f0f0] flex flex-col">
         <main className="flex-1 flex flex-col items-center justify-center px-4 py-12">
           <div className="mb-8 flex flex-col items-center gap-2">
             <Logo size="large" />
           </div>
 
-          <div className="w-full max-w-sm bg-[#191314] border border-[#2A2A2A] rounded-2xl p-6 shadow-xl">
+          <div className="w-full max-w-sm bg-[#070707] border border-[rgba(255,255,255,0.08)] rounded-2xl p-6 shadow-xl">
             <BackArrow onClick={() => { setStep(0); setError(''); }} />
 
             {accountType === 'business' && <StepIndicator current={0} total={2} />}
 
-            <h1 className="text-xl font-bold text-[#FAFAFA] mb-1">
+            <h1 className="text-xl font-bold text-[#f0f0f0] mb-1">
               {accountType === 'business' ? 'Your Details' : 'Create Account'}
             </h1>
-            <p className="text-[#888888] text-sm mb-6">
+            <p className="text-[#a1a4a5] text-sm mb-6">
               {accountType === 'business'
                 ? 'Personal info for your admin account'
                 : 'Sign up to start shipping with BlackBox'}
             </p>
 
             {error && (
-              <div className="mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm">
+              <div className="mb-4 p-3 bg-[rgba(135,55,55,0.12)] border border-red-500/30 rounded-lg text-[#a85858] text-sm">
                 {error}
               </div>
             )}
 
             <form onSubmit={handlePersonalContinue} noValidate className="flex flex-col gap-4">
               <div className="flex flex-col gap-1.5">
-                <label htmlFor="fullName" className="text-[#888888] text-xs font-medium uppercase tracking-wider">
+                <label htmlFor="fullName" className="text-[#a1a4a5] text-xs font-medium uppercase tracking-wider">
                   Full Name
                 </label>
                 <input
@@ -302,7 +302,7 @@ export default function CustomerSignupPage() {
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <label htmlFor="email" className="text-[#888888] text-xs font-medium uppercase tracking-wider">
+                <label htmlFor="email" className="text-[#a1a4a5] text-xs font-medium uppercase tracking-wider">
                   Email
                 </label>
                 <input
@@ -319,7 +319,7 @@ export default function CustomerSignupPage() {
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <label htmlFor="phone" className="text-[#888888] text-xs font-medium uppercase tracking-wider">
+                <label htmlFor="phone" className="text-[#a1a4a5] text-xs font-medium uppercase tracking-wider">
                   Phone Number
                 </label>
                 <input
@@ -336,7 +336,7 @@ export default function CustomerSignupPage() {
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <label htmlFor="password" className="text-[#888888] text-xs font-medium uppercase tracking-wider">
+                <label htmlFor="password" className="text-[#a1a4a5] text-xs font-medium uppercase tracking-wider">
                   Password
                 </label>
                 <input
@@ -353,7 +353,7 @@ export default function CustomerSignupPage() {
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <label htmlFor="confirmPassword" className="text-[#888888] text-xs font-medium uppercase tracking-wider">
+                <label htmlFor="confirmPassword" className="text-[#a1a4a5] text-xs font-medium uppercase tracking-wider">
                   Confirm Password
                 </label>
                 <input
@@ -372,7 +372,7 @@ export default function CustomerSignupPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="mt-2 w-full bg-[#F2FF66] text-[#0A0A0A] font-bold py-3 rounded-lg text-sm hover:bg-[#e8f55c] active:scale-95 transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 flex items-center justify-center gap-2"
+                className="mt-2 w-full bg-[#F2FF66] text-[#000000] font-bold py-3 rounded-lg text-sm hover:bg-[#e8f55c] active:scale-95 transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 flex items-center justify-center gap-2"
               >
                 {loading ? (
                   <>
@@ -391,7 +391,7 @@ export default function CustomerSignupPage() {
             </form>
 
             <div className="mt-5 text-center">
-              <p className="text-[#888888] text-sm">
+              <p className="text-[#a1a4a5] text-sm">
                 Already have an account?{' '}
                 <Link href="/" className="text-[#F2FF66] hover:underline font-medium">
                   Log in
@@ -406,32 +406,32 @@ export default function CustomerSignupPage() {
 
   // ===== Step 2: Business details (business only) =====
   return (
-    <div className="min-h-screen bg-[#0A0A0A] text-[#FAFAFA] flex flex-col">
+    <div className="min-h-screen bg-[#000000] text-[#f0f0f0] flex flex-col">
       <main className="flex-1 flex flex-col items-center justify-center px-4 py-12">
         <div className="mb-8 flex flex-col items-center gap-2">
           <Logo size="large" />
         </div>
 
-        <div className="w-full max-w-sm bg-[#191314] border border-[#2A2A2A] rounded-2xl p-6 shadow-xl">
+        <div className="w-full max-w-sm bg-[#070707] border border-[rgba(255,255,255,0.08)] rounded-2xl p-6 shadow-xl">
           <BackArrow onClick={() => { setStep(1); setError(''); }} />
 
           <StepIndicator current={1} total={2} />
 
-          <h1 className="text-xl font-bold text-[#FAFAFA] mb-0.5">
+          <h1 className="text-xl font-bold text-[#f0f0f0] mb-0.5">
             Hi {fullName.split(' ')[0]} 👋
           </h1>
-          <p className="text-[#888888] text-sm mb-6">Fill in your business details</p>
+          <p className="text-[#a1a4a5] text-sm mb-6">Fill in your business details</p>
 
           {error && (
-            <div className="mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm">
+            <div className="mb-4 p-3 bg-[rgba(135,55,55,0.12)] border border-red-500/30 rounded-lg text-[#a85858] text-sm">
               {error}
             </div>
           )}
 
           <form onSubmit={handleBusinessSubmit} noValidate className="flex flex-col gap-4">
             <div className="flex flex-col gap-1.5">
-              <label className="text-[#888888] text-xs font-medium uppercase tracking-wider">
-                Business Name <span className="text-red-400">*</span>
+              <label className="text-[#a1a4a5] text-xs font-medium uppercase tracking-wider">
+                Business Name <span className="text-[#a85858]">*</span>
               </label>
               <input
                 type="text"
@@ -445,7 +445,7 @@ export default function CustomerSignupPage() {
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <label className="text-[#888888] text-xs font-medium uppercase tracking-wider">
+              <label className="text-[#a1a4a5] text-xs font-medium uppercase tracking-wider">
                 Business Email <span className="text-[#555]">(optional)</span>
               </label>
               <input
@@ -459,7 +459,7 @@ export default function CustomerSignupPage() {
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <label className="text-[#888888] text-xs font-medium uppercase tracking-wider">
+              <label className="text-[#a1a4a5] text-xs font-medium uppercase tracking-wider">
                 Business Phone <span className="text-[#555]">(optional)</span>
               </label>
               <input
@@ -473,8 +473,8 @@ export default function CustomerSignupPage() {
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <label className="text-[#888888] text-xs font-medium uppercase tracking-wider">
-                Business Address <span className="text-red-400">*</span>
+              <label className="text-[#a1a4a5] text-xs font-medium uppercase tracking-wider">
+                Business Address <span className="text-[#a85858]">*</span>
               </label>
               <input
                 type="text"
@@ -488,7 +488,7 @@ export default function CustomerSignupPage() {
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <label className="text-[#888888] text-xs font-medium uppercase tracking-wider">
+              <label className="text-[#a1a4a5] text-xs font-medium uppercase tracking-wider">
                 Business Type
               </label>
               <select
@@ -509,7 +509,7 @@ export default function CustomerSignupPage() {
             <button
               type="submit"
               disabled={loading}
-              className="mt-2 w-full bg-[#F2FF66] text-[#0A0A0A] font-bold py-3 rounded-lg text-sm hover:bg-[#e8f55c] active:scale-95 transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 flex items-center justify-center gap-2"
+              className="mt-2 w-full bg-[#F2FF66] text-[#000000] font-bold py-3 rounded-lg text-sm hover:bg-[#e8f55c] active:scale-95 transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 flex items-center justify-center gap-2"
             >
               {loading ? (
                 <>

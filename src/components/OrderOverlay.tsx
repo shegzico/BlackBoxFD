@@ -104,7 +104,7 @@ export default function OrderOverlay({ orderNumber, onClose }: OrderOverlayProps
     >
       <div
         className={`
-          w-full max-w-md h-full bg-[#191314] border-l border-[#2A2A2A]
+          w-full max-w-md h-full bg-[#070707] border-l border-[rgba(255,255,255,0.08)]
           overflow-y-auto flex flex-col
           transform transition-transform duration-300 ease-out
           ${isVisible ? 'translate-x-0' : 'translate-x-full'}
@@ -112,16 +112,16 @@ export default function OrderOverlay({ orderNumber, onClose }: OrderOverlayProps
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="sticky top-0 bg-[#191314] border-b border-[#2A2A2A] px-4 py-4 flex items-center justify-between z-10 flex-shrink-0">
+        <div className="sticky top-0 bg-[#070707] border-b border-[rgba(255,255,255,0.08)] px-4 py-4 flex items-center justify-between z-10 flex-shrink-0">
           <div>
-            <p className="text-[#888888] text-xs mb-0.5">Order</p>
+            <p className="text-[#a1a4a5] text-xs mb-0.5">Order</p>
             <h2 className="font-mono text-[#F2FF66] font-bold text-base leading-tight">
               {orderNumber}
             </h2>
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 flex items-center justify-center rounded-lg text-[#888888] hover:text-[#FAFAFA] hover:bg-[#2A2A2A] transition-colors text-lg leading-none"
+            className="w-8 h-8 flex items-center justify-center rounded-lg text-[#a1a4a5] hover:text-[#f0f0f0] hover:bg-[rgba(255,255,255,0.08)] transition-colors text-lg leading-none"
             aria-label="Close"
           >
             &times;
@@ -133,18 +133,18 @@ export default function OrderOverlay({ orderNumber, onClose }: OrderOverlayProps
           {/* Loading */}
           {loading && (
             <div className="space-y-3 animate-pulse">
-              <div className="h-12 bg-[#2A2A2A] rounded-xl" />
-              <div className="h-28 bg-[#2A2A2A] rounded-xl" />
-              <div className="h-20 bg-[#2A2A2A] rounded-xl" />
-              <div className="h-20 bg-[#2A2A2A] rounded-xl" />
+              <div className="h-12 bg-[rgba(255,255,255,0.08)] rounded-xl" />
+              <div className="h-28 bg-[rgba(255,255,255,0.08)] rounded-xl" />
+              <div className="h-20 bg-[rgba(255,255,255,0.08)] rounded-xl" />
+              <div className="h-20 bg-[rgba(255,255,255,0.08)] rounded-xl" />
             </div>
           )}
 
           {/* Not Found */}
           {!loading && notFound && (
-            <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 text-center">
-              <p className="text-red-400 text-sm font-medium">Order not found</p>
-              <p className="text-red-400/60 text-xs mt-1">
+            <div className="bg-[rgba(135,55,55,0.12)] border border-red-500/20 rounded-xl p-4 text-center">
+              <p className="text-[#a85858] text-sm font-medium">Order not found</p>
+              <p className="text-[#a85858]/60 text-xs mt-1">
                 No order with number <span className="font-mono">{orderNumber}</span>
               </p>
             </div>
@@ -154,23 +154,23 @@ export default function OrderOverlay({ orderNumber, onClose }: OrderOverlayProps
           {!loading && order && (
             <>
               {/* Status Badge */}
-              <div className="bg-[#0A0A0A] border border-[#2A2A2A] rounded-xl p-4 flex items-center gap-3">
+              <div className="bg-[#000000] border border-[rgba(255,255,255,0.08)] rounded-xl p-4 flex items-center gap-3">
                 <StatusBadge status={order.status as Parameters<typeof StatusBadge>[0]['status']} />
                 {order.is_express && (
-                  <span className="text-[10px] bg-amber-500/20 text-amber-400 border border-amber-500/30 px-1.5 py-0.5 rounded-full font-medium">
+                  <span className="text-[10px] bg-[rgba(150,105,35,0.18)] text-[#aa8040] border border-[rgba(150,105,35,0.25)] px-1.5 py-0.5 rounded-full font-medium">
                     EXPRESS
                   </span>
                 )}
               </div>
 
               {/* Pickup Section */}
-              <div className="bg-[#0A0A0A] border border-[#2A2A2A] rounded-xl p-4 space-y-1">
-                <p className="text-[#888888] text-[10px] uppercase tracking-wide font-medium mb-2">Pickup</p>
-                <p className="text-[#FAFAFA] text-sm font-medium">{order.sender_name}</p>
-                <p className="text-[#888888] text-xs">{order.sender_phone}</p>
-                <div className="mt-2 pt-2 border-t border-[#2A2A2A]">
-                  <p className="text-[#FAFAFA] text-sm">{order.pickup_area}</p>
-                  <p className="text-[#888888] text-xs mt-0.5">{order.pickup_address}</p>
+              <div className="bg-[#000000] border border-[rgba(255,255,255,0.08)] rounded-xl p-4 space-y-1">
+                <p className="text-[#a1a4a5] text-[10px] uppercase tracking-wide font-medium mb-2">Pickup</p>
+                <p className="text-[#f0f0f0] text-sm font-medium">{order.sender_name}</p>
+                <p className="text-[#a1a4a5] text-xs">{order.sender_phone}</p>
+                <div className="mt-2 pt-2 border-t border-[rgba(255,255,255,0.08)]">
+                  <p className="text-[#f0f0f0] text-sm">{order.pickup_area}</p>
+                  <p className="text-[#a1a4a5] text-xs mt-0.5">{order.pickup_address}</p>
                 </div>
                 {order.pickup_date && (
                   <p className="text-[#F2FF66] text-xs mt-1">
@@ -183,9 +183,9 @@ export default function OrderOverlay({ orderNumber, onClose }: OrderOverlayProps
                   </p>
                 )}
                 <div className="mt-2 flex items-center gap-2 flex-wrap">
-                  <span className="text-[#888888] text-xs">{paymentLabel}</span>
+                  <span className="text-[#a1a4a5] text-xs">{paymentLabel}</span>
                   {order.is_express && (
-                    <span className="text-amber-400 text-[10px] font-medium">Express Delivery</span>
+                    <span className="text-[#aa8040] text-[10px] font-medium">Express Delivery</span>
                   )}
                 </div>
               </div>
@@ -193,13 +193,13 @@ export default function OrderOverlay({ orderNumber, onClose }: OrderOverlayProps
               {/* Deliveries Section */}
               {order.deliveries && order.deliveries.length > 0 && (
                 <div className="space-y-3">
-                  <p className="text-[#888888] text-[10px] uppercase tracking-wide font-medium">
+                  <p className="text-[#a1a4a5] text-[10px] uppercase tracking-wide font-medium">
                     Deliveries ({order.deliveries.length})
                   </p>
                   {order.deliveries.map((delivery) => (
                     <div
                       key={delivery.id}
-                      className="bg-[#0A0A0A] border border-[#2A2A2A] rounded-xl p-4 space-y-3"
+                      className="bg-[#000000] border border-[rgba(255,255,255,0.08)] rounded-xl p-4 space-y-3"
                     >
                       {/* Tracking ID + Status */}
                       <div className="flex items-center justify-between gap-2">
@@ -209,17 +209,17 @@ export default function OrderOverlay({ orderNumber, onClose }: OrderOverlayProps
 
                       {/* Recipient */}
                       <div className="text-xs">
-                        <p className="text-[#888888] mb-0.5">Recipient</p>
-                        <p className="text-[#FAFAFA] font-medium">{delivery.recipient_name}</p>
-                        <p className="text-[#888888]">{delivery.recipient_phone}</p>
+                        <p className="text-[#a1a4a5] mb-0.5">Recipient</p>
+                        <p className="text-[#f0f0f0] font-medium">{delivery.recipient_name}</p>
+                        <p className="text-[#a1a4a5]">{delivery.recipient_phone}</p>
                       </div>
 
                       {/* Route */}
                       <div className="text-xs">
-                        <p className="text-[#888888] mb-0.5">Destination</p>
-                        <p className="text-[#FAFAFA]">
+                        <p className="text-[#a1a4a5] mb-0.5">Destination</p>
+                        <p className="text-[#f0f0f0]">
                           {delivery.dropoff_area}{' '}
-                          <span className="text-[#888888]">{'\u2192'}</span>{' '}
+                          <span className="text-[#a1a4a5]">{'\u2192'}</span>{' '}
                           {delivery.dropoff_address}
                         </p>
                       </div>
@@ -227,8 +227,8 @@ export default function OrderOverlay({ orderNumber, onClose }: OrderOverlayProps
                       {/* Package */}
                       {delivery.package_description && (
                         <div className="text-xs">
-                          <p className="text-[#888888] mb-0.5">Package</p>
-                          <p className="text-[#FAFAFA]">{delivery.package_description}</p>
+                          <p className="text-[#a1a4a5] mb-0.5">Package</p>
+                          <p className="text-[#f0f0f0]">{delivery.package_description}</p>
                         </div>
                       )}
 
@@ -251,8 +251,8 @@ export default function OrderOverlay({ orderNumber, onClose }: OrderOverlayProps
 
               {/* Total Fee */}
               {order.total_fee != null && (
-                <div className="bg-[#0A0A0A] border border-[#2A2A2A] rounded-xl p-4 flex items-center justify-between">
-                  <p className="text-[#888888] text-sm">Total Fee</p>
+                <div className="bg-[#000000] border border-[rgba(255,255,255,0.08)] rounded-xl p-4 flex items-center justify-between">
+                  <p className="text-[#a1a4a5] text-sm">Total Fee</p>
                   <p className="text-[#F2FF66] font-bold text-lg">
                     {'\u20A6'}{order.total_fee.toLocaleString()}
                   </p>

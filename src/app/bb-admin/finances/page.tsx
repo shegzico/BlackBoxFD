@@ -21,8 +21,8 @@ const DATE_FILTERS: { label: string; value: DateFilter }[] = [
 ];
 
 const PAYMENT_METHOD_COLORS: Record<PaymentMethod, string> = {
-  sender_pays: 'bg-blue-500',
-  receiver_pays: 'bg-amber-500',
+  sender_pays: 'bg-[#2d5a8a]',
+  receiver_pays: 'bg-[#5a4018]',
 };
 
 function formatNaira(amount: number): string {
@@ -176,14 +176,14 @@ export default function AdminFinancesPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-bold text-[#FAFAFA]">Finances</h1>
-          <p className="text-[#888888] text-xs mt-0.5">Revenue and payment overview</p>
+          <h1 className="text-xl font-bold text-[#f0f0f0]">Finances</h1>
+          <p className="text-[#a1a4a5] text-xs mt-0.5">Revenue and payment overview</p>
         </div>
         <button
           onClick={handleExport}
           disabled={exportLoading}
           className="
-            border border-[#2A2A2A] text-[#888888] hover:text-[#FAFAFA] hover:border-[#F2FF66]
+            border border-[rgba(255,255,255,0.08)] text-[#a1a4a5] hover:text-[#f0f0f0] hover:border-[#212629]
             text-sm px-4 py-2 rounded-lg transition-colors flex items-center gap-1.5
             disabled:opacity-50 disabled:cursor-not-allowed
           "
@@ -205,20 +205,20 @@ export default function AdminFinancesPage() {
       {/* Revenue Cards */}
       <div className="grid grid-cols-3 gap-3">
         {revenueCards.map((card) => (
-          <div key={card.label} className="bg-[#191314] border border-[#2A2A2A] rounded-xl p-3 md:p-4">
+          <div key={card.label} className="bg-[#070707] border border-[rgba(255,255,255,0.08)] rounded-xl p-3 md:p-4">
             {card.value == null ? (
               <div className="space-y-2">
-                <div className="w-6 h-6 bg-[#2A2A2A] rounded animate-pulse" />
-                <div className="w-full h-5 bg-[#2A2A2A] rounded animate-pulse" />
-                <div className="w-16 h-3 bg-[#2A2A2A] rounded animate-pulse" />
+                <div className="w-6 h-6 bg-[rgba(255,255,255,0.08)] rounded animate-pulse" />
+                <div className="w-full h-5 bg-[rgba(255,255,255,0.08)] rounded animate-pulse" />
+                <div className="w-16 h-3 bg-[rgba(255,255,255,0.08)] rounded animate-pulse" />
               </div>
             ) : (
               <>
                 <span className="text-xl leading-none">{card.icon}</span>
-                <p className="text-lg md:text-2xl font-bold text-[#FAFAFA] mt-2 leading-none break-all">
+                <p className="text-lg md:text-2xl font-bold text-[#f0f0f0] mt-2 leading-none break-all">
                   {formatNaira(card.value)}
                 </p>
-                <p className="text-[#888888] text-xs mt-1">{card.label}</p>
+                <p className="text-[#a1a4a5] text-xs mt-1">{card.label}</p>
               </>
             )}
           </div>
@@ -227,10 +227,10 @@ export default function AdminFinancesPage() {
 
       {/* Payment Method Breakdown */}
       {!statsLoading && (
-        <div className="bg-[#191314] border border-[#2A2A2A] rounded-xl p-4">
-          <h2 className="text-sm font-semibold text-[#FAFAFA] mb-3">Revenue by Payment Method</h2>
+        <div className="bg-[#070707] border border-[rgba(255,255,255,0.08)] rounded-xl p-4">
+          <h2 className="text-sm font-semibold text-[#f0f0f0] mb-3">Revenue by Payment Method</h2>
           {pmTotal === 0 ? (
-            <p className="text-[#888888] text-sm">No data for selected period.</p>
+            <p className="text-[#a1a4a5] text-sm">No data for selected period.</p>
           ) : (
             <>
               {/* Breakdown Bar */}
@@ -258,11 +258,11 @@ export default function AdminFinancesPage() {
                       <div key={method} className="flex items-center justify-between text-sm">
                         <div className="flex items-center gap-2">
                           <span className={`w-2.5 h-2.5 rounded-full ${PAYMENT_METHOD_COLORS[method]}`} />
-                          <span className="text-[#888888]">{PAYMENT_LABELS[method]}</span>
+                          <span className="text-[#a1a4a5]">{PAYMENT_LABELS[method]}</span>
                         </div>
                         <div className="flex items-center gap-3">
-                          <span className="text-[#888888] text-xs">{pct}%</span>
-                          <span className="text-[#FAFAFA] font-medium">{formatNaira(amount)}</span>
+                          <span className="text-[#a1a4a5] text-xs">{pct}%</span>
+                          <span className="text-[#f0f0f0] font-medium">{formatNaira(amount)}</span>
                         </div>
                       </div>
                     );
@@ -274,9 +274,9 @@ export default function AdminFinancesPage() {
       )}
 
       {/* Date Filter + Table */}
-      <div className="bg-[#191314] border border-[#2A2A2A] rounded-xl overflow-hidden">
+      <div className="bg-[#070707] border border-[rgba(255,255,255,0.08)] rounded-xl overflow-hidden">
         {/* Filter + Summary Header */}
-        <div className="px-4 py-3 border-b border-[#2A2A2A] flex flex-col sm:flex-row sm:items-center gap-3">
+        <div className="px-4 py-3 border-b border-[rgba(255,255,255,0.08)] flex flex-col sm:flex-row sm:items-center gap-3">
           <div className="flex gap-1.5 overflow-x-auto pb-0.5 scrollbar-none">
             {DATE_FILTERS.map((df) => (
               <button
@@ -285,8 +285,8 @@ export default function AdminFinancesPage() {
                 className={`
                   flex-shrink-0 px-3 py-1 rounded-full text-xs font-medium transition-colors
                   ${dateFilter === df.value
-                    ? 'bg-[#F2FF66] text-[#0A0A0A]'
-                    : 'border border-[#2A2A2A] text-[#888888] hover:text-[#FAFAFA]'
+                    ? 'bg-[#18191ce0] text-[#f0f0f0] border border-[rgba(255,255,255,0.12)]'
+                    : 'border border-[rgba(255,255,255,0.08)] text-[#a1a4a5] hover:text-[#f0f0f0]'
                   }
                 `}
               >
@@ -295,30 +295,30 @@ export default function AdminFinancesPage() {
             ))}
           </div>
           <div className="sm:ml-auto flex items-center gap-3">
-            <span className="text-[#888888] text-xs">{filtered.length} orders</span>
-            <span className="text-[#F2FF66] font-semibold text-sm">{formatNaira(filteredRevenue)}</span>
+            <span className="text-[#a1a4a5] text-xs">{filtered.length} orders</span>
+            <span className="text-[#f0f0f0] font-semibold text-sm">{formatNaira(filteredRevenue)}</span>
           </div>
         </div>
 
         {/* Table */}
         {loading ? (
-          <div className="divide-y divide-[#2A2A2A]">
+          <div className="divide-y divide-[rgba(255,255,255,0.08)]">
             {Array(5).fill(null).map((_, i) => (
               <div key={i} className="px-4 py-3 flex gap-4 animate-pulse">
-                <div className="w-28 h-3 bg-[#2A2A2A] rounded" />
-                <div className="w-20 h-3 bg-[#2A2A2A] rounded" />
-                <div className="w-16 h-3 bg-[#2A2A2A] rounded ml-auto" />
+                <div className="w-28 h-3 bg-[rgba(255,255,255,0.08)] rounded" />
+                <div className="w-20 h-3 bg-[rgba(255,255,255,0.08)] rounded" />
+                <div className="w-16 h-3 bg-[rgba(255,255,255,0.08)] rounded ml-auto" />
               </div>
             ))}
           </div>
         ) : filtered.length === 0 ? (
-          <div className="px-4 py-10 text-center text-[#888888] text-sm">
+          <div className="px-4 py-10 text-center text-[#a1a4a5] text-sm">
             No completed deliveries in this period.
           </div>
         ) : (
           <>
             {/* Table Header */}
-            <div className="hidden md:grid grid-cols-7 gap-2 px-4 py-2 text-[#888888] text-xs font-medium uppercase tracking-wider border-b border-[#2A2A2A]">
+            <div className="hidden md:grid grid-cols-7 gap-2 px-4 py-2 text-[#a1a4a5] text-xs font-medium uppercase tracking-wider border-b border-[rgba(255,255,255,0.08)]">
               <span className="col-span-2">Tracking ID / Sender</span>
               <span>Recipient</span>
               <span>Route</span>
@@ -327,36 +327,36 @@ export default function AdminFinancesPage() {
               <span className="text-right">Date</span>
             </div>
 
-            <ul className="divide-y divide-[#2A2A2A]">
+            <ul className="divide-y divide-[rgba(255,255,255,0.08)]">
               {paginated.map((d) => (
                 <li key={d.id} className="px-4 py-3">
                   {/* Mobile Layout */}
                   <div className="md:hidden space-y-1">
                     <div className="flex items-start justify-between gap-2">
                       <div>
-                        <p className="font-mono text-[#F2FF66] text-xs font-semibold">{d.id}</p>
-                        <p className="text-[#FAFAFA] text-sm">{d.sender_name} → {d.recipient_name}</p>
-                        <p className="text-[#888888] text-xs">{d.pickup_area} → {d.dropoff_area}</p>
+                        <p className="font-mono text-[#f0f0f0] text-xs font-semibold">{d.id}</p>
+                        <p className="text-[#f0f0f0] text-sm">{d.sender_name} → {d.recipient_name}</p>
+                        <p className="text-[#a1a4a5] text-xs">{d.pickup_area} → {d.dropoff_area}</p>
                       </div>
                       <div className="text-right flex-shrink-0">
-                        <p className="text-[#FAFAFA] font-bold text-sm">{formatNaira(d.fee!)}</p>
-                        <p className="text-[#888888] text-xs">{formatDate(d.created_at)}</p>
+                        <p className="text-[#f0f0f0] font-bold text-sm">{formatNaira(d.fee!)}</p>
+                        <p className="text-[#a1a4a5] text-xs">{formatDate(d.created_at)}</p>
                       </div>
                     </div>
-                    <span className="text-[#888888] text-xs">{PAYMENT_LABELS[d.payment_method]}</span>
+                    <span className="text-[#a1a4a5] text-xs">{PAYMENT_LABELS[d.payment_method]}</span>
                   </div>
 
                   {/* Desktop Layout */}
                   <div className="hidden md:grid grid-cols-7 gap-2 items-center text-sm">
                     <div className="col-span-2 min-w-0">
-                      <p className="font-mono text-[#F2FF66] text-xs truncate">{d.id}</p>
-                      <p className="text-[#FAFAFA] truncate">{d.sender_name}</p>
+                      <p className="font-mono text-[#a1a4a5] text-xs truncate">{d.id}</p>
+                      <p className="text-[#f0f0f0] truncate">{d.sender_name}</p>
                     </div>
-                    <p className="text-[#888888] truncate">{d.recipient_name}</p>
-                    <p className="text-[#888888] text-xs truncate">{d.pickup_area} → {d.dropoff_area}</p>
-                    <p className="text-[#888888] text-xs">{PAYMENT_LABELS[d.payment_method]}</p>
-                    <p className="text-[#FAFAFA] font-semibold text-right">{formatNaira(d.fee!)}</p>
-                    <p className="text-[#888888] text-xs text-right">{formatDate(d.created_at)}</p>
+                    <p className="text-[#a1a4a5] truncate">{d.recipient_name}</p>
+                    <p className="text-[#a1a4a5] text-xs truncate">{d.pickup_area} → {d.dropoff_area}</p>
+                    <p className="text-[#a1a4a5] text-xs">{PAYMENT_LABELS[d.payment_method]}</p>
+                    <p className="text-[#f0f0f0] font-semibold text-right">{formatNaira(d.fee!)}</p>
+                    <p className="text-[#a1a4a5] text-xs text-right">{formatDate(d.created_at)}</p>
                   </div>
                 </li>
               ))}
@@ -364,19 +364,19 @@ export default function AdminFinancesPage() {
 
             {/* Pagination */}
             {totalPages > 1 && (
-              <div className="flex items-center justify-center gap-2 px-4 py-3 border-t border-[#2A2A2A]">
+              <div className="flex items-center justify-center gap-2 px-4 py-3 border-t border-[rgba(255,255,255,0.08)]">
                 <button
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
                   disabled={page === 1}
-                  className="px-3 py-1.5 text-sm border border-[#2A2A2A] rounded-lg text-[#888888] hover:text-[#FAFAFA] disabled:opacity-40 transition-colors"
+                  className="px-3 py-1.5 text-sm border border-[rgba(255,255,255,0.08)] rounded-lg text-[#a1a4a5] hover:text-[#f0f0f0] disabled:opacity-40 transition-colors"
                 >
                   ← Prev
                 </button>
-                <span className="text-[#888888] text-sm">{page} / {totalPages}</span>
+                <span className="text-[#a1a4a5] text-sm">{page} / {totalPages}</span>
                 <button
                   onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                   disabled={page === totalPages}
-                  className="px-3 py-1.5 text-sm border border-[#2A2A2A] rounded-lg text-[#888888] hover:text-[#FAFAFA] disabled:opacity-40 transition-colors"
+                  className="px-3 py-1.5 text-sm border border-[rgba(255,255,255,0.08)] rounded-lg text-[#a1a4a5] hover:text-[#f0f0f0] disabled:opacity-40 transition-colors"
                 >
                   Next →
                 </button>

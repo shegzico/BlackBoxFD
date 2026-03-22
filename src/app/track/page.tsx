@@ -33,7 +33,7 @@ export default function TrackPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0A0A0A] text-[#FAFAFA] flex flex-col">
+    <div className="min-h-screen bg-[#000000] text-[#f0f0f0] flex flex-col">
       <Navbar showBack backHref="/" title="Track Package" />
 
       <main className="flex flex-1 flex-col items-center justify-center px-4 py-12">
@@ -55,7 +55,7 @@ export default function TrackPage() {
                 />
               </svg>
             </div>
-            <h1 className="text-2xl font-bold text-[#FAFAFA] mb-1">Track your package</h1>
+            <h1 className="text-2xl font-bold text-[#f0f0f0] mb-1">Track your package</h1>
             <p className="text-sm text-gray-400">
               Enter your tracking ID to see real-time delivery status.
             </p>
@@ -77,11 +77,11 @@ export default function TrackPage() {
                 onChange={handleChange}
                 placeholder="Enter tracking ID (e.g., BB-A3K9X2)"
                 maxLength={9}
-                className={`w-full bg-[#191314] border rounded-xl px-4 py-3.5 text-[#FAFAFA] text-base placeholder-gray-600 font-mono tracking-wider outline-none transition-colors
-                  ${error ? 'border-red-500 focus:border-red-400' : 'border-gray-800 focus:border-[#F2FF66]'}`}
+                className={`w-full bg-[#070707] border rounded-xl px-4 py-3.5 text-[#f0f0f0] text-base placeholder-gray-600 font-mono tracking-wider outline-none transition-colors
+                  ${error ? 'border-red-500 focus:border-red-400' : 'border-[rgba(255,255,255,0.08)] focus:border-[#212629]'}`}
               />
               {error && (
-                <p className="mt-2 text-xs text-red-400">{error}</p>
+                <p className="mt-2 text-xs text-[#a85858]">{error}</p>
               )}
             </div>
 

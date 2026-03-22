@@ -95,31 +95,31 @@ function VerifyForm() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0A0A0A] text-[#FAFAFA] flex flex-col">
+    <div className="min-h-screen bg-[#000000] text-[#f0f0f0] flex flex-col">
       <main className="flex-1 flex flex-col items-center justify-center px-4 py-12">
         {/* Logo */}
         <div className="mb-8 flex flex-col items-center gap-2">
           <Logo size="large" />
-          <p className="text-[#888888] text-sm tracking-widest uppercase">Customer Portal</p>
+          <p className="text-[#a1a4a5] text-sm tracking-widest uppercase">Customer Portal</p>
         </div>
 
         {/* Card */}
-        <div className="w-full max-w-sm bg-[#191314] border border-[#2A2A2A] rounded-2xl p-6 shadow-xl">
-          <h1 className="text-xl font-bold text-[#FAFAFA] mb-1">Verify Your Email</h1>
-          <p className="text-[#888888] text-sm mb-6">
+        <div className="w-full max-w-sm bg-[#070707] border border-[rgba(255,255,255,0.08)] rounded-2xl p-6 shadow-xl">
+          <h1 className="text-xl font-bold text-[#f0f0f0] mb-1">Verify Your Email</h1>
+          <p className="text-[#a1a4a5] text-sm mb-6">
             We sent a verification code to{' '}
-            <span className="text-[#FAFAFA] font-medium">{email}</span>
+            <span className="text-[#f0f0f0] font-medium">{email}</span>
           </p>
 
           {error && (
-            <div className="mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm">
+            <div className="mb-4 p-3 bg-[rgba(135,55,55,0.12)] border border-red-500/30 rounded-lg text-[#a85858] text-sm">
               {error}
             </div>
           )}
 
           <form onSubmit={handleVerify} noValidate className="flex flex-col gap-4">
             <div className="flex flex-col gap-1.5">
-              <label htmlFor="otp" className="text-[#888888] text-xs font-medium uppercase tracking-wider">
+              <label htmlFor="otp" className="text-[#a1a4a5] text-xs font-medium uppercase tracking-wider">
                 Verification Code
               </label>
               <input
@@ -137,10 +137,10 @@ function VerifyForm() {
                 disabled={loading}
                 autoComplete="one-time-code"
                 className="
-                  w-full bg-[#232023] border border-gray-700 rounded-lg
-                  px-3 py-4 text-[#FAFAFA] text-2xl text-center font-mono
+                  w-full bg-[#232023] border border-[rgba(255,255,255,0.06)] rounded-lg
+                  px-3 py-4 text-[#f0f0f0] text-2xl text-center font-mono
                   placeholder-gray-600 tracking-[0.5em]
-                  focus:outline-none focus:border-[#F2FF66] focus:ring-1 focus:ring-[#F2FF66]
+                  focus:outline-none focus:border-[#212629] focus:ring-1 focus:ring-[#212629]
                   transition-colors disabled:opacity-50
                 "
               />
@@ -150,7 +150,7 @@ function VerifyForm() {
               type="submit"
               disabled={loading || otp.length !== 6}
               className="
-                mt-2 w-full bg-[#F2FF66] text-[#0A0A0A] font-bold
+                mt-2 w-full bg-[#F2FF66] text-[#000000] font-bold
                 py-3 rounded-lg text-sm
                 hover:bg-[#e8f55c] active:scale-95
                 transition-all duration-150
@@ -177,7 +177,7 @@ function VerifyForm() {
               type="button"
               onClick={handleResend}
               disabled={resendCooldown > 0 || resendLoading}
-              className="text-sm disabled:text-[#888888] text-[#F2FF66] hover:underline font-medium disabled:no-underline disabled:cursor-not-allowed transition-colors"
+              className="text-sm disabled:text-[#a1a4a5] text-[#F2FF66] hover:underline font-medium disabled:no-underline disabled:cursor-not-allowed transition-colors"
             >
               {resendLoading
                 ? 'Sending...'
@@ -196,7 +196,7 @@ export default function CustomerVerifyPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center">
+        <div className="min-h-screen bg-[#000000] flex items-center justify-center">
           <svg className="animate-spin w-6 h-6 text-[#F2FF66]" viewBox="0 0 24 24" fill="none">
             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />

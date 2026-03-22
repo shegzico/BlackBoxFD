@@ -1,16 +1,16 @@
 @import "tailwindcss";
 
 @theme inline {
-  --color-background: #0A0A0A;
-  --color-foreground: #FAFAFA;
+  --color-background: #000000;
+  --color-foreground: #f0f0f0;
   --color-accent: #F2FF66;
   --color-accent-dark: #d4e052;
-  --color-surface: #191314;
-  --color-surface-light: #1E1E1E;
-  --color-border: #2A2A2A;
-  --color-muted: #888888;
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-surface: #070707;
+  --color-surface-light: #18191ce0;
+  --color-border: rgba(255,255,255,0.08);
+  --color-muted: #a1a4a5;
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-mono);
 }
 
 * {
@@ -44,8 +44,8 @@ input, select, textarea {
 }
 input:focus, select:focus, textarea:focus {
   outline: none !important;
-  border-color: var(--color-accent) !important;
-  box-shadow: 0 0 0 1px var(--color-accent) !important;
+  border-color: #212629 !important;
+  box-shadow: none !important;
 }
 input::placeholder, textarea::placeholder {
   color: var(--color-muted) !important;
@@ -65,19 +65,25 @@ input[type="checkbox"] {
   animation: slide-in-right 0.25s ease-out;
 }
 
+/* Card surface utility — gradient bg + subtle border */
+.card-surface {
+  background: linear-gradient(rgba(80,80,80,0.10) 0%, rgba(0,0,0,0) 70%);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
 /* Google Places autocomplete dropdown styling */
 .pac-container {
-  background: #191314 !important;
-  border: 1px solid #2A2A2A !important;
+  background: #070707 !important;
+  border: 1px solid rgba(255,255,255,0.08) !important;
   border-radius: 8px !important;
   margin-top: 4px !important;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.5) !important;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.6) !important;
   z-index: 9999 !important;
 }
 .pac-item {
-  background: #191314 !important;
-  color: #FAFAFA !important;
-  border-top: 1px solid #2A2A2A !important;
+  background: #070707 !important;
+  color: #f0f0f0 !important;
+  border-top: 1px solid rgba(255,255,255,0.08) !important;
   padding: 8px 12px !important;
   cursor: pointer !important;
 }
@@ -85,7 +91,7 @@ input[type="checkbox"] {
   border-top: none !important;
 }
 .pac-item:hover, .pac-item-selected {
-  background: #1E1E1E !important;
+  background: #161616 !important;
 }
 .pac-item-query {
   color: #F2FF66 !important;

@@ -200,12 +200,12 @@ export default function AdminRidersPage() {
   }
 
   const inputCls = `
-    w-full bg-[#0A0A0A] border border-[#2A2A2A] rounded-lg
-    px-3 py-2.5 text-[#FAFAFA] text-sm placeholder:text-[#888888]
-    focus:outline-none focus:border-[#F2FF66] focus:ring-1 focus:ring-[#F2FF66]/20
+    w-full bg-[#000000] border border-[rgba(255,255,255,0.08)] rounded-lg
+    px-3 py-2.5 text-[#f0f0f0] text-sm placeholder:text-[#a1a4a5]
+    focus:outline-none focus:border-[#212629] focus:ring-1 focus:ring-[rgba(33,38,41,0.4)]
     transition-colors
   `;
-  const labelCls = 'text-[#888888] text-xs font-medium uppercase tracking-wider mb-1 block';
+  const labelCls = 'text-[#a1a4a5] text-xs font-medium uppercase tracking-wider mb-1 block';
 
   const activeCount = riders.filter((r) => r.is_active).length;
   const inactiveCount = riders.filter((r) => !r.is_active).length;
@@ -222,8 +222,8 @@ export default function AdminRidersPage() {
       );
     }
     return (
-      <div className={`${sizeClass} rounded-full bg-[#2A2A2A] flex items-center justify-center text-lg flex-shrink-0`}>
-        <svg className="w-5 h-5 text-[#888888]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+      <div className={`${sizeClass} rounded-full bg-[rgba(255,255,255,0.08)] flex items-center justify-center text-lg flex-shrink-0`}>
+        <svg className="w-5 h-5 text-[#a1a4a5]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
         </svg>
       </div>
@@ -235,14 +235,14 @@ export default function AdminRidersPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-bold text-[#FAFAFA]">Riders</h1>
-          <p className="text-[#888888] text-xs mt-0.5">
+          <h1 className="text-xl font-bold text-[#f0f0f0]">Riders</h1>
+          <p className="text-[#a1a4a5] text-xs mt-0.5">
             {riders.length} total · {activeCount} active · {inactiveCount} inactive
           </p>
         </div>
         <button
           onClick={openAddModal}
-          className="bg-[#F2FF66] text-[#0A0A0A] text-sm font-bold px-4 py-2 rounded-lg hover:bg-[#e8f55c] active:scale-95 transition-all"
+          className="bg-[#F2FF66] text-[#000000] text-sm font-bold px-4 py-2 rounded-lg hover:bg-[#e8f55c] active:scale-95 transition-all"
         >
           + Add Rider
         </button>
@@ -250,13 +250,13 @@ export default function AdminRidersPage() {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-2 gap-3">
-        <div className="bg-[#191314] border border-[#2A2A2A] rounded-xl p-4">
-          <p className="text-3xl font-bold text-[#FAFAFA]">{activeCount}</p>
-          <p className="text-[#888888] text-xs mt-1">Active Riders</p>
+        <div className="bg-[#070707] border border-[rgba(255,255,255,0.08)] rounded-xl p-4">
+          <p className="text-3xl font-bold text-[#f0f0f0]">{activeCount}</p>
+          <p className="text-[#a1a4a5] text-xs mt-1">Active Riders</p>
         </div>
-        <div className="bg-[#191314] border border-[#2A2A2A] rounded-xl p-4">
-          <p className="text-3xl font-bold text-[#FAFAFA]">{inactiveCount}</p>
-          <p className="text-[#888888] text-xs mt-1">Inactive Riders</p>
+        <div className="bg-[#070707] border border-[rgba(255,255,255,0.08)] rounded-xl p-4">
+          <p className="text-3xl font-bold text-[#f0f0f0]">{inactiveCount}</p>
+          <p className="text-[#a1a4a5] text-xs mt-1">Inactive Riders</p>
         </div>
       </div>
 
@@ -264,21 +264,21 @@ export default function AdminRidersPage() {
       {loading ? (
         <div className="space-y-3">
           {Array(4).fill(null).map((_, i) => (
-            <div key={i} className="bg-[#191314] border border-[#2A2A2A] rounded-xl p-4 space-y-2 animate-pulse">
-              <div className="w-32 h-4 bg-[#2A2A2A] rounded" />
-              <div className="w-24 h-3 bg-[#2A2A2A] rounded" />
-              <div className="w-20 h-5 bg-[#2A2A2A] rounded-full" />
+            <div key={i} className="bg-[#070707] border border-[rgba(255,255,255,0.08)] rounded-xl p-4 space-y-2 animate-pulse">
+              <div className="w-32 h-4 bg-[rgba(255,255,255,0.08)] rounded" />
+              <div className="w-24 h-3 bg-[rgba(255,255,255,0.08)] rounded" />
+              <div className="w-20 h-5 bg-[rgba(255,255,255,0.08)] rounded-full" />
             </div>
           ))}
         </div>
       ) : riders.length === 0 ? (
-        <div className="py-16 text-center text-[#888888] text-sm">No riders yet. Add one above.</div>
+        <div className="py-16 text-center text-[#a1a4a5] text-sm">No riders yet. Add one above.</div>
       ) : (
         <div className="space-y-3">
           {riders.map((rider) => {
             const isExpanded = expandedId === rider.id;
             return (
-              <div key={rider.id} className="bg-[#191314] border border-[#2A2A2A] rounded-xl overflow-hidden">
+              <div key={rider.id} className="bg-[#070707] border border-[rgba(255,255,255,0.08)] rounded-xl overflow-hidden">
                 {/* Card Header */}
                 <button
                   className="w-full text-left px-4 py-3.5 flex items-center justify-between gap-3"
@@ -287,9 +287,9 @@ export default function AdminRidersPage() {
                   <div className="flex items-center gap-3 min-w-0">
                     <RiderAvatar rider={rider} />
                     <div className="min-w-0">
-                      <p className="text-[#FAFAFA] font-semibold text-sm truncate">{rider.name}</p>
-                      <p className="text-[#888888] text-xs">
-                        {rider.username && <span className="text-[#F2FF66]/70 font-mono">@{rider.username} · </span>}
+                      <p className="text-[#f0f0f0] font-semibold text-sm truncate">{rider.name}</p>
+                      <p className="text-[#a1a4a5] text-xs">
+                        {rider.username && <span className="text-[#a1a4a5] font-mono">@{rider.username} · </span>}
                         {rider.phone}
                       </p>
                     </div>
@@ -298,40 +298,40 @@ export default function AdminRidersPage() {
                     <span
                       className={`text-xs px-2.5 py-1 rounded-full font-medium ${
                         rider.is_active
-                          ? 'bg-green-500/20 text-green-400 border border-green-500/30'
+                          ? 'bg-[#1e5030]/20 text-[#3d8050] border border-green-500/30'
                           : 'bg-gray-500/20 text-gray-400 border border-gray-500/30'
                       }`}
                     >
                       {rider.is_active ? 'Active' : 'Inactive'}
                     </span>
-                    <span className="text-[#888888] text-xs">{isExpanded ? '▲' : '▼'}</span>
+                    <span className="text-[#a1a4a5] text-xs">{isExpanded ? '▲' : '▼'}</span>
                   </div>
                 </button>
 
                 {/* Expanded */}
                 {isExpanded && (
-                  <div className="px-4 pb-4 border-t border-[#2A2A2A] pt-3 space-y-3">
+                  <div className="px-4 pb-4 border-t border-[rgba(255,255,255,0.08)] pt-3 space-y-3">
                     {/* Bike Info */}
                     {(rider.bike_plate || rider.bike_model || rider.bike_color) && (
-                      <div className="bg-[#0A0A0A] rounded-lg p-3 border border-[#2A2A2A]">
-                        <p className="text-[#888888] text-[10px] uppercase tracking-wider mb-2 font-medium">Bike Info</p>
+                      <div className="bg-[#000000] rounded-lg p-3 border border-[rgba(255,255,255,0.08)]">
+                        <p className="text-[#a1a4a5] text-[10px] uppercase tracking-wider mb-2 font-medium">Bike Info</p>
                         <div className="grid grid-cols-3 gap-2 text-xs">
                           {rider.bike_model && (
                             <div>
-                              <p className="text-[#888888]">Model</p>
-                              <p className="text-[#FAFAFA]">{rider.bike_model}</p>
+                              <p className="text-[#a1a4a5]">Model</p>
+                              <p className="text-[#f0f0f0]">{rider.bike_model}</p>
                             </div>
                           )}
                           {rider.bike_plate && (
                             <div>
-                              <p className="text-[#888888]">Plate</p>
-                              <p className="text-[#F2FF66] font-mono">{rider.bike_plate}</p>
+                              <p className="text-[#a1a4a5]">Plate</p>
+                              <p className="text-[#f0f0f0] font-mono">{rider.bike_plate}</p>
                             </div>
                           )}
                           {rider.bike_color && (
                             <div>
-                              <p className="text-[#888888]">Color</p>
-                              <p className="text-[#FAFAFA]">{rider.bike_color}</p>
+                              <p className="text-[#a1a4a5]">Color</p>
+                              <p className="text-[#f0f0f0]">{rider.bike_color}</p>
                             </div>
                           )}
                         </div>
@@ -346,22 +346,22 @@ export default function AdminRidersPage() {
                         { label: 'This Month', value: rider.stats?.this_month ?? '—' },
                         { label: 'All Time', value: rider.stats?.total ?? '—' },
                       ].map((s) => (
-                        <div key={s.label} className="bg-[#0A0A0A] rounded-lg p-3 text-center">
-                          <p className="text-[#FAFAFA] font-bold text-lg">{s.value}</p>
-                          <p className="text-[#888888] text-[10px]">{s.label}</p>
+                        <div key={s.label} className="bg-[#000000] rounded-lg p-3 text-center">
+                          <p className="text-[#f0f0f0] font-bold text-lg">{s.value}</p>
+                          <p className="text-[#a1a4a5] text-[10px]">{s.label}</p>
                         </div>
                       ))}
                     </div>
 
                     {rider.stats?.currently_assigned !== undefined && (
-                      <p className="text-[#888888] text-xs">
+                      <p className="text-[#a1a4a5] text-xs">
                         Currently assigned:{' '}
-                        <span className="text-[#F2FF66] font-medium">{rider.stats.currently_assigned} order{rider.stats.currently_assigned !== 1 ? 's' : ''}</span>
+                        <span className="text-[#f0f0f0] font-medium">{rider.stats.currently_assigned} order{rider.stats.currently_assigned !== 1 ? 's' : ''}</span>
                       </p>
                     )}
 
                     {/* Info */}
-                    <div className="text-xs text-[#888888]">
+                    <div className="text-xs text-[#a1a4a5]">
                       <p>Joined: {new Date(rider.created_at).toLocaleDateString('en-NG', { day: '2-digit', month: 'short', year: 'numeric' })}</p>
                     </div>
 
@@ -369,7 +369,7 @@ export default function AdminRidersPage() {
                     <div className="flex gap-2">
                       <button
                         onClick={() => openEditModal(rider)}
-                        className="flex-1 border border-[#F2FF66]/30 text-[#F2FF66] hover:bg-[#F2FF66]/10 text-sm py-2 rounded-lg font-medium transition-colors"
+                        className="flex-1 border border-[rgba(255,255,255,0.10)] text-[#a1a4a5] hover:text-[#f0f0f0] hover:border-[#212629] text-sm py-2 rounded-lg font-medium transition-colors"
                       >
                         ✏️ Edit
                       </button>
@@ -379,8 +379,8 @@ export default function AdminRidersPage() {
                         className={`
                           flex-1 text-sm py-2 rounded-lg font-medium transition-colors disabled:opacity-50
                           ${rider.is_active
-                            ? 'border border-red-500/30 text-red-400 hover:bg-red-500/10'
-                            : 'border border-green-500/30 text-green-400 hover:bg-green-500/10'
+                            ? 'border border-red-500/30 text-[#a85858] hover:bg-[rgba(135,55,55,0.12)]'
+                            : 'border border-green-500/30 text-[#3d8050] hover:bg-[rgba(38,100,58,0.12)]'
                           }
                         `}
                       >
@@ -402,38 +402,38 @@ export default function AdminRidersPage() {
       {/* Add/Edit Rider Modal */}
       {modalMode && (
         <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center p-4 bg-black/70">
-          <div className="w-full max-w-md bg-[#191314] border border-[#2A2A2A] rounded-2xl shadow-2xl max-h-[90vh] overflow-y-auto">
-            <div className="px-5 py-4 border-b border-[#2A2A2A] flex items-center justify-between sticky top-0 bg-[#191314] z-10">
-              <h2 className="text-[#FAFAFA] font-bold">
+          <div className="w-full max-w-md bg-[#070707] border border-[rgba(255,255,255,0.08)] rounded-2xl shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div className="px-5 py-4 border-b border-[rgba(255,255,255,0.08)] flex items-center justify-between sticky top-0 bg-[#070707] z-10">
+              <h2 className="text-[#f0f0f0] font-bold">
                 {modalMode === 'add' ? 'Add New Rider' : `Edit Rider — ${editingRider?.name}`}
               </h2>
               <button
                 onClick={() => { setModalMode(null); setEditingRider(null); }}
-                className="text-[#888888] hover:text-[#FAFAFA] text-xl leading-none"
+                className="text-[#a1a4a5] hover:text-[#f0f0f0] text-xl leading-none"
               >
                 &times;
               </button>
             </div>
             <form onSubmit={handleSubmit} className="p-5 space-y-4">
               {formError && (
-                <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm">{formError}</div>
+                <div className="p-3 bg-[rgba(135,55,55,0.12)] border border-red-500/30 rounded-lg text-[#a85858] text-sm">{formError}</div>
               )}
 
               {/* Profile Image */}
               <div className="flex flex-col items-center gap-3">
                 <div
-                  className="w-20 h-20 rounded-full bg-[#2A2A2A] flex items-center justify-center overflow-hidden cursor-pointer border-2 border-dashed border-[#444] hover:border-[#F2FF66] transition-colors"
+                  className="w-20 h-20 rounded-full bg-[rgba(255,255,255,0.08)] flex items-center justify-center overflow-hidden cursor-pointer border-2 border-dashed border-[#444] hover:border-[#212629] transition-colors"
                   onClick={() => fileInputRef.current?.click()}
                 >
                   {imagePreview ? (
                     <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
                   ) : (
                     <div className="text-center">
-                      <svg className="w-6 h-6 text-[#888888] mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                      <svg className="w-6 h-6 text-[#a1a4a5] mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z" />
                         <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0z" />
                       </svg>
-                      <p className="text-[#888888] text-[10px] mt-1">Photo</p>
+                      <p className="text-[#a1a4a5] text-[10px] mt-1">Photo</p>
                     </div>
                   )}
                 </div>
@@ -444,7 +444,7 @@ export default function AdminRidersPage() {
                   onChange={handleImageChange}
                   className="hidden"
                 />
-                <p className="text-[#888888] text-[10px]">Tap to upload photo (max 2MB)</p>
+                <p className="text-[#a1a4a5] text-[10px]">Tap to upload photo (max 2MB)</p>
               </div>
 
               {/* Basic Info */}
@@ -497,14 +497,14 @@ export default function AdminRidersPage() {
                   maxLength={6}
                   pattern="[0-9]{4,6}"
                 />
-                <p className="text-[#888888] text-xs mt-1">
+                <p className="text-[#a1a4a5] text-xs mt-1">
                   {modalMode === 'edit' ? 'Only fill to change PIN' : 'Rider uses this PIN to log in'}
                 </p>
               </div>
 
               {/* Bike Info Section */}
-              <div className="border-t border-[#2A2A2A] pt-4">
-                <p className="text-[#F2FF66] text-xs font-semibold uppercase tracking-wider mb-3">Bike Information</p>
+              <div className="border-t border-[rgba(255,255,255,0.08)] pt-4">
+                <p className="text-[#a1a4a5] text-xs font-semibold uppercase tracking-wider mb-3">Bike Information</p>
                 <div className="space-y-3">
                   <div>
                     <label className={labelCls}>Bike Model</label>
@@ -541,7 +541,7 @@ export default function AdminRidersPage() {
               <button
                 type="submit"
                 disabled={formLoading}
-                className="w-full bg-[#F2FF66] text-[#0A0A0A] font-bold py-3 rounded-lg text-sm hover:bg-[#e8f55c] active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full bg-[#F2FF66] text-[#000000] font-bold py-3 rounded-lg text-sm hover:bg-[#e8f55c] active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {formLoading ? 'Saving...' : modalMode === 'add' ? 'Add Rider' : 'Save Changes'}
               </button>

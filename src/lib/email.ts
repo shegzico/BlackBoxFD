@@ -25,7 +25,7 @@ function otpEmailHtml(name: string, otp: string): string {
 
           <!-- Header -->
           <tr>
-            <td style="background:#0A0A0A;padding:28px 32px;text-align:center;">
+            <td style="background:#000000;padding:28px 32px;text-align:center;">
               <span style="color:#F2FF66;font-size:22px;font-weight:800;letter-spacing:2px;text-transform:uppercase;">BLACKBOX</span>
               <span style="color:#ffffff;font-size:22px;font-weight:300;margin-left:6px;letter-spacing:1px;">LOGISTICS</span>
             </td>
@@ -40,7 +40,7 @@ function otpEmailHtml(name: string, otp: string): string {
               </p>
 
               <!-- OTP Box -->
-              <div style="background:#0A0A0A;border-radius:12px;padding:28px 16px;text-align:center;margin-bottom:28px;">
+              <div style="background:#000000;border-radius:12px;padding:28px 16px;text-align:center;margin-bottom:28px;">
                 <div style="color:#F2FF66;font-size:42px;font-weight:800;letter-spacing:14px;font-family:'Courier New',monospace;">
                   ${otp}
                 </div>
@@ -87,7 +87,7 @@ function inviteEmailHtml(inviterName: string, businessName: string, role: string
 
           <!-- Header -->
           <tr>
-            <td style="background:#0A0A0A;padding:28px 32px;text-align:center;">
+            <td style="background:#000000;padding:28px 32px;text-align:center;">
               <span style="color:#F2FF66;font-size:22px;font-weight:800;letter-spacing:2px;text-transform:uppercase;">BLACKBOX</span>
               <span style="color:#ffffff;font-size:22px;font-weight:300;margin-left:6px;letter-spacing:1px;">LOGISTICS</span>
             </td>
@@ -102,7 +102,7 @@ function inviteEmailHtml(inviterName: string, businessName: string, role: string
               </p>
 
               <!-- Business Info Box -->
-              <div style="background:#0A0A0A;border-radius:12px;padding:24px 20px;text-align:center;margin-bottom:28px;">
+              <div style="background:#000000;border-radius:12px;padding:24px 20px;text-align:center;margin-bottom:28px;">
                 <div style="color:#F2FF66;font-size:20px;font-weight:800;letter-spacing:1px;">
                   ${businessName}
                 </div>
@@ -111,7 +111,7 @@ function inviteEmailHtml(inviterName: string, businessName: string, role: string
 
               <!-- CTA Button -->
               <div style="text-align:center;margin-bottom:28px;">
-                <a href="${inviteLink}" style="display:inline-block;background:#F2FF66;color:#0A0A0A;font-size:15px;font-weight:800;padding:14px 36px;border-radius:10px;text-decoration:none;letter-spacing:0.5px;">
+                <a href="${inviteLink}" style="display:inline-block;background:#F2FF66;color:#000000;font-size:15px;font-weight:800;padding:14px 36px;border-radius:10px;text-decoration:none;letter-spacing:0.5px;">
                   Accept Invitation
                 </a>
               </div>

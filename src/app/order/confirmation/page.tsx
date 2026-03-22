@@ -53,7 +53,7 @@ function ConfirmationContent() {
           </svg>
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-[#FAFAFA]">Order Confirmed!</h1>
+          <h1 className="text-2xl font-bold text-[#f0f0f0]">Order Confirmed!</h1>
           <p className="text-gray-400 text-sm mt-1">
             Your package has been booked for dispatch.
           </p>
@@ -61,25 +61,25 @@ function ConfirmationContent() {
       </div>
 
       {/* Tracking ID Card */}
-      <div className="w-full bg-[#191314] border border-gray-800 rounded-xl p-6 flex flex-col items-center gap-4">
+      <div className="w-full bg-[#070707] border border-[rgba(255,255,255,0.08)] rounded-xl p-6 flex flex-col items-center gap-4">
         <p className="text-gray-400 text-xs uppercase tracking-widest font-medium">
           Tracking ID
         </p>
-        <p className="text-[#F2FF66] font-bold text-3xl tracking-widest font-mono break-all text-center">
+        <p className="text-[#f0f0f0] font-bold text-3xl tracking-widest font-mono break-all text-center">
           {trackingId}
         </p>
         <button
           onClick={handleCopy}
           className="
             flex items-center gap-2 px-4 py-2 rounded-lg
-            bg-gray-800 hover:bg-gray-700
-            text-sm text-[#FAFAFA] font-medium
+            bg-[#161616] hover:bg-gray-700
+            text-sm text-[#f0f0f0] font-medium
             transition-all duration-150 active:scale-95
           "
         >
           {copied ? (
             <>
-              <svg className="w-4 h-4 text-[#F2FF66]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <svg className="w-4 h-4 text-[#a1a4a5]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
               </svg>
               Copied!
@@ -122,7 +122,7 @@ function ConfirmationContent() {
           className="
             w-full flex items-center justify-center
             py-4 rounded-xl font-semibold text-base
-            bg-[#F2FF66] text-[#0A0A0A]
+            bg-[#F2FF66] text-[#000000]
             hover:bg-[#e8f550] active:scale-[0.98]
             transition-all duration-150
           "
@@ -136,7 +136,7 @@ function ConfirmationContent() {
           className="
             w-full flex items-center justify-center
             py-4 rounded-xl font-semibold text-base
-            bg-[#191314] text-[#FAFAFA] border border-gray-700
+            bg-[#070707] text-[#f0f0f0] border border-[rgba(255,255,255,0.06)]
             hover:border-gray-500 active:scale-[0.98]
             transition-all duration-150
           "
@@ -151,16 +151,16 @@ function ConfirmationContent() {
 function ConfirmationFallback() {
   return (
     <main className="max-w-lg mx-auto px-4 py-10 flex flex-col items-center gap-8">
-      <div className="w-20 h-20 rounded-full bg-gray-800 animate-pulse" />
-      <div className="w-48 h-8 rounded-lg bg-gray-800 animate-pulse" />
-      <div className="w-full h-40 rounded-xl bg-gray-800 animate-pulse" />
+      <div className="w-20 h-20 rounded-full bg-[#161616] animate-pulse" />
+      <div className="w-48 h-8 rounded-lg bg-[#161616] animate-pulse" />
+      <div className="w-full h-40 rounded-xl bg-[#161616] animate-pulse" />
     </main>
   );
 }
 
 export default function ConfirmationPage() {
   return (
-    <div className="min-h-screen bg-[#0A0A0A] text-[#FAFAFA]">
+    <div className="min-h-screen bg-[#000000] text-[#f0f0f0]">
       <Navbar showBack backHref="/" title="Order Confirmed" />
       <Suspense fallback={<ConfirmationFallback />}>
         <ConfirmationContent />

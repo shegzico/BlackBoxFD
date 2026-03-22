@@ -103,9 +103,9 @@ export default function AddressInput({
   }, []);
 
   const defaultCls = `
-    w-full rounded-lg bg-[#232023] border border-gray-700 text-[#FAFAFA]
-    px-3 py-3 text-sm placeholder-gray-600
-    focus:outline-none focus:border-[#F2FF66] focus:ring-1 focus:ring-[#F2FF66]
+    w-full rounded-lg bg-[#18191c] border border-[rgba(255,255,255,0.08)] text-[#f0f0f0]
+    px-3 py-3 text-sm placeholder:text-[#a1a4a5]
+    focus:outline-none focus:border-[#212629]
     transition-colors disabled:opacity-50
   `;
 

@@ -83,7 +83,7 @@ export default function DeliveryOverlay({ trackingId, onClose }: DeliveryOverlay
     >
       <div
         className={`
-          w-full max-w-md h-full bg-[#191314] border-l border-[#2A2A2A]
+          w-full max-w-md h-full bg-[#070707] border-l border-[rgba(255,255,255,0.08)]
           overflow-y-auto flex flex-col
           transform transition-transform duration-300 ease-out
           ${isVisible ? 'translate-x-0' : 'translate-x-full'}
@@ -91,14 +91,14 @@ export default function DeliveryOverlay({ trackingId, onClose }: DeliveryOverlay
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="sticky top-0 bg-[#191314] border-b border-[#2A2A2A] px-4 py-4 flex items-center justify-between z-10 flex-shrink-0">
+        <div className="sticky top-0 bg-[#070707] border-b border-[rgba(255,255,255,0.08)] px-4 py-4 flex items-center justify-between z-10 flex-shrink-0">
           <div>
-            <p className="text-[#888888] text-xs mb-0.5">Tracking ID</p>
+            <p className="text-[#a1a4a5] text-xs mb-0.5">Tracking ID</p>
             <h2 className="font-mono text-[#F2FF66] font-bold text-base leading-tight">{trackingId}</h2>
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 flex items-center justify-center rounded-lg text-[#888888] hover:text-[#FAFAFA] hover:bg-[#2A2A2A] transition-colors text-lg leading-none"
+            className="w-8 h-8 flex items-center justify-center rounded-lg text-[#a1a4a5] hover:text-[#f0f0f0] hover:bg-[rgba(255,255,255,0.08)] transition-colors text-lg leading-none"
             aria-label="Close"
           >
             &times;
@@ -110,17 +110,17 @@ export default function DeliveryOverlay({ trackingId, onClose }: DeliveryOverlay
           {/* Loading */}
           {loading && (
             <div className="space-y-3 animate-pulse">
-              <div className="h-16 bg-[#2A2A2A] rounded-xl" />
-              <div className="h-24 bg-[#2A2A2A] rounded-xl" />
-              <div className="h-32 bg-[#2A2A2A] rounded-xl" />
+              <div className="h-16 bg-[rgba(255,255,255,0.08)] rounded-xl" />
+              <div className="h-24 bg-[rgba(255,255,255,0.08)] rounded-xl" />
+              <div className="h-32 bg-[rgba(255,255,255,0.08)] rounded-xl" />
             </div>
           )}
 
           {/* Not Found */}
           {!loading && notFound && (
-            <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 text-center">
-              <p className="text-red-400 text-sm font-medium">Delivery not found</p>
-              <p className="text-red-400/60 text-xs mt-1">
+            <div className="bg-[rgba(135,55,55,0.12)] border border-red-500/20 rounded-xl p-4 text-center">
+              <p className="text-[#a85858] text-sm font-medium">Delivery not found</p>
+              <p className="text-[#a85858]/60 text-xs mt-1">
                 No delivery with ID <span className="font-mono">{trackingId}</span>
               </p>
             </div>
@@ -130,11 +130,11 @@ export default function DeliveryOverlay({ trackingId, onClose }: DeliveryOverlay
           {!loading && delivery && (
             <>
               {/* Status + Express */}
-              <div className="bg-[#0A0A0A] border border-[#2A2A2A] rounded-xl p-4 flex items-center justify-between gap-3">
+              <div className="bg-[#000000] border border-[rgba(255,255,255,0.08)] rounded-xl p-4 flex items-center justify-between gap-3">
                 <div className="flex items-center gap-2">
                   <StatusBadge status={delivery.status} />
                   {delivery.is_express && (
-                    <span className="text-[10px] bg-amber-500/20 text-amber-400 border border-amber-500/30 px-1.5 py-0.5 rounded-full font-medium">
+                    <span className="text-[10px] bg-[rgba(150,105,35,0.18)] text-[#aa8040] border border-[rgba(150,105,35,0.25)] px-1.5 py-0.5 rounded-full font-medium">
                       EXPRESS
                     </span>
                   )}
@@ -153,23 +153,23 @@ export default function DeliveryOverlay({ trackingId, onClose }: DeliveryOverlay
               </div>
 
               {/* Progress Bar */}
-              <div className="bg-[#0A0A0A] border border-[#2A2A2A] rounded-xl px-3 py-2">
+              <div className="bg-[#000000] border border-[rgba(255,255,255,0.08)] rounded-xl px-3 py-2">
                 <ProgressBar status={delivery.status} />
               </div>
 
               {/* Sender */}
-              <div className="bg-[#0A0A0A] border border-[#2A2A2A] rounded-xl p-4">
-                <p className="text-[#888888] text-[10px] uppercase tracking-wide font-medium mb-2">Sender</p>
-                <p className="text-[#FAFAFA] text-sm font-medium">{delivery.sender_name}</p>
-                <p className="text-[#888888] text-xs mt-0.5">{delivery.sender_phone}</p>
+              <div className="bg-[#000000] border border-[rgba(255,255,255,0.08)] rounded-xl p-4">
+                <p className="text-[#a1a4a5] text-[10px] uppercase tracking-wide font-medium mb-2">Sender</p>
+                <p className="text-[#f0f0f0] text-sm font-medium">{delivery.sender_name}</p>
+                <p className="text-[#a1a4a5] text-xs mt-0.5">{delivery.sender_phone}</p>
               </div>
 
               {/* Route */}
-              <div className="bg-[#0A0A0A] border border-[#2A2A2A] rounded-xl p-4 grid grid-cols-2 gap-3 text-xs">
+              <div className="bg-[#000000] border border-[rgba(255,255,255,0.08)] rounded-xl p-4 grid grid-cols-2 gap-3 text-xs">
                 <div>
-                  <p className="text-[#888888] mb-1">Pickup</p>
-                  <p className="text-[#FAFAFA] font-medium">{delivery.pickup_area}</p>
-                  <p className="text-[#888888] mt-0.5 leading-tight">{delivery.pickup_address}</p>
+                  <p className="text-[#a1a4a5] mb-1">Pickup</p>
+                  <p className="text-[#f0f0f0] font-medium">{delivery.pickup_area}</p>
+                  <p className="text-[#a1a4a5] mt-0.5 leading-tight">{delivery.pickup_address}</p>
                   {delivery.pickup_date && (
                     <p className="text-[#F2FF66] text-[10px] mt-1">
                       {new Date(delivery.pickup_date).toLocaleDateString('en-NG', {
@@ -179,39 +179,39 @@ export default function DeliveryOverlay({ trackingId, onClose }: DeliveryOverlay
                   )}
                 </div>
                 <div>
-                  <p className="text-[#888888] mb-1">Dropoff</p>
-                  <p className="text-[#FAFAFA] font-medium">{delivery.dropoff_area}</p>
-                  <p className="text-[#888888] mt-0.5 leading-tight">{delivery.dropoff_address}</p>
+                  <p className="text-[#a1a4a5] mb-1">Dropoff</p>
+                  <p className="text-[#f0f0f0] font-medium">{delivery.dropoff_area}</p>
+                  <p className="text-[#a1a4a5] mt-0.5 leading-tight">{delivery.dropoff_address}</p>
                 </div>
               </div>
 
               {/* Recipient */}
-              <div className="bg-[#0A0A0A] border border-[#2A2A2A] rounded-xl p-4">
-                <p className="text-[#888888] text-[10px] uppercase tracking-wide font-medium mb-2">Recipient</p>
-                <p className="text-[#FAFAFA] text-sm font-medium">{delivery.recipient_name}</p>
-                <p className="text-[#888888] text-xs mt-0.5">{delivery.recipient_phone}</p>
+              <div className="bg-[#000000] border border-[rgba(255,255,255,0.08)] rounded-xl p-4">
+                <p className="text-[#a1a4a5] text-[10px] uppercase tracking-wide font-medium mb-2">Recipient</p>
+                <p className="text-[#f0f0f0] text-sm font-medium">{delivery.recipient_name}</p>
+                <p className="text-[#a1a4a5] text-xs mt-0.5">{delivery.recipient_phone}</p>
               </div>
 
               {/* Rider */}
-              <div className="bg-[#0A0A0A] border border-[#2A2A2A] rounded-xl p-4">
-                <p className="text-[#888888] text-[10px] uppercase tracking-wide font-medium mb-2">Rider</p>
-                <p className="text-[#FAFAFA] text-sm font-medium">{riderName ?? 'Not yet assigned'}</p>
+              <div className="bg-[#000000] border border-[rgba(255,255,255,0.08)] rounded-xl p-4">
+                <p className="text-[#a1a4a5] text-[10px] uppercase tracking-wide font-medium mb-2">Rider</p>
+                <p className="text-[#f0f0f0] text-sm font-medium">{riderName ?? 'Not yet assigned'}</p>
                 {delivery.rider?.phone && (
-                  <p className="text-[#888888] text-xs mt-0.5">{delivery.rider.phone}</p>
+                  <p className="text-[#a1a4a5] text-xs mt-0.5">{delivery.rider.phone}</p>
                 )}
               </div>
 
               {/* Package + Payment */}
               <div className="grid grid-cols-2 gap-3">
                 {delivery.package_description && (
-                  <div className="bg-[#0A0A0A] border border-[#2A2A2A] rounded-xl p-4">
-                    <p className="text-[#888888] text-[10px] uppercase tracking-wide font-medium mb-2">Package</p>
-                    <p className="text-[#FAFAFA] text-xs leading-snug">{delivery.package_description}</p>
+                  <div className="bg-[#000000] border border-[rgba(255,255,255,0.08)] rounded-xl p-4">
+                    <p className="text-[#a1a4a5] text-[10px] uppercase tracking-wide font-medium mb-2">Package</p>
+                    <p className="text-[#f0f0f0] text-xs leading-snug">{delivery.package_description}</p>
                   </div>
                 )}
-                <div className="bg-[#0A0A0A] border border-[#2A2A2A] rounded-xl p-4">
-                  <p className="text-[#888888] text-[10px] uppercase tracking-wide font-medium mb-2">Payment</p>
-                  <p className="text-[#FAFAFA] text-xs">{paymentLabel}</p>
+                <div className="bg-[#000000] border border-[rgba(255,255,255,0.08)] rounded-xl p-4">
+                  <p className="text-[#a1a4a5] text-[10px] uppercase tracking-wide font-medium mb-2">Payment</p>
+                  <p className="text-[#f0f0f0] text-xs">{paymentLabel}</p>
                   {delivery.fee != null && (
                     <p className="text-[#F2FF66] text-sm font-bold mt-1">{'\u20A6'}{delivery.fee.toLocaleString()}</p>
                   )}
@@ -220,8 +220,8 @@ export default function DeliveryOverlay({ trackingId, onClose }: DeliveryOverlay
 
               {/* Timeline */}
               {delivery.history && delivery.history.length > 0 && (
-                <div className="bg-[#0A0A0A] border border-[#2A2A2A] rounded-xl p-4">
-                  <p className="text-[#888888] text-[10px] uppercase tracking-wide font-medium mb-3">Timeline</p>
+                <div className="bg-[#000000] border border-[rgba(255,255,255,0.08)] rounded-xl p-4">
+                  <p className="text-[#a1a4a5] text-[10px] uppercase tracking-wide font-medium mb-3">Timeline</p>
                   <Timeline history={delivery.history} />
                 </div>
               )}

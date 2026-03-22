@@ -95,20 +95,20 @@ function PeriodDropdown({
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="flex items-center gap-2 bg-[#191314] border border-[#2A2A2A] hover:border-[#F2FF66]/30 text-[#FAFAFA] text-xs font-medium px-3 py-2 rounded-lg transition-colors"
+        className="flex items-center gap-2 bg-[#070707] border border-[rgba(255,255,255,0.08)] hover:border-[#212629] text-[#f0f0f0] text-xs font-medium px-3 py-2 rounded-lg transition-colors"
       >
-        <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 text-[#888888]" fill="none" stroke="currentColor" strokeWidth={2}>
+        <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 text-[#a1a4a5]" fill="none" stroke="currentColor" strokeWidth={2}>
           <rect x="3" y="4" width="18" height="18" rx="2" />
           <path strokeLinecap="round" d="M3 9h18M8 2v4M16 2v4" />
         </svg>
         {selectedLabel}
-        <svg viewBox="0 0 24 24" className={`w-3 h-3 text-[#888888] transition-transform ${open ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" strokeWidth={2.5}>
+        <svg viewBox="0 0 24 24" className={`w-3 h-3 text-[#a1a4a5] transition-transform ${open ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" strokeWidth={2.5}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M6 9l6 6 6-6" />
         </svg>
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full mt-1.5 w-52 bg-[#191314] border border-[#2A2A2A] rounded-xl shadow-xl z-30 overflow-hidden">
+        <div className="absolute right-0 top-full mt-1.5 w-52 bg-[#070707] border border-[rgba(255,255,255,0.08)] rounded-xl shadow-xl z-30 overflow-hidden">
           {PERIODS.map((p) => (
             <button
               key={p.key}
@@ -116,8 +116,8 @@ function PeriodDropdown({
               onClick={() => { onChange(p.key); if (p.key !== 'custom') setOpen(false); }}
               className={`w-full text-left px-4 py-2.5 text-xs transition-colors flex items-center justify-between ${
                 selected === p.key
-                  ? 'bg-[#F2FF66]/10 text-[#F2FF66]'
-                  : 'text-[#FAFAFA] hover:bg-[#2A2A2A]'
+                  ? 'bg-[#18191ce0] text-[#f0f0f0]'
+                  : 'text-[#a1a4a5] hover:bg-[rgba(255,255,255,0.05)] hover:text-[#f0f0f0]'
               }`}
             >
               {p.label}
@@ -131,32 +131,32 @@ function PeriodDropdown({
 
           {/* Custom date range inputs */}
           {selected === 'custom' && (
-            <div className="border-t border-[#2A2A2A] px-4 py-3 flex flex-col gap-2">
+            <div className="border-t border-[rgba(255,255,255,0.08)] px-4 py-3 flex flex-col gap-2">
               <div className="flex flex-col gap-1">
-                <label className="text-[10px] text-[#888888] uppercase tracking-wider">From</label>
+                <label className="text-[10px] text-[#a1a4a5] uppercase tracking-wider">From</label>
                 <input
                   type="date"
                   value={customFrom}
                   max={customTo || undefined}
                   onChange={(e) => onCustomChange(e.target.value, customTo)}
-                  className="bg-[#0A0A0A] border border-[#2A2A2A] rounded-lg px-2 py-1.5 text-xs text-[#FAFAFA] focus:outline-none focus:border-[#F2FF66]/40 [color-scheme:dark]"
+                  className="bg-[#000000] border border-[rgba(255,255,255,0.08)] rounded-lg px-2 py-1.5 text-xs text-[#f0f0f0] focus:outline-none focus:border-[#212629] [color-scheme:dark]"
                 />
               </div>
               <div className="flex flex-col gap-1">
-                <label className="text-[10px] text-[#888888] uppercase tracking-wider">To</label>
+                <label className="text-[10px] text-[#a1a4a5] uppercase tracking-wider">To</label>
                 <input
                   type="date"
                   value={customTo}
                   min={customFrom || undefined}
                   onChange={(e) => onCustomChange(customFrom, e.target.value)}
-                  className="bg-[#0A0A0A] border border-[#2A2A2A] rounded-lg px-2 py-1.5 text-xs text-[#FAFAFA] focus:outline-none focus:border-[#F2FF66]/40 [color-scheme:dark]"
+                  className="bg-[#000000] border border-[rgba(255,255,255,0.08)] rounded-lg px-2 py-1.5 text-xs text-[#f0f0f0] focus:outline-none focus:border-[#212629] [color-scheme:dark]"
                 />
               </div>
               <button
                 type="button"
                 onClick={() => setOpen(false)}
                 disabled={!customFrom || !customTo}
-                className="mt-1 w-full bg-[#F2FF66] text-[#0A0A0A] text-xs font-semibold py-1.5 rounded-lg disabled:opacity-40 disabled:cursor-not-allowed"
+                className="mt-1 w-full bg-[#F2FF66] text-[#000000] text-xs font-semibold py-1.5 rounded-lg disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 Apply
               </button>
@@ -201,7 +201,7 @@ function Banner() {
   }, [next]);
 
   return (
-    <div className="relative rounded-2xl border border-[#2A2A2A] overflow-hidden h-36 md:h-44">
+    <div className="relative rounded-2xl border border-[rgba(255,255,255,0.08)] overflow-hidden h-36 md:h-44">
       {bannerSlides.map((slide, i) => (
         <div
           key={i}
@@ -215,13 +215,13 @@ function Banner() {
 
           <div className="relative z-10 flex items-center justify-between w-full gap-4">
             <div>
-              <span className="inline-block bg-[#F2FF66] text-[#0A0A0A] text-[9px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full mb-3">
+              <span className="inline-block bg-[#F2FF66] text-[#000000] text-[9px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full mb-3">
                 BlackBox Logistics
               </span>
-              <h2 className="text-base md:text-xl font-bold text-[#FAFAFA] leading-snug max-w-xs">
+              <h2 className="text-base md:text-xl font-bold text-[#f0f0f0] leading-snug max-w-xs">
                 {slide.headline}
               </h2>
-              <p className="text-[#888888] text-xs md:text-sm mt-1.5">{slide.sub}</p>
+              <p className="text-[#a1a4a5] text-xs md:text-sm mt-1.5">{slide.sub}</p>
             </div>
 
             <div className="hidden md:flex items-center justify-center w-16 h-16 rounded-2xl bg-[#F2FF66]/10 flex-shrink-0">
@@ -243,7 +243,7 @@ function Banner() {
             key={i}
             onClick={() => setCurrent(i)}
             className={`h-1.5 rounded-full transition-all duration-300 ${
-              i === current ? 'w-5 bg-[#F2FF66]' : 'w-1.5 bg-[#FAFAFA]/25'
+              i === current ? 'w-5 bg-[#F2FF66]' : 'w-1.5 bg-[#f0f0f0]/25'
             }`}
           />
         ))}
@@ -263,7 +263,7 @@ function QuickActions() {
       label: 'Place Order',
       sub: 'Send a package',
       iconBg: 'bg-[#F2FF66]',
-      iconColor: 'text-[#0A0A0A]',
+      iconColor: 'text-[#000000]',
       icon: (
         <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
@@ -275,7 +275,7 @@ function QuickActions() {
       label: 'Track Package',
       sub: 'Live status',
       iconBg: 'bg-[#232023]',
-      iconColor: 'text-[#FAFAFA]',
+      iconColor: 'text-[#f0f0f0]',
       icon: (
         <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.8}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
@@ -288,7 +288,7 @@ function QuickActions() {
       label: 'Pending Orders',
       sub: 'View pending',
       iconBg: 'bg-[#232023]',
-      iconColor: 'text-[#FAFAFA]',
+      iconColor: 'text-[#f0f0f0]',
       icon: (
         <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.8}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -300,7 +300,7 @@ function QuickActions() {
       label: 'Raise a Concern',
       sub: 'Get help',
       iconBg: 'bg-[#232023]',
-      iconColor: 'text-[#FAFAFA]',
+      iconColor: 'text-[#f0f0f0]',
       disabled: true,
       icon: (
         <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.8}>
@@ -319,8 +319,8 @@ function QuickActions() {
               {action.icon}
             </div>
             <div>
-              <p className="text-[#FAFAFA] text-[11px] md:text-xs font-semibold leading-tight">{action.label}</p>
-              <p className="text-[#888888] text-[10px] mt-0.5 leading-tight hidden md:block">{action.sub}</p>
+              <p className="text-[#f0f0f0] text-[11px] md:text-xs font-semibold leading-tight">{action.label}</p>
+              <p className="text-[#a1a4a5] text-[10px] mt-0.5 leading-tight hidden md:block">{action.sub}</p>
             </div>
           </>
         );
@@ -329,11 +329,11 @@ function QuickActions() {
           return (
             <div
               key={action.label}
-              className="flex flex-col items-center gap-2 bg-[#191314] border border-[#2A2A2A] rounded-xl p-3 md:p-4 text-center opacity-60 cursor-not-allowed relative"
+              className="flex flex-col items-center gap-2 bg-[#070707] border border-[rgba(255,255,255,0.08)] rounded-xl p-3 md:p-4 text-center opacity-60 cursor-not-allowed relative"
               title="Coming soon"
             >
               {inner}
-              <span className="absolute top-1.5 right-1.5 text-[8px] bg-[#2A2A2A] text-[#888888] px-1.5 py-0.5 rounded-full font-medium uppercase tracking-wide hidden md:block">
+              <span className="absolute top-1.5 right-1.5 text-[8px] bg-[rgba(255,255,255,0.08)] text-[#a1a4a5] px-1.5 py-0.5 rounded-full font-medium uppercase tracking-wide hidden md:block">
                 Soon
               </span>
             </div>
@@ -344,7 +344,7 @@ function QuickActions() {
           <Link
             key={action.label}
             href={action.href}
-            className="flex flex-col items-center gap-2 bg-[#191314] border border-[#2A2A2A] rounded-xl p-3 md:p-4 hover:border-[#F2FF66]/30 active:scale-95 transition-all text-center"
+            className="flex flex-col items-center gap-2 bg-[#070707] border border-[rgba(255,255,255,0.08)] rounded-xl p-3 md:p-4 hover:border-[#212629] active:scale-95 transition-all text-center"
           >
             {inner}
           </Link>
@@ -366,14 +366,17 @@ function StatCard({ label, value, icon, accent, loading }: {
   loading: boolean;
 }) {
   return (
-    <div className="bg-[#191314] border border-[#2A2A2A] rounded-xl p-3.5 flex items-center gap-3">
+    <div
+      className="rounded-xl p-3.5 flex items-center gap-3 border border-[rgba(255,255,255,0.08)]"
+      style={{ background: 'linear-gradient(rgba(80,80,80,0.10) 0%, rgba(0,0,0,0) 70%)' }}
+    >
       <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${accent}`}>
         {icon}
       </div>
       <div className="min-w-0">
-        <p className="text-[#888888] text-[11px] leading-tight">{label}</p>
-        <p className="text-[#FAFAFA] text-xl font-bold mt-0.5">
-          {loading ? <span className="inline-block w-6 h-5 bg-[#2A2A2A] rounded animate-pulse align-middle" /> : value}
+        <p className="text-[#a1a4a5] text-[11px] leading-tight">{label}</p>
+        <p className="text-[#f0f0f0] text-xl font-bold mt-0.5">
+          {loading ? <span className="inline-block w-6 h-5 bg-[rgba(255,255,255,0.08)] rounded animate-pulse align-middle" /> : value}
         </p>
       </div>
     </div>
@@ -476,50 +479,50 @@ export default function CustomerDashboard() {
     {
       label: 'Pending pickup',
       value: stats.pending,
-      accent: 'bg-amber-500/10',
-      icon: <svg viewBox="0 0 24 24" className="w-4.5 h-4.5 text-amber-400 w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>,
+      accent: 'bg-[rgba(150,105,35,0.12)]',
+      icon: <svg viewBox="0 0 24 24" className="w-4.5 h-4.5 text-[#aa8040] w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>,
     },
     {
       label: 'Picked up items',
       value: stats.picked_up,
-      accent: 'bg-purple-500/10',
-      icon: <svg viewBox="0 0 24 24" className="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10" /></svg>,
+      accent: 'bg-[rgba(110,85,160,0.12)]',
+      icon: <svg viewBox="0 0 24 24" className="w-5 h-5 text-[#8878b8]" fill="none" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10" /></svg>,
     },
     {
       label: 'Prepared for delivery',
       value: stats.assigned,
-      accent: 'bg-blue-500/10',
-      icon: <svg viewBox="0 0 24 24" className="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" /></svg>,
+      accent: 'bg-[rgba(65,100,155,0.12)]',
+      icon: <svg viewBox="0 0 24 24" className="w-5 h-5 text-[#6a8fbf]" fill="none" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" /></svg>,
     },
     {
       label: 'Delivery in progress',
       value: stats.in_transit,
-      accent: 'bg-orange-500/10',
-      icon: <svg viewBox="0 0 24 24" className="w-5 h-5 text-orange-400" fill="none" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" /></svg>,
+      accent: 'bg-[rgba(145,80,35,0.12)]',
+      icon: <svg viewBox="0 0 24 24" className="w-5 h-5 text-[#a06530]" fill="none" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" /></svg>,
     },
     {
       label: 'Delivered items',
       value: stats.delivered + stats.confirmed,
-      accent: 'bg-green-500/10',
-      icon: <svg viewBox="0 0 24 24" className="w-5 h-5 text-green-400" fill="none" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>,
+      accent: 'bg-[rgba(38,100,58,0.12)]',
+      icon: <svg viewBox="0 0 24 24" className="w-5 h-5 text-[#3d8050]" fill="none" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>,
     },
     {
       label: 'In transit back to you',
       value: 0,
-      accent: 'bg-cyan-500/10',
-      icon: <svg viewBox="0 0 24 24" className="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" /></svg>,
+      accent: 'bg-[rgba(50,110,145,0.12)]',
+      icon: <svg viewBox="0 0 24 24" className="w-5 h-5 text-[#4888a0]" fill="none" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" /></svg>,
     },
     {
       label: 'Returned items',
       value: 0,
-      accent: 'bg-red-500/10',
-      icon: <svg viewBox="0 0 24 24" className="w-5 h-5 text-red-400" fill="none" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M16 15v-1a4 4 0 00-4-4H8m0 0l3 3m-3-3l3-3m9 14V5a2 2 0 00-2-2H6a2 2 0 00-2 2v16l4-2 2 2 2-2 2 2 2-2 4 2z" /></svg>,
+      accent: 'bg-[rgba(135,55,55,0.12)]',
+      icon: <svg viewBox="0 0 24 24" className="w-5 h-5 text-[#a85858]" fill="none" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M16 15v-1a4 4 0 00-4-4H8m0 0l3 3m-3-3l3-3m9 14V5a2 2 0 00-2-2H6a2 2 0 00-2 2v16l4-2 2 2 2-2 2 2 2-2 4 2z" /></svg>,
     },
     {
       label: 'Total shipment',
       value: stats.total,
       accent: 'bg-[#F2FF66]/8',
-      icon: <svg viewBox="0 0 24 24" className="w-5 h-5 text-[#F2FF66]" fill="none" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 10h16M4 14h16M4 18h16" /></svg>,
+      icon: <svg viewBox="0 0 24 24" className="w-5 h-5 text-[#a1a4a5]" fill="none" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 10h16M4 14h16M4 18h16" /></svg>,
     },
   ];
 
@@ -528,17 +531,17 @@ export default function CustomerDashboard() {
 
       {/* Greeting */}
       <div>
-        <h1 className="text-lg md:text-xl font-bold text-[#FAFAFA]">
+        <h1 className="text-lg md:text-xl font-bold text-[#f0f0f0]">
           {getGreeting()}{customerName ? `, ${customerName}` : ''} 👋
         </h1>
         {(() => {
           try {
             const info = JSON.parse(localStorage.getItem('customer_info') || '{}');
             if (info.business_name) {
-              return <p className="text-[#888888] text-sm mt-0.5">Here&apos;s your business delivery overview</p>;
+              return <p className="text-[#a1a4a5] text-sm mt-0.5">Here&apos;s your business delivery overview</p>;
             }
           } catch { /**/ }
-          return <p className="text-[#888888] text-sm mt-0.5">Here&apos;s your delivery overview</p>;
+          return <p className="text-[#a1a4a5] text-sm mt-0.5">Here&apos;s your delivery overview</p>;
         })()}
       </div>
 
@@ -551,7 +554,7 @@ export default function CustomerDashboard() {
       {/* Delivery Numbers */}
       <div>
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-sm font-semibold text-[#FAFAFA]">Delivery numbers</h2>
+          <h2 className="text-sm font-semibold text-[#f0f0f0]">Delivery numbers</h2>
           <PeriodDropdown
             selected={period}
             onChange={setPeriod}
@@ -578,16 +581,16 @@ export default function CustomerDashboard() {
       {/* Recent Orders */}
       <div>
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-sm font-semibold text-[#FAFAFA]">Recent orders</h2>
-          <Link href="/customer/orders" className="text-[#F2FF66] text-xs font-medium hover:underline">
+          <h2 className="text-sm font-semibold text-[#f0f0f0]">Recent orders</h2>
+          <Link href="/customer/orders" className="text-[#a1a4a5] text-xs font-medium hover:text-[#f0f0f0] hover:underline">
             View all
           </Link>
         </div>
 
         {recentOrders.length === 0 ? (
-          <div className="bg-[#191314] border border-[#2A2A2A] rounded-xl p-8 text-center">
-            <p className="text-[#888888] text-sm">No orders yet</p>
-            <Link href="/customer/orders/create" className="inline-block mt-3 text-[#F2FF66] text-sm font-medium hover:underline">
+          <div className="bg-[#070707] border border-[rgba(255,255,255,0.08)] rounded-xl p-8 text-center">
+            <p className="text-[#a1a4a5] text-sm">No orders yet</p>
+            <Link href="/customer/orders/create" className="inline-block mt-3 text-[#a1a4a5] text-sm font-medium hover:text-[#f0f0f0] hover:underline">
               Place your first order →
             </Link>
           </div>
@@ -597,15 +600,15 @@ export default function CustomerDashboard() {
               <button
                 key={order.id}
                 onClick={() => setOverlayTrackingId(order.id)}
-                className="w-full bg-[#191314] border border-[#2A2A2A] rounded-xl px-4 py-3 text-left hover:border-[#F2FF66]/20 active:scale-[0.99] transition-all"
+                className="w-full bg-[#070707] border border-[rgba(255,255,255,0.08)] rounded-xl px-4 py-3 text-left hover:border-[#212629] active:scale-[0.99] transition-all"
               >
                 <div className="flex items-center justify-between gap-3">
                   <div className="min-w-0 flex-1">
-                    <p className="font-mono text-xs text-[#F2FF66] truncate">{order.id}</p>
-                    <p className="text-sm text-[#FAFAFA] mt-0.5 truncate">
+                    <p className="font-mono text-xs text-[#a1a4a5] truncate">{order.id}</p>
+                    <p className="text-sm text-[#f0f0f0] mt-0.5 truncate">
                       {order.pickup_area} → {order.dropoff_area}
                     </p>
-                    <p className="text-xs text-[#888888] mt-0.5">
+                    <p className="text-xs text-[#a1a4a5] mt-0.5">
                       {new Date(order.pickup_date || order.created_at).toLocaleDateString('en-NG', {
                         day: 'numeric', month: 'short', year: 'numeric',
                       })}

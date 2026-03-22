@@ -13,7 +13,7 @@ interface InviteDetails {
 }
 
 const inputClassName =
-  'w-full rounded-lg bg-[#232023] border border-gray-700 text-[#FAFAFA] px-3 py-3 text-sm placeholder-gray-600 focus:outline-none focus:border-[#F2FF66] focus:ring-1 focus:ring-[#F2FF66] transition-colors disabled:opacity-50';
+  'w-full rounded-lg bg-[#232023] border border-[rgba(255,255,255,0.06)] text-[#f0f0f0] px-3 py-3 text-sm placeholder-gray-600 focus:outline-none focus:border-[#212629] focus:ring-1 focus:ring-[#212629] transition-colors disabled:opacity-50';
 
 function AcceptInviteContent() {
   const router = useRouter();
@@ -92,13 +92,13 @@ function AcceptInviteContent() {
 
   if (checking) {
     return (
-      <div className="min-h-screen bg-[#0A0A0A] text-[#FAFAFA] flex items-center justify-center">
+      <div className="min-h-screen bg-[#000000] text-[#f0f0f0] flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
           <svg className="animate-spin w-8 h-8 text-[#F2FF66]" viewBox="0 0 24 24" fill="none">
             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
           </svg>
-          <p className="text-[#888888] text-sm">Validating invite...</p>
+          <p className="text-[#a1a4a5] text-sm">Validating invite...</p>
         </div>
       </div>
     );
@@ -106,16 +106,16 @@ function AcceptInviteContent() {
 
   if (!invite?.valid) {
     return (
-      <div className="min-h-screen bg-[#0A0A0A] text-[#FAFAFA] flex flex-col items-center justify-center px-4">
+      <div className="min-h-screen bg-[#000000] text-[#f0f0f0] flex flex-col items-center justify-center px-4">
         <Logo size="large" />
-        <div className="mt-8 w-full max-w-sm bg-[#191314] border border-[#2A2A2A] rounded-2xl p-8 text-center">
-          <div className="w-16 h-16 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center mx-auto mb-4">
-            <svg className="w-8 h-8 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <div className="mt-8 w-full max-w-sm bg-[#070707] border border-[rgba(255,255,255,0.08)] rounded-2xl p-8 text-center">
+          <div className="w-16 h-16 rounded-full bg-[rgba(135,55,55,0.12)] border border-red-500/20 flex items-center justify-center mx-auto mb-4">
+            <svg className="w-8 h-8 text-[#a85858]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
             </svg>
           </div>
-          <h1 className="text-xl font-bold text-[#FAFAFA] mb-2">Invalid Invite</h1>
-          <p className="text-[#888888] text-sm leading-relaxed">
+          <h1 className="text-xl font-bold text-[#f0f0f0] mb-2">Invalid Invite</h1>
+          <p className="text-[#a1a4a5] text-sm leading-relaxed">
             This invite link is invalid or has expired. Please ask your team admin to send a new invitation.
           </p>
         </div>
@@ -124,30 +124,30 @@ function AcceptInviteContent() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0A0A0A] text-[#FAFAFA] flex flex-col">
+    <div className="min-h-screen bg-[#000000] text-[#f0f0f0] flex flex-col">
       <main className="flex-1 flex flex-col items-center justify-center px-4 py-12">
         <div className="mb-6 flex flex-col items-center gap-2">
           <Logo size="large" />
         </div>
 
-        <div className="w-full max-w-sm bg-[#191314] border border-[#2A2A2A] rounded-2xl p-6 shadow-xl">
+        <div className="w-full max-w-sm bg-[#070707] border border-[rgba(255,255,255,0.08)] rounded-2xl p-6 shadow-xl">
           {/* Invite header */}
           <div className="mb-6 p-4 bg-[#F2FF66]/5 border border-[#F2FF66]/20 rounded-xl">
-            <p className="text-xs text-[#888888] uppercase tracking-wider mb-1">You&apos;ve been invited to</p>
+            <p className="text-xs text-[#a1a4a5] uppercase tracking-wider mb-1">You&apos;ve been invited to</p>
             <p className="text-base font-bold text-[#F2FF66]">{invite.business?.name}</p>
             <div className="mt-2 flex items-center gap-2">
               <span className="text-xs px-2 py-0.5 rounded-full bg-[#F2FF66]/10 text-[#F2FF66] font-medium capitalize">
                 {invite.role}
               </span>
-              <span className="text-xs text-[#888888]">role</span>
+              <span className="text-xs text-[#a1a4a5]">role</span>
             </div>
           </div>
 
-          <h1 className="text-xl font-bold text-[#FAFAFA] mb-1">Join the team</h1>
-          <p className="text-[#888888] text-sm mb-6">Create your account to accept this invitation</p>
+          <h1 className="text-xl font-bold text-[#f0f0f0] mb-1">Join the team</h1>
+          <p className="text-[#a1a4a5] text-sm mb-6">Create your account to accept this invitation</p>
 
           {error && (
-            <div className="mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm">
+            <div className="mb-4 p-3 bg-[rgba(135,55,55,0.12)] border border-red-500/30 rounded-lg text-[#a85858] text-sm">
               {error}
             </div>
           )}
@@ -155,7 +155,7 @@ function AcceptInviteContent() {
           <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4">
             {/* Email — read-only */}
             <div className="flex flex-col gap-1.5">
-              <label className="text-[#888888] text-xs font-medium uppercase tracking-wider">
+              <label className="text-[#a1a4a5] text-xs font-medium uppercase tracking-wider">
                 Email
               </label>
               <input
@@ -167,7 +167,7 @@ function AcceptInviteContent() {
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <label className="text-[#888888] text-xs font-medium uppercase tracking-wider">
+              <label className="text-[#a1a4a5] text-xs font-medium uppercase tracking-wider">
                 Full Name
               </label>
               <input
@@ -183,7 +183,7 @@ function AcceptInviteContent() {
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <label className="text-[#888888] text-xs font-medium uppercase tracking-wider">
+              <label className="text-[#a1a4a5] text-xs font-medium uppercase tracking-wider">
                 Phone Number
               </label>
               <input
@@ -199,7 +199,7 @@ function AcceptInviteContent() {
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <label className="text-[#888888] text-xs font-medium uppercase tracking-wider">
+              <label className="text-[#a1a4a5] text-xs font-medium uppercase tracking-wider">
                 Password
               </label>
               <input
@@ -215,7 +215,7 @@ function AcceptInviteContent() {
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <label className="text-[#888888] text-xs font-medium uppercase tracking-wider">
+              <label className="text-[#a1a4a5] text-xs font-medium uppercase tracking-wider">
                 Confirm Password
               </label>
               <input
@@ -233,7 +233,7 @@ function AcceptInviteContent() {
             <button
               type="submit"
               disabled={loading}
-              className="mt-2 w-full bg-[#F2FF66] text-[#0A0A0A] font-bold py-3 rounded-lg text-sm hover:bg-[#e8f55c] active:scale-95 transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 flex items-center justify-center gap-2"
+              className="mt-2 w-full bg-[#F2FF66] text-[#000000] font-bold py-3 rounded-lg text-sm hover:bg-[#e8f55c] active:scale-95 transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 flex items-center justify-center gap-2"
             >
               {loading ? (
                 <>
@@ -258,13 +258,13 @@ export default function AcceptInvitePage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-[#0A0A0A] text-[#FAFAFA] flex items-center justify-center">
+        <div className="min-h-screen bg-[#000000] text-[#f0f0f0] flex items-center justify-center">
           <div className="flex flex-col items-center gap-4">
             <svg className="animate-spin w-8 h-8 text-[#F2FF66]" viewBox="0 0 24 24" fill="none">
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
             </svg>
-            <p className="text-[#888888] text-sm">Loading...</p>
+            <p className="text-[#a1a4a5] text-sm">Loading...</p>
           </div>
         </div>
       }

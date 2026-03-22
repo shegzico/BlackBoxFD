@@ -12,24 +12,26 @@ export const STATUS_LABELS: Record<DeliveryStatus, string> = {
   cancelled: 'Cancelled',
 };
 
+// Full badge class: bg + border + text — used in StatusBadge
 export const STATUS_COLORS: Record<DeliveryStatus, string> = {
-  pending: 'bg-gray-500',
-  assigned: 'bg-blue-500',
-  picked_up: 'bg-amber-500',
-  in_transit: 'bg-amber-700',
-  delivered: 'bg-green-500',
-  confirmed: 'bg-green-700',
-  cancelled: 'bg-red-600',
+  pending:   'bg-[rgba(100,115,130,0.15)] border border-[rgba(100,115,130,0.25)] text-[#8090a0]',
+  assigned:  'bg-[rgba(65,100,155,0.15)] border border-[rgba(65,100,155,0.25)] text-[#6a8fbf]',
+  picked_up: 'bg-[rgba(150,105,35,0.15)] border border-[rgba(150,105,35,0.25)] text-[#aa8040]',
+  in_transit:'bg-[rgba(145,80,35,0.15)] border border-[rgba(145,80,35,0.25)] text-[#a06530]',
+  delivered: 'bg-[rgba(38,100,58,0.15)] border border-[rgba(38,100,58,0.25)] text-[#3d8050]',
+  confirmed: 'bg-[rgba(30,80,48,0.15)] border border-[rgba(30,80,48,0.25)] text-[#2d6840]',
+  cancelled: 'bg-[rgba(135,55,55,0.15)] border border-[rgba(135,55,55,0.25)] text-[#a85858]',
 };
 
+// Text-only color — used in timelines, labels, etc.
 export const STATUS_TEXT_COLORS: Record<DeliveryStatus, string> = {
-  pending: 'text-gray-400',
-  assigned: 'text-blue-400',
-  picked_up: 'text-amber-400',
-  in_transit: 'text-amber-600',
-  delivered: 'text-green-400',
-  confirmed: 'text-green-600',
-  cancelled: 'text-red-400',
+  pending:   'text-[#8090a0]',
+  assigned:  'text-[#6a8fbf]',
+  picked_up: 'text-[#aa8040]',
+  in_transit:'text-[#a06530]',
+  delivered: 'text-[#3d8050]',
+  confirmed: 'text-[#2d6840]',
+  cancelled: 'text-[#a85858]',
 };
 
 export type PaymentMethod = 'sender_pays' | 'receiver_pays';

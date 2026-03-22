@@ -26,18 +26,18 @@ const STATUS_BUTTON_LABEL: Partial<Record<DeliveryStatus, string>> = {
 
 function RiderNavbar({ riderName, onLogout }: { riderName: string; onLogout: () => void }) {
   return (
-    <nav className="w-full bg-[#191314] border-b border-gray-800 px-4 py-3 flex items-center gap-3 sticky top-0 z-50">
+    <nav className="w-full bg-[#070707] border-b border-[rgba(255,255,255,0.08)] px-4 py-3 flex items-center gap-3 sticky top-0 z-50">
       <div className="flex-1 flex items-center gap-3">
         <span className="text-white font-semibold text-base truncate">Dashboard</span>
       </div>
       <div className="flex items-center gap-2 flex-shrink-0">
-        <span className="text-[#888888] text-sm hidden sm:block truncate max-w-[140px]">{riderName}</span>
+        <span className="text-[#a1a4a5] text-sm hidden sm:block truncate max-w-[140px]">{riderName}</span>
         <button
           onClick={onLogout}
           className="
             flex items-center gap-1.5 px-3 py-1.5
-            bg-gray-800 hover:bg-red-500/20 border border-gray-700 hover:border-red-500/50
-            text-[#FAFAFA] hover:text-red-400 text-xs font-medium
+            bg-[#161616] hover:bg-red-500/20 border border-[rgba(255,255,255,0.06)] hover:border-red-500/50
+            text-[#f0f0f0] hover:text-[#a85858] text-xs font-medium
             rounded-lg transition-all duration-150
           "
           aria-label="Logout"
@@ -54,11 +54,11 @@ function RiderNavbar({ riderName, onLogout }: { riderName: string; onLogout: () 
 
 function StatCard({ label, value, accent }: { label: string; value: number | string; accent?: boolean }) {
   return (
-    <div className="flex-1 bg-[#191314] border border-[#2A2A2A] rounded-xl p-4 flex flex-col gap-1">
-      <span className={`text-2xl font-bold ${accent ? 'text-[#F2FF66]' : 'text-[#FAFAFA]'}`}>
+    <div className="flex-1 bg-[#070707] border border-[rgba(255,255,255,0.08)] rounded-xl p-4 flex flex-col gap-1">
+      <span className={`text-2xl font-bold ${'text-[#f0f0f0]'}`}>
         {value}
       </span>
-      <span className="text-[#888888] text-xs leading-snug">{label}</span>
+      <span className="text-[#a1a4a5] text-xs leading-snug">{label}</span>
     </div>
   );
 }
@@ -91,16 +91,16 @@ function ActiveDeliveryCard({
   const isDelivered = delivery.status === 'in_transit';
 
   return (
-    <div className="bg-[#191314] border border-[#2A2A2A] rounded-2xl p-4 flex flex-col gap-3">
+    <div className="bg-[#070707] border border-[rgba(255,255,255,0.08)] rounded-2xl p-4 flex flex-col gap-3">
       {/* Header row */}
       <div className="flex items-start justify-between gap-2">
         <div className="flex flex-col gap-1">
-          <span className="text-[#888888] text-xs font-medium uppercase tracking-wider">Tracking ID</span>
-          <span className="text-[#FAFAFA] font-mono font-bold text-sm">{delivery.id}</span>
+          <span className="text-[#a1a4a5] text-xs font-medium uppercase tracking-wider">Tracking ID</span>
+          <span className="text-[#f0f0f0] font-mono font-bold text-sm">{delivery.id}</span>
         </div>
         <div className="flex items-center gap-2 flex-shrink-0">
           {delivery.is_express && (
-            <span className="bg-[#F2FF66] text-[#0A0A0A] text-xs font-bold px-2 py-0.5 rounded-full">
+            <span className="bg-[#F2FF66] text-[#000000] text-xs font-bold px-2 py-0.5 rounded-full">
               EXPRESS
             </span>
           )}
@@ -109,36 +109,36 @@ function ActiveDeliveryCard({
       </div>
 
       {/* Divider */}
-      <div className="border-t border-[#2A2A2A]" />
+      <div className="border-t border-[rgba(255,255,255,0.08)]" />
 
       {/* Pickup */}
       <div className="flex flex-col gap-0.5">
-        <span className="text-[#888888] text-xs font-medium uppercase tracking-wider flex items-center gap-1">
+        <span className="text-[#a1a4a5] text-xs font-medium uppercase tracking-wider flex items-center gap-1">
           <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <circle cx="12" cy="12" r="3" />
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 2v2m0 16v2M2 12h2m16 0h2" />
           </svg>
           Pickup
         </span>
-        <span className="text-[#F2FF66] text-sm font-semibold">{delivery.pickup_area}</span>
+        <span className="text-[#f0f0f0] text-sm font-semibold">{delivery.pickup_area}</span>
         <span className="text-[#AAAAAA] text-sm leading-snug">{delivery.pickup_address}</span>
       </div>
 
       {/* Dropoff */}
       <div className="flex flex-col gap-0.5">
-        <span className="text-[#888888] text-xs font-medium uppercase tracking-wider flex items-center gap-1">
+        <span className="text-[#a1a4a5] text-xs font-medium uppercase tracking-wider flex items-center gap-1">
           <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
             <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
           </svg>
           Dropoff
         </span>
-        <span className="text-[#F2FF66] text-sm font-semibold">{delivery.dropoff_area}</span>
+        <span className="text-[#f0f0f0] text-sm font-semibold">{delivery.dropoff_area}</span>
         <span className="text-[#AAAAAA] text-sm leading-snug">{delivery.dropoff_address}</span>
       </div>
 
       {/* Divider */}
-      <div className="border-t border-[#2A2A2A]" />
+      <div className="border-t border-[rgba(255,255,255,0.08)]" />
 
       {/* Contact info */}
       <div className="flex flex-col gap-2">
@@ -149,11 +149,11 @@ function ActiveDeliveryCard({
       {/* Package details row */}
       <div className="flex flex-wrap items-center gap-2">
         {delivery.package_description && (
-          <span className="text-[#888888] text-xs bg-[#0A0A0A] border border-[#2A2A2A] px-2 py-1 rounded-lg truncate max-w-full">
+          <span className="text-[#a1a4a5] text-xs bg-[#000000] border border-[rgba(255,255,255,0.08)] px-2 py-1 rounded-lg truncate max-w-full">
             {delivery.package_description}
           </span>
         )}
-        <span className="text-[#888888] text-xs bg-[#0A0A0A] border border-[#2A2A2A] px-2 py-1 rounded-lg flex-shrink-0">
+        <span className="text-[#a1a4a5] text-xs bg-[#000000] border border-[rgba(255,255,255,0.08)] px-2 py-1 rounded-lg flex-shrink-0">
           {PAYMENT_LABELS[delivery.payment_method]}
         </span>
       </div>
@@ -169,8 +169,8 @@ function ActiveDeliveryCard({
             active:scale-95 transition-all duration-150
             disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100
             ${isDelivered
-              ? 'bg-green-500 hover:bg-green-400 text-white'
-              : 'bg-[#F2FF66] hover:bg-[#e8f55c] text-[#0A0A0A]'
+              ? 'bg-[#1e5030] hover:bg-green-400 text-white'
+              : 'bg-[#F2FF66] hover:bg-[#e8f55c] text-[#000000]'
             }
           `}
         >
@@ -193,13 +193,13 @@ function ActiveDeliveryCard({
 
 function CompletedDeliveryCard({ delivery }: { delivery: Delivery }) {
   return (
-    <div className="bg-[#0F0F0F] border border-[#1E1E1E] rounded-xl p-3 flex flex-col gap-2">
+    <div className="bg-[#0F0F0F] border border-[#161616] rounded-xl p-3 flex flex-col gap-2">
       <div className="flex items-center justify-between gap-2">
-        <span className="text-[#FAFAFA] font-mono font-semibold text-sm">{delivery.id}</span>
+        <span className="text-[#f0f0f0] font-mono font-semibold text-sm">{delivery.id}</span>
         <StatusBadge status={delivery.status} />
       </div>
       <div className="flex flex-col gap-0.5">
-        <span className="text-[#888888] text-xs">
+        <span className="text-[#a1a4a5] text-xs">
           {delivery.pickup_area} <span className="text-[#444444]">→</span> {delivery.dropoff_area}
         </span>
         <span className="text-[#666666] text-xs">{delivery.recipient_name} &bull; {delivery.recipient_phone}</span>
@@ -322,7 +322,7 @@ export default function RiderDashboardPage() {
   if (!rider && !loadingData) return null;
 
   return (
-    <div className="min-h-screen bg-[#0A0A0A] text-[#FAFAFA] flex flex-col">
+    <div className="min-h-screen bg-[#000000] text-[#f0f0f0] flex flex-col">
       <RiderNavbar riderName={rider?.name ?? ''} onLogout={logout} />
 
       <main className="flex-1 flex flex-col px-4 py-5 gap-5 max-w-2xl mx-auto w-full">
@@ -350,8 +350,8 @@ export default function RiderDashboardPage() {
             disabled={refreshing || loadingData}
             className="
               flex items-center gap-1.5 px-3 py-1.5
-              bg-[#191314] border border-[#2A2A2A] hover:border-[#F2FF66]
-              text-[#888888] hover:text-[#F2FF66] text-xs font-medium
+              bg-[#070707] border border-[rgba(255,255,255,0.08)] hover:border-[#212629]
+              text-[#a1a4a5] hover:text-[#F2FF66] text-xs font-medium
               rounded-lg transition-all duration-150
               disabled:opacity-50 disabled:cursor-not-allowed
             "
@@ -370,37 +370,37 @@ export default function RiderDashboardPage() {
         </div>
 
         {fetchError && (
-          <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm">
+          <div className="p-3 bg-[rgba(135,55,55,0.12)] border border-red-500/30 rounded-lg text-[#a85858] text-sm">
             {fetchError}
           </div>
         )}
 
         {/* Active Deliveries Section */}
         <section className="flex flex-col gap-3">
-          <h2 className="text-[#FAFAFA] font-bold text-base flex items-center gap-2">
+          <h2 className="text-[#f0f0f0] font-bold text-base flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-[#F2FF66] inline-block" />
             Active Deliveries
             {!loadingData && activeDeliveries.length > 0 && (
-              <span className="ml-auto text-[#888888] text-xs font-normal">{activeDeliveries.length} order{activeDeliveries.length !== 1 ? 's' : ''}</span>
+              <span className="ml-auto text-[#a1a4a5] text-xs font-normal">{activeDeliveries.length} order{activeDeliveries.length !== 1 ? 's' : ''}</span>
             )}
           </h2>
 
           {loadingData ? (
             <div className="flex flex-col gap-3">
               {[1, 2].map((i) => (
-                <div key={i} className="bg-[#191314] border border-[#2A2A2A] rounded-2xl p-4 animate-pulse">
-                  <div className="h-4 bg-[#2A2A2A] rounded w-32 mb-3" />
-                  <div className="h-3 bg-[#2A2A2A] rounded w-48 mb-2" />
-                  <div className="h-3 bg-[#2A2A2A] rounded w-40" />
+                <div key={i} className="bg-[#070707] border border-[rgba(255,255,255,0.08)] rounded-2xl p-4 animate-pulse">
+                  <div className="h-4 bg-[rgba(255,255,255,0.08)] rounded w-32 mb-3" />
+                  <div className="h-3 bg-[rgba(255,255,255,0.08)] rounded w-48 mb-2" />
+                  <div className="h-3 bg-[rgba(255,255,255,0.08)] rounded w-40" />
                 </div>
               ))}
             </div>
           ) : activeDeliveries.length === 0 ? (
-            <div className="bg-[#191314] border border-[#2A2A2A] rounded-2xl p-8 flex flex-col items-center gap-2 text-center">
+            <div className="bg-[#070707] border border-[rgba(255,255,255,0.08)] rounded-2xl p-8 flex flex-col items-center gap-2 text-center">
               <svg className="w-10 h-10 text-[#333333]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
               </svg>
-              <p className="text-[#888888] text-sm">No active deliveries right now</p>
+              <p className="text-[#a1a4a5] text-sm">No active deliveries right now</p>
               <p className="text-[#555555] text-xs">New assignments will appear here automatically</p>
             </div>
           ) : (
@@ -421,20 +421,20 @@ export default function RiderDashboardPage() {
         <section className="flex flex-col gap-2 pb-8">
           <button
             onClick={() => setCompletedOpen((prev) => !prev)}
-            className="w-full flex items-center justify-between gap-2 py-3 px-4 bg-[#191314] border border-[#2A2A2A] rounded-xl hover:border-[#3A3A3A] transition-colors"
+            className="w-full flex items-center justify-between gap-2 py-3 px-4 bg-[#070707] border border-[rgba(255,255,255,0.08)] rounded-xl hover:border-[#3A3A3A] transition-colors"
             aria-expanded={completedOpen}
           >
-            <span className="flex items-center gap-2 text-[#FAFAFA] font-semibold text-sm">
-              <span className="w-2 h-2 rounded-full bg-green-500 inline-block" />
+            <span className="flex items-center gap-2 text-[#f0f0f0] font-semibold text-sm">
+              <span className="w-2 h-2 rounded-full bg-[#1e5030] inline-block" />
               Completed Today
               {!loadingData && (
-                <span className="bg-green-500/20 text-green-400 text-xs px-2 py-0.5 rounded-full font-medium">
+                <span className="bg-[#1e5030]/20 text-[#3d8050] text-xs px-2 py-0.5 rounded-full font-medium">
                   {completedDeliveries.length}
                 </span>
               )}
             </span>
             <svg
-              className={`w-4 h-4 text-[#888888] transition-transform duration-200 ${completedOpen ? 'rotate-180' : ''}`}
+              className={`w-4 h-4 text-[#a1a4a5] transition-transform duration-200 ${completedOpen ? 'rotate-180' : ''}`}
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -447,12 +447,12 @@ export default function RiderDashboardPage() {
           {completedOpen && (
             <div className="flex flex-col gap-2 pt-1">
               {loadingData ? (
-                <div className="bg-[#0F0F0F] border border-[#1E1E1E] rounded-xl p-4 animate-pulse">
-                  <div className="h-3 bg-[#1E1E1E] rounded w-32 mb-2" />
-                  <div className="h-3 bg-[#1E1E1E] rounded w-24" />
+                <div className="bg-[#0F0F0F] border border-[#161616] rounded-xl p-4 animate-pulse">
+                  <div className="h-3 bg-[#161616] rounded w-32 mb-2" />
+                  <div className="h-3 bg-[#161616] rounded w-24" />
                 </div>
               ) : completedDeliveries.length === 0 ? (
-                <div className="bg-[#0F0F0F] border border-[#1E1E1E] rounded-xl p-6 text-center">
+                <div className="bg-[#0F0F0F] border border-[#161616] rounded-xl p-6 text-center">
                   <p className="text-[#555555] text-sm">No completed deliveries today yet</p>
                 </div>
               ) : (

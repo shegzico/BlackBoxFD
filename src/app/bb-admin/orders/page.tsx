@@ -340,12 +340,12 @@ export default function AdminOrdersPage() {
   }
 
   const inputCls = `
-    w-full bg-[#0A0A0A] border border-[#2A2A2A] rounded-lg
-    px-3 py-2.5 text-[#FAFAFA] text-sm placeholder:text-[#888888]
-    focus:outline-none focus:border-[#F2FF66] focus:ring-1 focus:ring-[#F2FF66]/20
+    w-full bg-[#000000] border border-[rgba(255,255,255,0.08)] rounded-lg
+    px-3 py-2.5 text-[#f0f0f0] text-sm placeholder:text-[#a1a4a5]
+    focus:outline-none focus:border-[#212629] focus:ring-1 focus:ring-[rgba(33,38,41,0.4)]
     transition-colors
   `;
-  const labelCls = 'text-[#888888] text-xs font-medium uppercase tracking-wider mb-1';
+  const labelCls = 'text-[#a1a4a5] text-xs font-medium uppercase tracking-wider mb-1';
 
   // Build price lookup from pricing data
   const priceMap: Record<string, number> = {};
@@ -411,7 +411,7 @@ export default function AdminOrdersPage() {
     return (
       <form onSubmit={onSubmit} className="space-y-3">
         {fError && (
-          <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm">{fError}</div>
+          <div className="p-3 bg-[rgba(135,55,55,0.12)] border border-red-500/30 rounded-lg text-[#a85858] text-sm">{fError}</div>
         )}
         <div className="grid grid-cols-2 gap-3">
           <div>
@@ -421,7 +421,7 @@ export default function AdminOrdersPage() {
           <div>
             <p className={labelCls}>Sender Phone</p>
             <input className={inputCls} type="tel" value={form.sender_phone} onChange={(e) => update('sender_phone', e.target.value)} required placeholder="08012345678" />
-            {phoneErrors.sender && <p className="text-red-400 text-xs mt-1">{phoneErrors.sender}</p>}
+            {phoneErrors.sender && <p className="text-[#a85858] text-xs mt-1">{phoneErrors.sender}</p>}
           </div>
         </div>
         <div>
@@ -446,7 +446,7 @@ export default function AdminOrdersPage() {
           <div>
             <p className={labelCls}>Recipient Phone</p>
             <input className={inputCls} type="tel" value={form.recipient_phone} onChange={(e) => update('recipient_phone', e.target.value)} required placeholder="08098765432" />
-            {phoneErrors.recipient && <p className="text-red-400 text-xs mt-1">{phoneErrors.recipient}</p>}
+            {phoneErrors.recipient && <p className="text-[#a85858] text-xs mt-1">{phoneErrors.recipient}</p>}
           </div>
         </div>
         <div className="grid grid-cols-2 gap-3">
@@ -480,8 +480,8 @@ export default function AdminOrdersPage() {
 
         {/* Delivery Cost Display */}
         {calculatedFee !== null && (
-          <div className="p-3 bg-[#0A0A0A] border border-[#F2FF66]/30 rounded-lg flex items-center justify-between">
-            <span className="text-[#888888] text-sm">Estimated Fee</span>
+          <div className="p-3 bg-[#000000] border border-[#F2FF66]/30 rounded-lg flex items-center justify-between">
+            <span className="text-[#a1a4a5] text-sm">Estimated Fee</span>
             <span className="text-[#F2FF66] text-lg font-bold">₦{calculatedFee.toLocaleString('en-NG')}</span>
           </div>
         )}
@@ -493,12 +493,12 @@ export default function AdminOrdersPage() {
             onChange={(e) => update('is_express', e.target.checked)}
             className="w-4 h-4 accent-[#F2FF66]"
           />
-          <span className="text-[#888888] text-sm">Express delivery (+50%)</span>
+          <span className="text-[#a1a4a5] text-sm">Express delivery (+50%)</span>
         </label>
         <button
           type="submit"
           disabled={fLoading}
-          className="w-full bg-[#F2FF66] text-[#0A0A0A] font-bold py-3 rounded-lg text-sm hover:bg-[#e8f55c] active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full bg-[#F2FF66] text-[#000000] font-bold py-3 rounded-lg text-sm hover:bg-[#e8f55c] active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {fLoading ? 'Saving...' : submitLabel}
         </button>
@@ -510,10 +510,10 @@ export default function AdminOrdersPage() {
     <div className="px-4 py-5 md:px-6 md:py-6 max-w-5xl mx-auto space-y-4">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold text-[#FAFAFA]">Orders</h1>
+        <h1 className="text-xl font-bold text-[#f0f0f0]">Orders</h1>
         <button
           onClick={() => { setShowCreateModal(true); setCreateError(''); setCreateForm(EMPTY_FORM); }}
-          className="bg-[#F2FF66] text-[#0A0A0A] text-sm font-bold px-4 py-2 rounded-lg hover:bg-[#e8f55c] active:scale-95 transition-all"
+          className="bg-[#F2FF66] text-[#000000] text-sm font-bold px-4 py-2 rounded-lg hover:bg-[#e8f55c] active:scale-95 transition-all"
         >
           + Create Order
         </button>
@@ -521,9 +521,9 @@ export default function AdminOrdersPage() {
 
       {/* Search */}
       <div className="relative">
-        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#888888] text-sm">🔍</span>
+        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#a1a4a5] text-sm">🔍</span>
         <input
-          className="w-full bg-[#191314] border border-[#2A2A2A] rounded-lg pl-9 pr-4 py-2.5 text-[#FAFAFA] text-sm placeholder:text-[#888888] focus:outline-none focus:border-[#F2FF66] transition-colors"
+          className="w-full bg-[#070707] border border-[rgba(255,255,255,0.08)] rounded-lg pl-9 pr-4 py-2.5 text-[#f0f0f0] text-sm placeholder:text-[#a1a4a5] focus:outline-none focus:border-[#212629] transition-colors"
           placeholder="Search by tracking ID, name, or phone..."
           value={search}
           onChange={(e) => { setSearch(e.target.value); setPage(1); }}
@@ -539,8 +539,8 @@ export default function AdminOrdersPage() {
             className={`
               flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition-colors
               ${filter === tab.value
-                ? 'bg-[#F2FF66] text-[#0A0A0A]'
-                : 'bg-[#191314] border border-[#2A2A2A] text-[#888888] hover:text-[#FAFAFA]'
+                ? 'bg-[#18191ce0] text-[#f0f0f0] border border-[rgba(255,255,255,0.12)]'
+                : 'bg-[#070707] border border-[rgba(255,255,255,0.08)] text-[#a1a4a5] hover:text-[#f0f0f0]'
               }
             `}
           >
@@ -555,7 +555,7 @@ export default function AdminOrdersPage() {
       </div>
 
       {/* Count */}
-      <p className="text-[#888888] text-xs">
+      <p className="text-[#a1a4a5] text-xs">
         Showing {paginated.length} of {filtered.length} orders
       </p>
 
@@ -563,15 +563,15 @@ export default function AdminOrdersPage() {
       {loading ? (
         <div className="space-y-3">
           {Array(5).fill(null).map((_, i) => (
-            <div key={i} className="bg-[#191314] border border-[#2A2A2A] rounded-xl p-4 space-y-2 animate-pulse">
-              <div className="w-40 h-4 bg-[#2A2A2A] rounded" />
-              <div className="w-64 h-3 bg-[#2A2A2A] rounded" />
-              <div className="w-32 h-3 bg-[#2A2A2A] rounded" />
+            <div key={i} className="bg-[#070707] border border-[rgba(255,255,255,0.08)] rounded-xl p-4 space-y-2 animate-pulse">
+              <div className="w-40 h-4 bg-[rgba(255,255,255,0.08)] rounded" />
+              <div className="w-64 h-3 bg-[rgba(255,255,255,0.08)] rounded" />
+              <div className="w-32 h-3 bg-[rgba(255,255,255,0.08)] rounded" />
             </div>
           ))}
         </div>
       ) : paginated.length === 0 ? (
-        <div className="py-16 text-center text-[#888888] text-sm">
+        <div className="py-16 text-center text-[#a1a4a5] text-sm">
           No orders found
         </div>
       ) : (
@@ -579,7 +579,7 @@ export default function AdminOrdersPage() {
           {paginated.map((order) => {
             const isExpanded = expandedId === order.id;
             return (
-              <div key={order.id} className="bg-[#191314] border border-[#2A2A2A] rounded-xl overflow-hidden">
+              <div key={order.id} className="bg-[#070707] border border-[rgba(255,255,255,0.08)] rounded-xl overflow-hidden">
                 {/* Card Header */}
                 <button
                   className="w-full text-left px-4 py-3 flex items-start justify-between gap-3"
@@ -587,80 +587,80 @@ export default function AdminOrdersPage() {
                 >
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="font-mono text-[#F2FF66] text-sm font-semibold">{order.id}</span>
+                      <span className="font-mono text-[#f0f0f0] text-sm font-semibold">{order.id}</span>
                       {order.is_express && (
-                        <span className="text-[10px] bg-amber-500/20 text-amber-400 border border-amber-500/30 px-1.5 py-0.5 rounded-full font-medium">EXPRESS</span>
+                        <span className="text-[10px] bg-[rgba(150,105,35,0.18)] text-[#aa8040] border border-[rgba(150,105,35,0.25)] px-1.5 py-0.5 rounded-full font-medium">EXPRESS</span>
                       )}
                     </div>
-                    <p className="text-[#FAFAFA] text-sm mt-0.5">
+                    <p className="text-[#f0f0f0] text-sm mt-0.5">
                       {order.sender_name} → {order.recipient_name}
                     </p>
-                    <p className="text-[#888888] text-xs mt-0.5">
+                    <p className="text-[#a1a4a5] text-xs mt-0.5">
                       {order.pickup_area} → {order.dropoff_area}
                     </p>
                   </div>
                   <div className="flex flex-col items-end gap-1.5 flex-shrink-0">
                     <StatusBadge status={order.status} />
-                    <span className="text-[#888888] text-xs">{formatNaira(order.fee)}</span>
+                    <span className="text-[#a1a4a5] text-xs">{formatNaira(order.fee)}</span>
                   </div>
                 </button>
 
                 {/* Expanded Details */}
                 {isExpanded && (
-                  <div className="px-4 pb-4 pt-0 border-t border-[#2A2A2A] space-y-3">
+                  <div className="px-4 pb-4 pt-0 border-t border-[rgba(255,255,255,0.08)] space-y-3">
                     <div className="grid grid-cols-2 gap-3 pt-3 text-xs">
                       <div>
-                        <p className="text-[#888888] mb-0.5">Sender</p>
-                        <p className="text-[#FAFAFA]">{order.sender_name}</p>
-                        <p className="text-[#888888]">{order.sender_phone}</p>
-                        {order.sender_email && <p className="text-[#888888]">{order.sender_email}</p>}
+                        <p className="text-[#a1a4a5] mb-0.5">Sender</p>
+                        <p className="text-[#f0f0f0]">{order.sender_name}</p>
+                        <p className="text-[#a1a4a5]">{order.sender_phone}</p>
+                        {order.sender_email && <p className="text-[#a1a4a5]">{order.sender_email}</p>}
                       </div>
                       <div>
-                        <p className="text-[#888888] mb-0.5">Recipient</p>
-                        <p className="text-[#FAFAFA]">{order.recipient_name}</p>
-                        <p className="text-[#888888]">{order.recipient_phone}</p>
+                        <p className="text-[#a1a4a5] mb-0.5">Recipient</p>
+                        <p className="text-[#f0f0f0]">{order.recipient_name}</p>
+                        <p className="text-[#a1a4a5]">{order.recipient_phone}</p>
                       </div>
                       <div>
-                        <p className="text-[#888888] mb-0.5">Pickup</p>
-                        <p className="text-[#FAFAFA]">{order.pickup_address}</p>
-                        <p className="text-[#888888]">{order.pickup_area}</p>
+                        <p className="text-[#a1a4a5] mb-0.5">Pickup</p>
+                        <p className="text-[#f0f0f0]">{order.pickup_address}</p>
+                        <p className="text-[#a1a4a5]">{order.pickup_area}</p>
                       </div>
                       <div>
-                        <p className="text-[#888888] mb-0.5">Dropoff</p>
-                        <p className="text-[#FAFAFA]">{order.dropoff_address}</p>
-                        <p className="text-[#888888]">{order.dropoff_area}</p>
+                        <p className="text-[#a1a4a5] mb-0.5">Dropoff</p>
+                        <p className="text-[#f0f0f0]">{order.dropoff_address}</p>
+                        <p className="text-[#a1a4a5]">{order.dropoff_area}</p>
                       </div>
                       <div>
-                        <p className="text-[#888888] mb-0.5">Payment</p>
-                        <p className="text-[#FAFAFA]">{PAYMENT_LABELS[order.payment_method]}</p>
+                        <p className="text-[#a1a4a5] mb-0.5">Payment</p>
+                        <p className="text-[#f0f0f0]">{PAYMENT_LABELS[order.payment_method]}</p>
                       </div>
                       <div>
-                        <p className="text-[#888888] mb-0.5">Rider</p>
-                        <p className="text-[#FAFAFA]">{order.rider?.name ?? '—'}</p>
+                        <p className="text-[#a1a4a5] mb-0.5">Rider</p>
+                        <p className="text-[#f0f0f0]">{order.rider?.name ?? '—'}</p>
                       </div>
                       <div>
-                        <p className="text-[#888888] mb-0.5">Created</p>
-                        <p className="text-[#FAFAFA]">{formatDate(order.created_at)}</p>
+                        <p className="text-[#a1a4a5] mb-0.5">Created</p>
+                        <p className="text-[#f0f0f0]">{formatDate(order.created_at)}</p>
                       </div>
                       <div>
-                        <p className="text-[#888888] mb-0.5">Source</p>
-                        <p className="text-[#FAFAFA] capitalize">{order.created_by}</p>
+                        <p className="text-[#a1a4a5] mb-0.5">Source</p>
+                        <p className="text-[#f0f0f0] capitalize">{order.created_by}</p>
                       </div>
                     </div>
 
                     {order.package_description && (
                       <div className="text-xs">
-                        <p className="text-[#888888] mb-0.5">Package</p>
-                        <p className="text-[#FAFAFA]">{order.package_description}</p>
+                        <p className="text-[#a1a4a5] mb-0.5">Package</p>
+                        <p className="text-[#f0f0f0]">{order.package_description}</p>
                       </div>
                     )}
 
                     {/* Change Status */}
                     <div className="pt-1">
-                      <p className="text-[#888888] text-[10px] uppercase tracking-wider mb-1.5 font-medium">Change Status</p>
+                      <p className="text-[#a1a4a5] text-[10px] uppercase tracking-wider mb-1.5 font-medium">Change Status</p>
                       <div className="flex gap-2">
                         <select
-                          className="flex-1 bg-[#0A0A0A] border border-[#2A2A2A] rounded-lg px-3 py-2 text-sm text-[#FAFAFA] focus:outline-none focus:border-[#F2FF66]"
+                          className="flex-1 bg-[#000000] border border-[rgba(255,255,255,0.08)] rounded-lg px-3 py-2 text-sm text-[#f0f0f0] focus:outline-none focus:border-[#212629]"
                           defaultValue=""
                           onChange={(e) => {
                             if (e.target.value) {
@@ -677,7 +677,7 @@ export default function AdminOrdersPage() {
                             ))}
                         </select>
                         {actionLoading === `status-${order.id}` && (
-                          <span className="text-[#888888] text-sm self-center px-2">…</span>
+                          <span className="text-[#a1a4a5] text-sm self-center px-2">…</span>
                         )}
                       </div>
                     </div>
@@ -685,12 +685,12 @@ export default function AdminOrdersPage() {
                     {/* Assign / Reassign Rider — hidden for delivered/confirmed */}
                     {!['delivered', 'confirmed'].includes(order.status) && (
                       <div className="pt-1">
-                        <p className="text-[#888888] text-[10px] uppercase tracking-wider mb-1.5 font-medium">
+                        <p className="text-[#a1a4a5] text-[10px] uppercase tracking-wider mb-1.5 font-medium">
                           {order.rider_id ? 'Reassign Rider' : 'Assign Rider'}
                         </p>
                         <div className="flex gap-2">
                           <select
-                            className="flex-1 bg-[#0A0A0A] border border-[#2A2A2A] rounded-lg px-3 py-2 text-sm text-[#FAFAFA] focus:outline-none focus:border-[#F2FF66]"
+                            className="flex-1 bg-[#000000] border border-[rgba(255,255,255,0.08)] rounded-lg px-3 py-2 text-sm text-[#f0f0f0] focus:outline-none focus:border-[#212629]"
                             value={assignMap[order.id] ?? ''}
                             onChange={(e) => setAssignMap((m) => ({ ...m, [order.id]: e.target.value }))}
                           >
@@ -702,7 +702,7 @@ export default function AdminOrdersPage() {
                           <button
                             onClick={() => handleAssign(order.id)}
                             disabled={!assignMap[order.id] || actionLoading === `assign-${order.id}`}
-                            className="bg-blue-500 text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-blue-600 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="bg-[#2d5a8a] text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-blue-600 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                           >
                             {actionLoading === `assign-${order.id}` ? '...' : order.rider_id ? 'Reassign' : 'Assign'}
                           </button>
@@ -716,7 +716,7 @@ export default function AdminOrdersPage() {
                         <input
                           type="number"
                           placeholder="Set fee (₦)"
-                          className="flex-1 bg-[#0A0A0A] border border-[#2A2A2A] rounded-lg px-3 py-2 text-sm text-[#FAFAFA] placeholder:text-[#888888] focus:outline-none focus:border-[#F2FF66]"
+                          className="flex-1 bg-[#000000] border border-[rgba(255,255,255,0.08)] rounded-lg px-3 py-2 text-sm text-[#f0f0f0] placeholder:text-[#a1a4a5] focus:outline-none focus:border-[#212629]"
                           value={feeMap[order.id] ?? ''}
                           onChange={(e) => setFeeMap((m) => ({ ...m, [order.id]: e.target.value }))}
                           min="0"
@@ -724,7 +724,7 @@ export default function AdminOrdersPage() {
                         <button
                           onClick={() => handleSetFee(order.id)}
                           disabled={!feeMap[order.id] || actionLoading === `fee-${order.id}`}
-                          className="bg-[#F2FF66] text-[#0A0A0A] text-sm font-bold px-4 py-2 rounded-lg hover:bg-[#e8f55c] active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="bg-[#F2FF66] text-[#000000] text-sm font-bold px-4 py-2 rounded-lg hover:bg-[#e8f55c] active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           {actionLoading === `fee-${order.id}` ? '...' : 'Set'}
                         </button>
@@ -735,14 +735,14 @@ export default function AdminOrdersPage() {
                     <div className="flex gap-2 pt-1">
                       <button
                         onClick={() => openEdit(order)}
-                        className="flex-1 border border-[#2A2A2A] text-[#888888] hover:text-[#FAFAFA] hover:border-[#F2FF66] text-sm py-2 rounded-lg transition-colors"
+                        className="flex-1 border border-[rgba(255,255,255,0.08)] text-[#a1a4a5] hover:text-[#f0f0f0] hover:border-[#212629] text-sm py-2 rounded-lg transition-colors"
                       >
                         ✏️ Edit
                       </button>
                       <button
                         onClick={() => handleCancel(order.id)}
                         disabled={actionLoading === `cancel-${order.id}`}
-                        className="flex-1 border border-red-500/30 text-red-400 hover:bg-red-500/10 text-sm py-2 rounded-lg transition-colors disabled:opacity-50"
+                        className="flex-1 border border-red-500/30 text-[#a85858] hover:bg-[rgba(135,55,55,0.12)] text-sm py-2 rounded-lg transition-colors disabled:opacity-50"
                       >
                         {actionLoading === `cancel-${order.id}` ? '...' : '🗑️ Cancel'}
                       </button>
@@ -761,15 +761,15 @@ export default function AdminOrdersPage() {
           <button
             onClick={() => setPage((p) => Math.max(1, p - 1))}
             disabled={page === 1}
-            className="px-3 py-1.5 text-sm border border-[#2A2A2A] rounded-lg text-[#888888] hover:text-[#FAFAFA] disabled:opacity-40 transition-colors"
+            className="px-3 py-1.5 text-sm border border-[rgba(255,255,255,0.08)] rounded-lg text-[#a1a4a5] hover:text-[#f0f0f0] disabled:opacity-40 transition-colors"
           >
             ← Prev
           </button>
-          <span className="text-[#888888] text-sm">{page} / {totalPages}</span>
+          <span className="text-[#a1a4a5] text-sm">{page} / {totalPages}</span>
           <button
             onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
             disabled={page === totalPages}
-            className="px-3 py-1.5 text-sm border border-[#2A2A2A] rounded-lg text-[#888888] hover:text-[#FAFAFA] disabled:opacity-40 transition-colors"
+            className="px-3 py-1.5 text-sm border border-[rgba(255,255,255,0.08)] rounded-lg text-[#a1a4a5] hover:text-[#f0f0f0] disabled:opacity-40 transition-colors"
           >
             Next →
           </button>
@@ -779,10 +779,10 @@ export default function AdminOrdersPage() {
       {/* Create Order Modal */}
       {showCreateModal && (
         <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center p-4 bg-black/70">
-          <div className="w-full max-w-lg bg-[#191314] border border-[#2A2A2A] rounded-2xl shadow-2xl max-h-[90vh] overflow-y-auto">
-            <div className="px-5 py-4 border-b border-[#2A2A2A] flex items-center justify-between sticky top-0 bg-[#191314] z-10">
-              <h2 className="text-[#FAFAFA] font-bold">Create New Order</h2>
-              <button onClick={() => setShowCreateModal(false)} className="text-[#888888] hover:text-[#FAFAFA] text-xl leading-none">&times;</button>
+          <div className="w-full max-w-lg bg-[#070707] border border-[rgba(255,255,255,0.08)] rounded-2xl shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div className="px-5 py-4 border-b border-[rgba(255,255,255,0.08)] flex items-center justify-between sticky top-0 bg-[#070707] z-10">
+              <h2 className="text-[#f0f0f0] font-bold">Create New Order</h2>
+              <button onClick={() => setShowCreateModal(false)} className="text-[#a1a4a5] hover:text-[#f0f0f0] text-xl leading-none">&times;</button>
             </div>
             <div className="p-5">
               <OrderForm
@@ -801,13 +801,13 @@ export default function AdminOrdersPage() {
       {/* Edit Order Modal */}
       {showEditModal && editTarget && (
         <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center p-4 bg-black/70">
-          <div className="w-full max-w-lg bg-[#191314] border border-[#2A2A2A] rounded-2xl shadow-2xl max-h-[90vh] overflow-y-auto">
-            <div className="px-5 py-4 border-b border-[#2A2A2A] flex items-center justify-between sticky top-0 bg-[#191314] z-10">
+          <div className="w-full max-w-lg bg-[#070707] border border-[rgba(255,255,255,0.08)] rounded-2xl shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div className="px-5 py-4 border-b border-[rgba(255,255,255,0.08)] flex items-center justify-between sticky top-0 bg-[#070707] z-10">
               <div>
-                <h2 className="text-[#FAFAFA] font-bold">Edit Order</h2>
-                <p className="text-[#888888] text-xs font-mono">{editTarget.id}</p>
+                <h2 className="text-[#f0f0f0] font-bold">Edit Order</h2>
+                <p className="text-[#a1a4a5] text-xs font-mono">{editTarget.id}</p>
               </div>
-              <button onClick={() => { setShowEditModal(false); setEditTarget(null); }} className="text-[#888888] hover:text-[#FAFAFA] text-xl leading-none">&times;</button>
+              <button onClick={() => { setShowEditModal(false); setEditTarget(null); }} className="text-[#a1a4a5] hover:text-[#f0f0f0] text-xl leading-none">&times;</button>
             </div>
             <div className="p-5">
               <OrderForm

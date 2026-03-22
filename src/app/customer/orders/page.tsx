@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import StatusBadge from '@/components/StatusBadge';
+import AddressInput from '@/components/AddressInput';
 import { Delivery, DeliveryStatus, STATUS_LABELS, PAYMENT_LABELS, PaymentMethod } from '@/lib/types';
 
 /* ------------------------------------------------------------------ */
@@ -102,16 +103,16 @@ function ViewModal({ delivery, onClose }: { delivery: DeliveryWithHistory; onClo
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm" onClick={onClose}>
       <div
-        className="bg-[#191314] border border-[#2A2A2A] rounded-2xl w-full max-w-lg max-h-[85vh] overflow-y-auto"
+        className="bg-[#070707] border border-[rgba(255,255,255,0.08)] rounded-2xl w-full max-w-lg max-h-[85vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-[#2A2A2A] sticky top-0 bg-[#191314] z-10">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-[rgba(255,255,255,0.08)] sticky top-0 bg-[#070707] z-10">
           <div>
-            <h2 className="text-[#FAFAFA] font-semibold text-base">Order Details</h2>
-            <p className="font-mono text-xs text-[#F2FF66] mt-0.5">{d.id}</p>
+            <h2 className="text-[#f0f0f0] font-semibold text-base">Order Details</h2>
+            <p className="font-mono text-xs text-[#a1a4a5] mt-0.5">{d.id}</p>
           </div>
-          <button onClick={onClose} className="text-[#888888] hover:text-[#FAFAFA] p-1.5 rounded-lg transition-colors">
+          <button onClick={onClose} className="text-[#a1a4a5] hover:text-[#f0f0f0] p-1.5 rounded-lg transition-colors">
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -122,8 +123,8 @@ function ViewModal({ delivery, onClose }: { delivery: DeliveryWithHistory; onClo
         <div className="px-5 py-4 space-y-1">
           {rows.map(({ label, value }) => (
             <div key={label} className="flex items-start justify-between gap-4 py-2.5 border-b border-[#1A1A1A] last:border-0">
-              <span className="text-[#888888] text-xs flex-shrink-0 w-28">{label}</span>
-              <span className="text-[#FAFAFA] text-xs text-right">{value}</span>
+              <span className="text-[#a1a4a5] text-xs flex-shrink-0 w-28">{label}</span>
+              <span className="text-[#f0f0f0] text-xs text-right">{value}</span>
             </div>
           ))}
         </div>
@@ -131,14 +132,14 @@ function ViewModal({ delivery, onClose }: { delivery: DeliveryWithHistory; onClo
         {/* History */}
         {d.history && d.history.length > 0 && (
           <div className="px-5 pb-5">
-            <p className="text-[#888888] text-xs uppercase tracking-wider font-medium mb-3">Activity</p>
+            <p className="text-[#a1a4a5] text-xs uppercase tracking-wider font-medium mb-3">Activity</p>
             <div className="space-y-2">
               {d.history.map((h) => (
                 <div key={h.id} className="flex items-start gap-3">
-                  <div className="w-1.5 h-1.5 rounded-full bg-[#F2FF66] mt-1.5 flex-shrink-0" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-[rgba(255,255,255,0.25)] mt-1.5 flex-shrink-0" />
                   <div>
-                    <p className="text-xs text-[#FAFAFA]">{STATUS_LABELS[h.status] || h.status}</p>
-                    {h.note && <p className="text-xs text-[#888888] mt-0.5">{h.note}</p>}
+                    <p className="text-xs text-[#f0f0f0]">{STATUS_LABELS[h.status] || h.status}</p>
+                    {h.note && <p className="text-xs text-[#a1a4a5] mt-0.5">{h.note}</p>}
                     <p className="text-[10px] text-[#555] mt-0.5">{fmtDate(h.created_at)}</p>
                   </div>
                 </div>
@@ -155,7 +156,7 @@ function ViewModal({ delivery, onClose }: { delivery: DeliveryWithHistory; onClo
 /*  Edit Modal                                                          */
 /* ------------------------------------------------------------------ */
 
-const inputCls = 'w-full bg-[#0A0A0A] border border-[#2A2A2A] rounded-lg px-3 py-2.5 text-sm text-[#FAFAFA] placeholder-[#555] focus:outline-none focus:border-[#F2FF66]/50 transition-colors';
+const inputCls = 'w-full bg-[#000000] border border-[rgba(255,255,255,0.08)] rounded-lg px-3 py-2.5 text-sm text-[#f0f0f0] placeholder-[#555] focus:outline-none focus:border-[#212629] transition-colors';
 
 function EditModal({
   order,
@@ -230,16 +231,16 @@ function EditModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm" onClick={onClose}>
       <div
-        className="bg-[#191314] border border-[#2A2A2A] rounded-2xl w-full max-w-lg max-h-[85vh] flex flex-col"
+        className="bg-[#070707] border border-[rgba(255,255,255,0.08)] rounded-2xl w-full max-w-lg max-h-[85vh] flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-[#2A2A2A] flex-shrink-0">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-[rgba(255,255,255,0.08)] flex-shrink-0">
           <div>
-            <h2 className="text-[#FAFAFA] font-semibold text-base">Edit Order</h2>
-            <p className="font-mono text-xs text-[#F2FF66] mt-0.5">{order.id}</p>
+            <h2 className="text-[#f0f0f0] font-semibold text-base">Edit Order</h2>
+            <p className="font-mono text-xs text-[#a1a4a5] mt-0.5">{order.id}</p>
           </div>
-          <button onClick={onClose} className="text-[#888888] hover:text-[#FAFAFA] p-1.5 rounded-lg transition-colors">
+          <button onClick={onClose} className="text-[#a1a4a5] hover:text-[#f0f0f0] p-1.5 rounded-lg transition-colors">
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -249,20 +250,27 @@ function EditModal({
         {/* Form */}
         <div className="overflow-y-auto flex-1 px-5 py-4">
           {error && (
-            <div className="mb-4 px-3 py-2.5 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-xs">
+            <div className="mb-4 px-3 py-2.5 bg-[rgba(135,55,55,0.12)] border border-red-500/20 rounded-lg text-[#a85858] text-xs">
               {error}
             </div>
           )}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {fields.map(({ label, field, type = 'text' }) => (
               <div key={field} className={field === 'package_description' ? 'sm:col-span-2' : ''}>
-                <label className="block text-[10px] text-[#888888] uppercase tracking-wider font-medium mb-1.5">{label}</label>
+                <label className="block text-[10px] text-[#a1a4a5] uppercase tracking-wider font-medium mb-1.5">{label}</label>
                 {field === 'package_description' ? (
                   <textarea
                     rows={2}
                     value={form[field as keyof typeof form]}
                     onChange={(e) => set(field, e.target.value)}
                     className={inputCls + ' resize-none'}
+                  />
+                ) : field === 'dropoff_address' ? (
+                  <AddressInput
+                    value={form.dropoff_address}
+                    onChange={(val) => set('dropoff_address', val)}
+                    placeholder="Street address or landmark"
+                    className={inputCls}
                   />
                 ) : (
                   <input
@@ -278,17 +286,17 @@ function EditModal({
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-3 px-5 py-4 border-t border-[#2A2A2A] flex-shrink-0">
+        <div className="flex items-center justify-end gap-3 px-5 py-4 border-t border-[rgba(255,255,255,0.08)] flex-shrink-0">
           <button
             onClick={onClose}
-            className="px-4 py-2 text-sm text-[#888888] hover:text-[#FAFAFA] border border-[#2A2A2A] rounded-lg transition-colors"
+            className="px-4 py-2 text-sm text-[#a1a4a5] hover:text-[#f0f0f0] border border-[rgba(255,255,255,0.08)] rounded-lg transition-colors"
           >
             Cancel
           </button>
           <button
             onClick={handleSave}
             disabled={saving}
-            className="px-5 py-2 bg-[#F2FF66] text-[#0A0A0A] text-sm font-semibold rounded-lg hover:bg-[#e8f550] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="px-5 py-2 bg-[#F2FF66] text-[#000000] text-sm font-semibold rounded-lg hover:bg-[#e8f550] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             {saving ? 'Saving…' : 'Save Changes'}
           </button>
@@ -340,31 +348,31 @@ function CancelModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm" onClick={onClose}>
       <div
-        className="bg-[#191314] border border-[#2A2A2A] rounded-2xl w-full max-w-sm p-6"
+        className="bg-[#070707] border border-[rgba(255,255,255,0.08)] rounded-2xl w-full max-w-sm p-6"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="w-12 h-12 rounded-full bg-red-500/10 flex items-center justify-center mb-4">
-          <svg className="w-6 h-6 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <div className="w-12 h-12 rounded-full bg-[rgba(135,55,55,0.12)] flex items-center justify-center mb-4">
+          <svg className="w-6 h-6 text-[#a85858]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
           </svg>
         </div>
-        <h3 className="text-[#FAFAFA] font-semibold text-base mb-1">Cancel Order?</h3>
-        <p className="text-[#888888] text-sm mb-1">
-          Order <span className="font-mono text-[#F2FF66]">{order.id}</span> will be cancelled.
+        <h3 className="text-[#f0f0f0] font-semibold text-base mb-1">Cancel Order?</h3>
+        <p className="text-[#a1a4a5] text-sm mb-1">
+          Order <span className="font-mono text-[#f0f0f0]">{order.id}</span> will be cancelled.
         </p>
-        <p className="text-[#888888] text-xs mb-5">This action cannot be undone.</p>
-        {error && <p className="text-red-400 text-xs mb-3">{error}</p>}
+        <p className="text-[#a1a4a5] text-xs mb-5">This action cannot be undone.</p>
+        {error && <p className="text-[#a85858] text-xs mb-3">{error}</p>}
         <div className="flex gap-3">
           <button
             onClick={onClose}
-            className="flex-1 px-4 py-2.5 text-sm text-[#888888] border border-[#2A2A2A] rounded-lg hover:text-[#FAFAFA] transition-colors"
+            className="flex-1 px-4 py-2.5 text-sm text-[#a1a4a5] border border-[rgba(255,255,255,0.08)] rounded-lg hover:text-[#f0f0f0] transition-colors"
           >
             Keep Order
           </button>
           <button
             onClick={handleCancel}
             disabled={loading}
-            className="flex-1 px-4 py-2.5 bg-red-600 hover:bg-red-500 text-white text-sm font-semibold rounded-lg disabled:opacity-50 transition-colors"
+            className="flex-1 px-4 py-2.5 bg-[#6a2828] hover:bg-red-500 text-white text-sm font-semibold rounded-lg disabled:opacity-50 transition-colors"
           >
             {loading ? 'Canceling…' : 'Yes, Cancel'}
           </button>
@@ -407,26 +415,26 @@ function DeleteDraftModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm" onClick={onClose}>
       <div
-        className="bg-[#191314] border border-[#2A2A2A] rounded-2xl w-full max-w-sm p-6"
+        className="bg-[#070707] border border-[rgba(255,255,255,0.08)] rounded-2xl w-full max-w-sm p-6"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="w-12 h-12 rounded-full bg-red-500/10 flex items-center justify-center mb-4">
-          <svg className="w-6 h-6 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <div className="w-12 h-12 rounded-full bg-[rgba(135,55,55,0.12)] flex items-center justify-center mb-4">
+          <svg className="w-6 h-6 text-[#a85858]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
           </svg>
         </div>
-        <h3 className="text-[#FAFAFA] font-semibold text-base mb-1">Delete Draft?</h3>
-        <p className="text-[#888888] text-sm mb-5">
-          Draft <span className="font-mono text-amber-400">{draft.order_number}</span> will be permanently deleted.
+        <h3 className="text-[#f0f0f0] font-semibold text-base mb-1">Delete Draft?</h3>
+        <p className="text-[#a1a4a5] text-sm mb-5">
+          Draft <span className="font-mono text-[#aa8040]">{draft.order_number}</span> will be permanently deleted.
         </p>
         <div className="flex gap-3">
-          <button onClick={onClose} className="flex-1 px-4 py-2.5 text-sm text-[#888888] border border-[#2A2A2A] rounded-lg hover:text-[#FAFAFA] transition-colors">
+          <button onClick={onClose} className="flex-1 px-4 py-2.5 text-sm text-[#a1a4a5] border border-[rgba(255,255,255,0.08)] rounded-lg hover:text-[#f0f0f0] transition-colors">
             Keep
           </button>
           <button
             onClick={handleDelete}
             disabled={loading}
-            className="flex-1 px-4 py-2.5 bg-red-600 hover:bg-red-500 text-white text-sm font-semibold rounded-lg disabled:opacity-50 transition-colors"
+            className="flex-1 px-4 py-2.5 bg-[#6a2828] hover:bg-red-500 text-white text-sm font-semibold rounded-lg disabled:opacity-50 transition-colors"
           >
             {loading ? 'Deleting…' : 'Delete'}
           </button>
@@ -457,8 +465,8 @@ function ActionBtn({
       disabled={disabled}
       className={`p-1.5 rounded-lg transition-colors disabled:opacity-30 disabled:cursor-not-allowed ${
         variant === 'danger'
-          ? 'text-red-500/60 hover:text-red-400 hover:bg-red-500/10'
-          : 'text-[#888888] hover:text-[#FAFAFA] hover:bg-[#2A2A2A]'
+          ? 'text-red-500/60 hover:text-[#a85858] hover:bg-[rgba(135,55,55,0.12)]'
+          : 'text-[#a1a4a5] hover:text-[#f0f0f0] hover:bg-[rgba(255,255,255,0.08)]'
       }`}
     >
       {children}
@@ -548,10 +556,10 @@ export default function CustomerOrders() {
 
   const stats = computeStats(allOrders);
   const statCards = [
-    { label: 'Total Orders', value: stats.totalOrders, color: 'text-[#F2FF66]' },
-    { label: 'Completed', value: stats.completedOrders, color: 'text-green-400' },
-    { label: 'Delivered', value: stats.completedDeliveries, color: 'text-emerald-400' },
-    { label: 'Cancelled', value: stats.canceled, color: 'text-red-400' },
+    { label: 'Total Orders',  value: stats.totalOrders,          color: 'text-[#f0f0f0]' },
+    { label: 'Completed',     value: stats.completedOrders,      color: 'text-[#f0f0f0]' },
+    { label: 'Delivered',     value: stats.completedDeliveries,  color: 'text-[#f0f0f0]' },
+    { label: 'Cancelled',     value: stats.canceled,             color: 'text-[#f0f0f0]' },
   ];
 
   /* ---- Icons ---- */
@@ -581,10 +589,10 @@ export default function CustomerOrders() {
     <div className="px-4 md:px-6 py-6 space-y-5 max-w-6xl mx-auto">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold text-[#FAFAFA]">My Orders</h1>
+        <h1 className="text-xl font-bold text-[#f0f0f0]">My Orders</h1>
         <Link
           href="/customer/orders/create"
-          className="bg-[#F2FF66] text-[#0A0A0A] px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#E5F25E] transition-colors"
+          className="bg-[#F2FF66] text-[#000000] px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#E5F25E] transition-colors"
         >
           + New Order
         </Link>
@@ -593,10 +601,10 @@ export default function CustomerOrders() {
       {/* Stat Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {statCards.map((card) => (
-          <div key={card.label} className="bg-[#191314] border border-[#2A2A2A] rounded-xl p-3 md:p-4">
-            <p className="text-[#888888] text-[10px] md:text-xs font-medium uppercase tracking-wide">{card.label}</p>
+          <div key={card.label} className="bg-[#070707] border border-[rgba(255,255,255,0.08)] rounded-xl p-3 md:p-4">
+            <p className="text-[#a1a4a5] text-[10px] md:text-xs font-medium uppercase tracking-wide">{card.label}</p>
             <p className={`text-xl md:text-2xl font-bold mt-1 ${card.color}`}>
-              {loading ? <span className="inline-block w-8 h-6 bg-[#2A2A2A] rounded animate-pulse align-middle" /> : card.value}
+              {loading ? <span className="inline-block w-8 h-6 bg-[rgba(255,255,255,0.08)] rounded animate-pulse align-middle" /> : card.value}
             </p>
           </div>
         ))}
@@ -605,7 +613,7 @@ export default function CustomerOrders() {
       {/* Search + Date Range */}
       <div className="flex flex-col md:flex-row gap-3">
         <div className="relative flex-1">
-          <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#888888]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#a1a4a5]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
           <input
@@ -613,14 +621,14 @@ export default function CustomerOrders() {
             placeholder="Search by tracking ID or recipient..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-[#191314] border border-[#2A2A2A] rounded-lg pl-9 pr-4 py-2.5 text-sm text-[#FAFAFA] placeholder-[#555] focus:outline-none focus:border-[#F2FF66]/40"
+            className="w-full bg-[#070707] border border-[rgba(255,255,255,0.08)] rounded-lg pl-9 pr-4 py-2.5 text-sm text-[#f0f0f0] placeholder-[#555] focus:outline-none focus:border-[#212629]"
           />
         </div>
         <div className="flex gap-2 flex-shrink-0">
-          <input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} title="From" className="bg-[#191314] border border-[#2A2A2A] rounded-lg px-3 py-2.5 text-sm text-[#FAFAFA] focus:outline-none focus:border-[#F2FF66]/40 [color-scheme:dark]" />
-          <input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} title="To" className="bg-[#191314] border border-[#2A2A2A] rounded-lg px-3 py-2.5 text-sm text-[#FAFAFA] focus:outline-none focus:border-[#F2FF66]/40 [color-scheme:dark]" />
+          <input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} title="From" className="bg-[#070707] border border-[rgba(255,255,255,0.08)] rounded-lg px-3 py-2.5 text-sm text-[#f0f0f0] focus:outline-none focus:border-[#212629] [color-scheme:dark]" />
+          <input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} title="To" className="bg-[#070707] border border-[rgba(255,255,255,0.08)] rounded-lg px-3 py-2.5 text-sm text-[#f0f0f0] focus:outline-none focus:border-[#212629] [color-scheme:dark]" />
           {(dateFrom || dateTo) && (
-            <button onClick={() => { setDateFrom(''); setDateTo(''); }} className="text-xs text-[#888888] hover:text-[#FAFAFA] px-2 border border-[#2A2A2A] rounded-lg transition-colors">Clear</button>
+            <button onClick={() => { setDateFrom(''); setDateTo(''); }} className="text-xs text-[#a1a4a5] hover:text-[#f0f0f0] px-2 border border-[rgba(255,255,255,0.08)] rounded-lg transition-colors">Clear</button>
           )}
         </div>
       </div>
@@ -635,8 +643,8 @@ export default function CustomerOrders() {
               onClick={() => setStatusFilter(s)}
               className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition-colors border ${
                 statusFilter === s
-                  ? 'bg-[#F2FF66]/10 text-[#F2FF66] border-[#F2FF66]/20'
-                  : 'bg-[#191314] text-[#888888] border-[#2A2A2A] hover:text-[#FAFAFA]'
+                  ? 'bg-[#18191ce0] text-[#f0f0f0] border-[rgba(255,255,255,0.12)]'
+                  : 'bg-[#070707] text-[#a1a4a5] border-[rgba(255,255,255,0.08)] hover:text-[#f0f0f0]'
               }`}
             >
               {s === 'all' ? 'All' : STATUS_LABELS[s]}
@@ -650,15 +658,15 @@ export default function CustomerOrders() {
       {drafts.length > 0 && (
         <div>
           <div className="flex items-center gap-2 mb-2">
-            <h2 className="text-xs font-semibold text-[#888888] uppercase tracking-wider">Drafts</h2>
-            <span className="text-[10px] bg-amber-500/20 text-amber-400 border border-amber-500/30 px-2 py-0.5 rounded-full font-medium">{drafts.length}</span>
+            <h2 className="text-xs font-semibold text-[#a1a4a5] uppercase tracking-wider">Drafts</h2>
+            <span className="text-[10px] bg-[rgba(150,105,35,0.18)] text-[#aa8040] border border-[rgba(150,105,35,0.25)] px-2 py-0.5 rounded-full font-medium">{drafts.length}</span>
           </div>
 
           {/* Desktop table */}
-          <div className="hidden md:block rounded-xl border border-[#2A2A2A] overflow-hidden">
+          <div className="hidden md:block rounded-xl border border-[rgba(255,255,255,0.08)] overflow-hidden">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-[#2A2A2A] bg-[#111]">
+                <tr className="border-b border-[rgba(255,255,255,0.08)] bg-[#111]">
                   {['Order #', 'Pickup area', 'Items', 'Date saved', 'Fee', ''].map((h) => (
                     <th key={h} className="text-left text-[#555] text-xs font-medium px-4 py-3">{h}</th>
                   ))}
@@ -668,13 +676,13 @@ export default function CustomerOrders() {
                 {drafts.map((d) => (
                   <tr key={d.order_number} className="group border-b border-[#1A1A1A] last:border-0 hover:bg-[#1A1A1A] transition-colors">
                     <td className="px-4 py-3">
-                      <span className="font-mono text-xs text-amber-400">{d.order_number}</span>
-                      <span className="ml-2 text-[9px] bg-amber-500/20 text-amber-400 border border-amber-500/30 px-1.5 py-0.5 rounded-full font-medium uppercase">Draft</span>
+                      <span className="font-mono text-xs text-[#aa8040]">{d.order_number}</span>
+                      <span className="ml-2 text-[9px] bg-[rgba(150,105,35,0.18)] text-[#aa8040] border border-[rgba(150,105,35,0.25)] px-1.5 py-0.5 rounded-full font-medium uppercase">Draft</span>
                     </td>
-                    <td className="px-4 py-3 text-[#FAFAFA] text-xs">{d.pickup_area || '—'}</td>
-                    <td className="px-4 py-3 text-[#888888] text-xs">{d.delivery_count}</td>
-                    <td className="px-4 py-3 text-[#888888] text-xs">{fmtDate(d.updated_at || d.created_at)}</td>
-                    <td className="px-4 py-3 text-[#888888] text-xs">{d.total_fee != null ? `₦${d.total_fee.toLocaleString()}` : '—'}</td>
+                    <td className="px-4 py-3 text-[#f0f0f0] text-xs">{d.pickup_area || '—'}</td>
+                    <td className="px-4 py-3 text-[#a1a4a5] text-xs">{d.delivery_count}</td>
+                    <td className="px-4 py-3 text-[#a1a4a5] text-xs">{fmtDate(d.updated_at || d.created_at)}</td>
+                    <td className="px-4 py-3 text-[#a1a4a5] text-xs">{d.total_fee != null ? `₦${d.total_fee.toLocaleString()}` : '—'}</td>
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-end gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
                         <ActionBtn title="Edit draft" onClick={() => router.push(`/customer/orders/create?draft=${d.order_number}`)}>
@@ -694,12 +702,12 @@ export default function CustomerOrders() {
           {/* Mobile cards */}
           <div className="md:hidden space-y-2">
             {drafts.map((d) => (
-              <div key={d.order_number} className="bg-[#191314] border border-amber-500/20 rounded-xl p-4">
+              <div key={d.order_number} className="bg-[#070707] border border-amber-500/20 rounded-xl p-4">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
-                    <span className="font-mono text-xs text-amber-400">{d.order_number}</span>
-                    <p className="text-sm text-[#FAFAFA] mt-1">{d.pickup_area} · {d.delivery_count} item{d.delivery_count !== 1 ? 's' : ''}</p>
-                    <p className="text-xs text-[#888888] mt-0.5">{fmtDate(d.updated_at || d.created_at)}{d.total_fee != null ? ` · ₦${d.total_fee.toLocaleString()}` : ''}</p>
+                    <span className="font-mono text-xs text-[#aa8040]">{d.order_number}</span>
+                    <p className="text-sm text-[#f0f0f0] mt-1">{d.pickup_area} · {d.delivery_count} item{d.delivery_count !== 1 ? 's' : ''}</p>
+                    <p className="text-xs text-[#a1a4a5] mt-0.5">{fmtDate(d.updated_at || d.created_at)}{d.total_fee != null ? ` · ₦${d.total_fee.toLocaleString()}` : ''}</p>
                   </div>
                   <div className="flex items-center gap-1 flex-shrink-0">
                     <ActionBtn title="Edit draft" onClick={() => router.push(`/customer/orders/create?draft=${d.order_number}`)}>
@@ -714,7 +722,7 @@ export default function CustomerOrders() {
             ))}
           </div>
 
-          <div className="border-t border-[#2A2A2A] mt-4" />
+          <div className="border-t border-[rgba(255,255,255,0.08)] mt-4" />
         </div>
       )}
 
@@ -725,18 +733,18 @@ export default function CustomerOrders() {
       {loading ? (
         <div className="space-y-2">
           {[...Array(4)].map((_, i) => (
-            <div key={i} className="bg-[#191314] border border-[#2A2A2A] rounded-xl h-16 animate-pulse" />
+            <div key={i} className="bg-[#070707] border border-[rgba(255,255,255,0.08)] rounded-xl h-16 animate-pulse" />
           ))}
         </div>
       ) : orders.length === 0 ? (
-        <div className="bg-[#191314] border border-[#2A2A2A] rounded-xl p-10 text-center">
+        <div className="bg-[#070707] border border-[rgba(255,255,255,0.08)] rounded-xl p-10 text-center">
           <p className="text-3xl mb-3">📦</p>
-          <p className="text-[#FAFAFA] font-medium">No orders found</p>
-          <p className="text-[#888888] text-sm mt-1">
+          <p className="text-[#f0f0f0] font-medium">No orders found</p>
+          <p className="text-[#a1a4a5] text-sm mt-1">
             {allOrders.length === 0 ? 'Your delivery history will appear here' : 'Try adjusting your filters'}
           </p>
           {allOrders.length === 0 && (
-            <Link href="/customer/orders/create" className="inline-block mt-4 bg-[#F2FF66] text-[#0A0A0A] px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-[#E5F25E] transition-colors">
+            <Link href="/customer/orders/create" className="inline-block mt-4 border border-[rgba(255,255,255,0.12)] text-[#f0f0f0] px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-[rgba(255,255,255,0.05)] transition-colors">
               Create Your First Order
             </Link>
           )}
@@ -744,10 +752,10 @@ export default function CustomerOrders() {
       ) : (
         <>
           {/* Desktop table */}
-          <div className="hidden md:block rounded-xl border border-[#2A2A2A] overflow-hidden">
+          <div className="hidden md:block rounded-xl border border-[rgba(255,255,255,0.08)] overflow-hidden">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-[#2A2A2A] bg-[#111]">
+                <tr className="border-b border-[rgba(255,255,255,0.08)] bg-[#111]">
                   {['Tracking ID', 'Route', 'Recipient', 'Pickup date', 'Fee', 'Status', ''].map((h) => (
                     <th key={h} className="text-left text-[#555] text-xs font-medium px-4 py-3 whitespace-nowrap">{h}</th>
                   ))}
@@ -764,16 +772,16 @@ export default function CustomerOrders() {
                       onClick={() => openView(order.id)}
                     >
                       <td className="px-4 py-3">
-                        <span className="font-mono text-xs text-[#F2FF66]">{order.id}</span>
+                        <span className="font-mono text-xs text-[#a1a4a5]">{order.id}</span>
                       </td>
-                      <td className="px-4 py-3 text-xs text-[#FAFAFA] max-w-[180px]">
+                      <td className="px-4 py-3 text-xs text-[#f0f0f0] max-w-[180px]">
                         <p className="truncate">{order.pickup_area} → {order.dropoff_area}</p>
                       </td>
-                      <td className="px-4 py-3 text-xs text-[#888888] whitespace-nowrap">{order.recipient_name}</td>
-                      <td className="px-4 py-3 text-xs text-[#888888] whitespace-nowrap">
+                      <td className="px-4 py-3 text-xs text-[#a1a4a5] whitespace-nowrap">{order.recipient_name}</td>
+                      <td className="px-4 py-3 text-xs text-[#a1a4a5] whitespace-nowrap">
                         {order.pickup_date ? fmtDate(order.pickup_date) : '—'}
                       </td>
-                      <td className="px-4 py-3 text-xs text-[#888888] whitespace-nowrap">
+                      <td className="px-4 py-3 text-xs text-[#a1a4a5] whitespace-nowrap">
                         {order.fee != null ? `₦${order.fee.toLocaleString()}` : '—'}
                       </td>
                       <td className="px-4 py-3"><StatusBadge status={order.status} /></td>
@@ -803,21 +811,21 @@ export default function CustomerOrders() {
               const canEdit = order.status === 'pending';
               const canCancel = order.status === 'pending';
               return (
-                <div key={order.id} className="bg-[#191314] border border-[#2A2A2A] rounded-xl p-4">
+                <div key={order.id} className="bg-[#070707] border border-[rgba(255,255,255,0.08)] rounded-xl p-4">
                   <div className="flex items-start justify-between gap-3 mb-3">
                     <div className="min-w-0 flex-1">
-                      <p className="font-mono text-xs text-[#F2FF66] truncate">{order.id}</p>
-                      <p className="text-sm text-[#FAFAFA] mt-1 truncate">{order.pickup_area} → {order.dropoff_area}</p>
+                      <p className="font-mono text-xs text-[#a1a4a5] truncate">{order.id}</p>
+                      <p className="text-sm text-[#f0f0f0] mt-1 truncate">{order.pickup_area} → {order.dropoff_area}</p>
                       <div className="flex items-center gap-2 mt-1 flex-wrap">
-                        <span className="text-xs text-[#888888]">{order.recipient_name}</span>
-                        {order.pickup_date && <span className="text-xs text-[#888888]">{fmtDate(order.pickup_date)}</span>}
-                        {order.fee != null && <span className="text-xs text-[#888888]">₦{order.fee.toLocaleString()}</span>}
+                        <span className="text-xs text-[#a1a4a5]">{order.recipient_name}</span>
+                        {order.pickup_date && <span className="text-xs text-[#a1a4a5]">{fmtDate(order.pickup_date)}</span>}
+                        {order.fee != null && <span className="text-xs text-[#a1a4a5]">₦{order.fee.toLocaleString()}</span>}
                       </div>
                     </div>
                     <StatusBadge status={order.status} />
                   </div>
                   {/* Always-visible actions on mobile */}
-                  <div className="flex items-center gap-1 border-t border-[#2A2A2A] pt-3">
+                  <div className="flex items-center gap-1 border-t border-[rgba(255,255,255,0.08)] pt-3">
                     <ActionBtn title="View details" onClick={() => openView(order.id)}>
                       {EyeIcon}
                     </ActionBtn>
@@ -838,7 +846,7 @@ export default function CustomerOrders() {
       {/* FAB (mobile) */}
       <Link
         href="/customer/orders/create"
-        className="md:hidden fixed right-4 bottom-20 z-40 bg-[#F2FF66] text-[#0A0A0A] w-14 h-14 rounded-full flex items-center justify-center text-2xl font-bold shadow-lg hover:bg-[#E5F25E] active:scale-95 transition-all"
+        className="md:hidden fixed right-4 bottom-20 z-40 bg-[#F2FF66] text-[#000000] w-14 h-14 rounded-full flex items-center justify-center text-2xl font-bold shadow-lg hover:bg-[#E5F25E] active:scale-95 transition-all"
         aria-label="Create Order"
       >+</Link>
 

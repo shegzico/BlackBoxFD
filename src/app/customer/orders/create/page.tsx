@@ -16,10 +16,10 @@ import {
 /* ------------------------------------------------------------------ */
 
 const inputClass =
-  'w-full rounded-lg bg-[#232023] border border-gray-700 text-[#FAFAFA] px-3 py-3 text-sm placeholder-gray-600 focus:outline-none focus:border-[#F2FF66] focus:ring-1 focus:ring-[#F2FF66] transition-colors';
+  'w-full rounded-lg bg-[#232023] border border-[rgba(255,255,255,0.06)] text-[#f0f0f0] px-3 py-3 text-sm placeholder-gray-600 focus:outline-none focus:border-[#212629] focus:ring-1 focus:ring-[#212629] transition-colors';
 
 const selectClass =
-  'w-full rounded-lg bg-[#232023] border border-gray-700 text-[#FAFAFA] px-3 py-3 text-sm focus:outline-none focus:border-[#F2FF66] focus:ring-1 focus:ring-[#F2FF66] transition-colors appearance-none';
+  'w-full rounded-lg bg-[#232023] border border-[rgba(255,255,255,0.06)] text-[#f0f0f0] px-3 py-3 text-sm focus:outline-none focus:border-[#212629] focus:ring-1 focus:ring-[#212629] transition-colors appearance-none';
 
 /* ------------------------------------------------------------------ */
 /*  State interfaces                                                    */
@@ -126,7 +126,7 @@ function emptyDelivery(): DeliveryItem {
 
 function SectionHeading({ children }: { children: React.ReactNode }) {
   return (
-    <h2 className="text-[#F2FF66] font-semibold text-sm uppercase tracking-wider mb-4">
+    <h2 className="text-[#a1a4a5] font-semibold text-sm uppercase tracking-wider mb-4">
       {children}
     </h2>
   );
@@ -223,23 +223,23 @@ function EstimateSummary({
   const total = subtotal + vat;
 
   return (
-    <div className="rounded-xl border border-[#2A2A2A] bg-[#191314] flex flex-col h-full">
+    <div className="rounded-xl border border-[rgba(255,255,255,0.08)] bg-[#070707] flex flex-col h-full">
       {/* Fixed header */}
-      <div className="px-5 pt-5 pb-3 border-b border-[#2A2A2A] flex-shrink-0">
-        <h3 className="text-[#FAFAFA] font-semibold text-base">Estimate Summary</h3>
+      <div className="px-5 pt-5 pb-3 border-b border-[rgba(255,255,255,0.08)] flex-shrink-0">
+        <h3 className="text-[#f0f0f0] font-semibold text-base">Estimate Summary</h3>
       </div>
 
       {/* Scrollable content */}
       <div className="flex-1 overflow-y-auto px-5 py-4 flex flex-col gap-4">
         {/* Pickup Details */}
         <div className="flex flex-col gap-1.5">
-          <p className="text-[#888888] text-[10px] font-semibold uppercase tracking-wider mb-0.5">Pickup</p>
-          <p className="text-[#FAFAFA] font-bold text-sm">{pickup.sender_name || '—'}</p>
+          <p className="text-[#a1a4a5] text-[10px] font-semibold uppercase tracking-wider mb-0.5">Pickup</p>
+          <p className="text-[#f0f0f0] font-bold text-sm">{pickup.sender_name || '—'}</p>
           <p className="text-gray-400 text-xs">{pickup.pickup_address || pickup.pickup_area}</p>
           <p className="text-gray-400 text-xs">{formatDate(pickup.pickup_date)}</p>
         </div>
 
-        <div className="border-t border-[#2A2A2A]" />
+        <div className="border-t border-[rgba(255,255,255,0.08)]" />
 
         {/* Delivery entries */}
         {displayDeliveries.map((d, idx) => {
@@ -247,12 +247,12 @@ function EstimateSummary({
           return (
             <div key={d._id} className="flex flex-col gap-1">
               <div className="flex items-center justify-between">
-                <p className="text-[#F2FF66] text-xs font-semibold uppercase tracking-wider">
+                <p className="text-[#a1a4a5] text-xs font-semibold uppercase tracking-wider">
                   {isMulti ? `Delivery ${idx + 1}` : 'Delivery'}
                 </p>
-                <p className="text-[#F2FF66] font-bold text-sm">{formatCurrency(fee)}</p>
+                <p className="text-[#f0f0f0] font-bold text-sm">{formatCurrency(fee)}</p>
               </div>
-              <p className="text-[#FAFAFA] font-bold text-sm">{d.recipient_name || '—'}</p>
+              <p className="text-[#f0f0f0] font-bold text-sm">{d.recipient_name || '—'}</p>
               <p className="text-gray-400 text-xs">
                 {d.dropoff_address || '—'}{d.dropoff_area ? ` · ${d.dropoff_area}` : ''}
               </p>
@@ -263,29 +263,29 @@ function EstimateSummary({
                 <p className="text-gray-500 text-xs line-clamp-2">{d.package_description}</p>
               )}
               {idx < displayDeliveries.length - 1 && (
-                <div className="border-t border-[#2A2A2A] mt-2" />
+                <div className="border-t border-[rgba(255,255,255,0.08)] mt-2" />
               )}
             </div>
           );
         })}
 
-        <div className="border-t border-[#2A2A2A]" />
+        <div className="border-t border-[rgba(255,255,255,0.08)]" />
 
         {/* VAT + totals */}
         <div className="flex flex-col gap-2">
           <div className="flex items-center justify-between">
             <p className="text-gray-400 text-sm">Subtotal</p>
-            <p className="text-[#FAFAFA] text-sm">{formatCurrency(subtotal)}</p>
+            <p className="text-[#f0f0f0] text-sm">{formatCurrency(subtotal)}</p>
           </div>
           <div className="flex items-center justify-between">
             <p className="text-gray-500 text-xs">VAT included</p>
-            <p className="text-[#F2FF66] text-xs font-medium">+ 7.5%</p>
+            <p className="text-[#a1a4a5] text-xs font-medium">+ 7.5%</p>
           </div>
         </div>
-        <div className="border-t border-[#2A2A2A]" />
+        <div className="border-t border-[rgba(255,255,255,0.08)]" />
         <div className="flex items-center justify-between">
-          <p className="text-[#FAFAFA] font-bold text-base">Total</p>
-          <p className="text-[#F2FF66] font-bold text-xl">{formatCurrency(total)}</p>
+          <p className="text-[#f0f0f0] font-bold text-base">Total</p>
+          <p className="text-[#f0f0f0] font-bold text-xl">{formatCurrency(total)}</p>
         </div>
 
         {/* Disclaimer */}
@@ -293,17 +293,17 @@ function EstimateSummary({
           Disclaimer: The price is subject to adjustment based on the item&apos;s final weight.
           <br /><br />
           By clicking &quot;Place Order&quot;, you agree to our{' '}
-          <span className="text-[#F2FF66] cursor-pointer">Terms and Conditions</span>.
+          <span className="text-[#a1a4a5] underline cursor-pointer">Terms and Conditions</span>.
         </p>
       </div>
 
       {/* Always-visible action buttons */}
-      <div className="px-5 py-4 border-t border-[#2A2A2A] flex gap-3 flex-shrink-0">
+      <div className="px-5 py-4 border-t border-[rgba(255,255,255,0.08)] flex gap-3 flex-shrink-0">
         <button
           type="button"
           onClick={onSaveDraft}
           disabled={placing || savingDraft}
-          className="flex-1 py-3 rounded-xl font-semibold text-sm border border-[#2A2A2A] text-[#888888] hover:border-[#F2FF66] transition-colors disabled:opacity-60"
+          className="flex-1 py-3 rounded-xl font-semibold text-sm border border-[rgba(255,255,255,0.08)] text-[#a1a4a5] hover:border-[#212629] transition-colors disabled:opacity-60"
         >
           {savingDraft ? 'Saving…' : 'Save as Draft'}
         </button>
@@ -311,7 +311,7 @@ function EstimateSummary({
           type="button"
           onClick={onPlaceOrder}
           disabled={placing || savingDraft}
-          className="flex-1 py-3 rounded-xl font-bold text-sm bg-[#F2FF66] text-[#0A0A0A] hover:bg-[#e8f550] transition-colors disabled:opacity-60"
+          className="flex-1 py-3 rounded-xl font-bold text-sm bg-[#F2FF66] text-[#000000] hover:bg-[#e8f550] transition-colors disabled:opacity-60"
         >
           {placing ? 'Placing…' : draftOrderNumber ? 'Confirm Order' : 'Place Order'}
         </button>
@@ -326,7 +326,7 @@ function EstimateSummary({
 
 function EstimatePlaceholder() {
   return (
-    <div className="rounded-xl border border-dashed border-[#2A2A2A] bg-[#191314] p-8 flex flex-col items-center justify-center gap-3 text-center min-h-[200px]">
+    <div className="rounded-xl border border-dashed border-[rgba(255,255,255,0.08)] bg-[#070707] p-8 flex flex-col items-center justify-center gap-3 text-center min-h-[200px]">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         className="w-10 h-10 text-gray-600"
@@ -342,7 +342,7 @@ function EstimatePlaceholder() {
         />
       </svg>
       <p className="text-gray-500 text-sm">
-        Fill in the form and click <span className="text-[#F2FF66]">Estimate Cost</span> to see a
+        Fill in the form and click <span className="text-[#f0f0f0] underline">Estimate Cost</span> to see a
         price breakdown here.
       </p>
     </div>
@@ -379,7 +379,7 @@ function CompactDeliveryCard({
 
   if (expanded) {
     return (
-      <div className="rounded-xl border border-[#F2FF66]/40 bg-[#191314] p-5 flex flex-col gap-4">
+      <div className="rounded-xl border border-[rgba(255,255,255,0.08)] bg-[#070707] p-5 flex flex-col gap-4">
         <div className="flex items-center justify-between">
           <SectionHeading>Delivery {index + 1}</SectionHeading>
           {/* Only show Done button if not the last card */}
@@ -387,7 +387,7 @@ function CompactDeliveryCard({
             <button
               type="button"
               onClick={onEdit}
-              className="px-3 py-1.5 rounded-lg text-xs border border-[#2A2A2A] text-gray-400 hover:text-[#F2FF66] hover:border-[#F2FF66] transition-colors"
+              className="px-3 py-1.5 rounded-lg text-xs border border-[rgba(255,255,255,0.08)] text-gray-400 hover:text-[#F2FF66] hover:border-[#212629] transition-colors"
             >
               Done
             </button>
@@ -481,9 +481,9 @@ function CompactDeliveryCard({
   }
 
   return (
-    <div className="rounded-xl border border-[#2A2A2A] bg-[#191314] px-4 py-3 flex items-center justify-between gap-3">
+    <div className="rounded-xl border border-[rgba(255,255,255,0.08)] bg-[#070707] px-4 py-3 flex items-center justify-between gap-3">
       <div className="flex flex-col gap-0.5 min-w-0">
-        <p className="text-[#FAFAFA] font-bold text-sm truncate">
+        <p className="text-[#f0f0f0] font-bold text-sm truncate">
           {delivery.recipient_name || <span className="text-gray-600">Unnamed Recipient</span>}
         </p>
         <p className="text-gray-500 text-xs truncate">
@@ -512,7 +512,7 @@ function CompactDeliveryCard({
             type="button"
             onClick={onRemove}
             title="Remove"
-            className="p-1.5 rounded-lg text-gray-500 hover:text-red-400 hover:bg-red-400/10 transition-colors"
+            className="p-1.5 rounded-lg text-gray-500 hover:text-[#a85858] hover:bg-red-400/10 transition-colors"
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -563,51 +563,51 @@ function BulkUploadZone({ onFile, onDownloadTemplate }: BulkUploadZoneProps) {
         onDrop={handleDrop}
         onClick={() => fileInputRef.current?.click()}
         className={`rounded-xl border-2 border-dashed cursor-pointer transition-colors flex flex-col items-center justify-center gap-2 py-12 px-6 text-center ${
-          isDragging ? 'border-[#F2FF66] bg-[#F2FF66]/5' : 'border-[#2A2A2A] bg-[#0A0A0A] hover:border-gray-600'
+          isDragging ? 'border-[#F2FF66] bg-[#F2FF66]/5' : 'border-[rgba(255,255,255,0.08)] bg-[#000000] hover:border-gray-600'
         }`}
       >
         <svg xmlns="http://www.w3.org/2000/svg" className={`w-8 h-8 ${isDragging ? 'text-[#F2FF66]' : 'text-gray-600'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
         </svg>
         <p className="text-gray-300 text-sm font-medium">
-          Drop your file here or <span className="text-[#F2FF66]">Browse</span>
+          Drop your file here or <span className="text-[#a1a4a5] underline">Browse</span>
         </p>
         <p className="text-gray-600 text-xs">Max. file size must be 2MB (Supported format: .XLS, .CSV)</p>
         <input ref={fileInputRef} type="file" accept=".csv,.xlsx,.xls" className="hidden" onChange={handleChange} />
       </div>
 
       {/* Document sample row */}
-      <div className="flex items-center justify-between bg-[#0A0A0A] border border-[#2A2A2A] rounded-xl px-4 py-3">
+      <div className="flex items-center justify-between bg-[#000000] border border-[rgba(255,255,255,0.08)] rounded-xl px-4 py-3">
         <div className="flex items-center gap-2">
           <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
           </svg>
           <div>
-            <p className="text-[#FAFAFA] text-xs font-semibold">Document Sample</p>
+            <p className="text-[#f0f0f0] text-xs font-semibold">Document Sample</p>
             <p className="text-gray-500 text-[10px]">Download the template and use it as a guide to create yours.</p>
           </div>
         </div>
         <button
           type="button"
           onClick={onDownloadTemplate}
-          className="px-3 py-1.5 rounded-lg border border-[#2A2A2A] text-xs text-gray-300 hover:text-[#F2FF66] hover:border-[#F2FF66] transition-colors flex-shrink-0"
+          className="px-3 py-1.5 rounded-lg border border-[rgba(255,255,255,0.08)] text-xs text-gray-300 hover:text-[#F2FF66] hover:border-[#212629] transition-colors flex-shrink-0"
         >
           Download
         </button>
       </div>
 
       {/* Field instructions */}
-      <div className="rounded-xl border border-[#F2FF66]/20 bg-[#F2FF66]/5 px-4 py-4 flex flex-col gap-2">
-        <p className="text-[#F2FF66] text-xs font-bold">Guide for Filling Bulk Upload Template</p>
+      <div className="rounded-xl border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.03)] px-4 py-4 flex flex-col gap-2">
+        <p className="text-[#a1a4a5] text-xs font-bold">Guide for Filling Bulk Upload Template</p>
         <p className="text-gray-400 text-xs">Field Instructions for Bulk Upload Template</p>
         <ul className="flex flex-col gap-1.5 text-xs text-gray-400 list-none">
-          <li><span className="text-[#FAFAFA] font-medium">recipient_name</span> → Enter the recipient&apos;s full legal name (first name and surname).</li>
-          <li><span className="text-[#FAFAFA] font-medium">recipient_phone</span> → Nigerian phone number (e.g. 08012345678 or +2348012345678).</li>
-          <li><span className="text-[#FAFAFA] font-medium">recipient_email</span> → Optional. Recipient&apos;s email address.</li>
-          <li><span className="text-[#FAFAFA] font-medium">dropoff_area</span> → Lagos delivery zone (e.g. Victoria Island, Ikeja, Lekki Phase 1).</li>
-          <li><span className="text-[#FAFAFA] font-medium">dropoff_address</span> → Provide the complete delivery address.</li>
-          <li><span className="text-[#FAFAFA] font-medium">package_weight</span> → Enter the accurate weight in kg (e.g. 1.5). Required for calculating delivery cost.</li>
-          <li><span className="text-[#FAFAFA] font-medium">package_description</span> → Describe the item, declare value, indicate insurance, add delivery instructions.</li>
+          <li><span className="text-[#f0f0f0] font-medium">recipient_name</span> → Enter the recipient&apos;s full legal name (first name and surname).</li>
+          <li><span className="text-[#f0f0f0] font-medium">recipient_phone</span> → Nigerian phone number (e.g. 08012345678 or +2348012345678).</li>
+          <li><span className="text-[#f0f0f0] font-medium">recipient_email</span> → Optional. Recipient&apos;s email address.</li>
+          <li><span className="text-[#f0f0f0] font-medium">dropoff_area</span> → Lagos delivery zone (e.g. Victoria Island, Ikeja, Lekki Phase 1).</li>
+          <li><span className="text-[#f0f0f0] font-medium">dropoff_address</span> → Provide the complete delivery address.</li>
+          <li><span className="text-[#f0f0f0] font-medium">package_weight</span> → Enter the accurate weight in kg (e.g. 1.5). Required for calculating delivery cost.</li>
+          <li><span className="text-[#f0f0f0] font-medium">package_description</span> → Describe the item, declare value, indicate insurance, add delivery instructions.</li>
         </ul>
       </div>
     </div>
@@ -662,16 +662,16 @@ function BulkPreviewCards({
   return (
     <div className="flex flex-col gap-4">
       {/* Summary line */}
-      <div className="rounded-lg border border-[#2A2A2A] bg-[#0A0A0A] px-4 py-2.5 text-sm">
+      <div className="rounded-lg border border-[rgba(255,255,255,0.08)] bg-[#000000] px-4 py-2.5 text-sm">
         Found{' '}
-        <span className="text-green-400 font-semibold">{validRows.length} valid</span>
+        <span className="text-[#3d8050] font-semibold">{validRows.length} valid</span>
         {' '}and{' '}
-        <span className="text-red-400 font-semibold">{invalidRows.length} invalid</span>
+        <span className="text-[#a85858] font-semibold">{invalidRows.length} invalid</span>
         {' '}deliveries.
       </div>
 
       {/* Tabs + Remove all */}
-      <div className="flex items-center justify-between border-b border-[#2A2A2A]">
+      <div className="flex items-center justify-between border-b border-[rgba(255,255,255,0.08)]">
         <div className="flex">
           {(['valid', 'invalid'] as const).map((tab) => (
             <button
@@ -680,8 +680,8 @@ function BulkPreviewCards({
               onClick={() => setActiveTab(tab)}
               className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors capitalize ${
                 activeTab === tab
-                  ? 'border-[#F2FF66] text-[#F2FF66]'
-                  : 'border-transparent text-gray-500 hover:text-[#FAFAFA]'
+                  ? 'border-[rgba(255,255,255,0.2)] text-[#f0f0f0]'
+                  : 'border-transparent text-gray-500 hover:text-[#f0f0f0]'
               }`}
             >
               {tab} ({tab === 'valid' ? validRows.length : invalidRows.length})
@@ -691,7 +691,7 @@ function BulkPreviewCards({
         <button
           type="button"
           onClick={() => onRemoveAll(activeTab)}
-          className="flex items-center gap-1.5 text-xs text-red-400 hover:text-red-300 border border-red-800/40 hover:border-red-600/40 px-3 py-1.5 rounded-lg transition-colors"
+          className="flex items-center gap-1.5 text-xs text-[#a85858] hover:text-red-300 border border-red-800/40 hover:border-red-600/40 px-3 py-1.5 rounded-lg transition-colors"
         >
           <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -701,12 +701,12 @@ function BulkPreviewCards({
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto rounded-xl border border-[#2A2A2A]">
+      <div className="overflow-x-auto rounded-xl border border-[rgba(255,255,255,0.08)]">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-[#2A2A2A]">
+            <tr className="border-b border-[rgba(255,255,255,0.08)]">
               {['Full Name', 'Address', 'Phone number', 'Weight', 'Item Desc.', 'Action'].map((h) => (
-                <th key={h} className="text-left text-[#888888] text-xs font-medium px-3 py-3 whitespace-nowrap">{h}</th>
+                <th key={h} className="text-left text-[#a1a4a5] text-xs font-medium px-3 py-3 whitespace-nowrap">{h}</th>
               ))}
             </tr>
           </thead>
@@ -721,18 +721,18 @@ function BulkPreviewCards({
                   key={row._id}
                   className={`border-b border-[#1A1A1A] last:border-0 ${row._error ? 'bg-red-900/10' : 'hover:bg-[#1A1A1A]'}`}
                 >
-                  <td className="px-3 py-3 text-[#FAFAFA] text-xs whitespace-nowrap">
+                  <td className="px-3 py-3 text-[#f0f0f0] text-xs whitespace-nowrap">
                     {row.recipient_name || <span className="text-gray-600 italic">Missing</span>}
                   </td>
                   <td className="px-3 py-3 text-gray-400 text-xs max-w-[200px]">
-                    <p className="truncate">{row.dropoff_address || <span className="text-red-400 italic">Missing</span>}</p>
-                    {row.dropoff_area && <p className="text-[#888888] text-[10px] truncate">{row.dropoff_area}</p>}
+                    <p className="truncate">{row.dropoff_address || <span className="text-[#a85858] italic">Missing</span>}</p>
+                    {row.dropoff_area && <p className="text-[#a1a4a5] text-[10px] truncate">{row.dropoff_area}</p>}
                   </td>
                   <td className="px-3 py-3 text-gray-400 text-xs whitespace-nowrap">
-                    {row.recipient_phone || <span className="text-red-400 italic">Missing</span>}
+                    {row.recipient_phone || <span className="text-[#a85858] italic">Missing</span>}
                   </td>
                   <td className="px-3 py-3 text-gray-400 text-xs whitespace-nowrap">
-                    {row.package_weight ? `${row.package_weight}kg` : <span className="text-red-400 italic">Missing</span>}
+                    {row.package_weight ? `${row.package_weight}kg` : <span className="text-[#a85858] italic">Missing</span>}
                   </td>
                   <td className="px-3 py-3 text-gray-400 text-xs max-w-[160px]">
                     <p className="truncate">{row.package_description || '—'}</p>
@@ -743,7 +743,7 @@ function BulkPreviewCards({
                         type="button"
                         onClick={() => onSetEditing(row._id)}
                         title="Edit"
-                        className="p-1.5 text-[#F2FF66]/60 hover:text-[#F2FF66] hover:bg-[#F2FF66]/10 rounded-lg transition-colors"
+                        className="p-1.5 text-[#a1a4a5] hover:text-[#f0f0f0] hover:bg-[rgba(255,255,255,0.06)] rounded-lg transition-colors"
                       >
                         <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                           <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536M9 13l6.586-6.586a2 2 0 112.828 2.828L11.828 15.828a2 2 0 01-1.414.586H9v-2a2 2 0 01.586-1.414z" />
@@ -753,7 +753,7 @@ function BulkPreviewCards({
                         type="button"
                         onClick={() => onDeleteRow(row._id)}
                         title="Remove"
-                        className="p-1.5 text-red-500/60 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-colors"
+                        className="p-1.5 text-red-500/60 hover:text-[#a85858] hover:bg-red-400/10 rounded-lg transition-colors"
                       >
                         <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                           <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -772,7 +772,7 @@ function BulkPreviewCards({
       {activeTab === 'valid' && (
         <div className="flex flex-col items-end gap-2">
           {invalidRows.length > 0 && (
-            <p className="text-xs text-red-400">
+            <p className="text-xs text-[#a85858]">
               Fix or remove all {invalidRows.length} invalid row{invalidRows.length !== 1 ? 's' : ''} before importing.
             </p>
           )}
@@ -780,7 +780,7 @@ function BulkPreviewCards({
             type="button"
             onClick={onConfirm}
             disabled={validRows.length === 0 || invalidRows.length > 0}
-            className="px-5 py-2.5 rounded-xl bg-[#F2FF66] text-[#0A0A0A] font-semibold text-sm hover:bg-[#e8f550] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            className="px-5 py-2.5 rounded-xl bg-[#F2FF66] text-[#000000] font-semibold text-sm hover:bg-[#e8f550] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
           >
             Import {validRows.length} deliver{validRows.length === 1 ? 'y' : 'ies'}
           </button>
@@ -790,13 +790,13 @@ function BulkPreviewCards({
       {/* Edit modal overlay */}
       {editingRow && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70">
-          <div className="bg-[#191314] border border-[#2A2A2A] rounded-2xl p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto flex flex-col gap-4">
+          <div className="bg-[#070707] border border-[rgba(255,255,255,0.08)] rounded-2xl p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto flex flex-col gap-4">
             <div className="flex items-center justify-between">
-              <h3 className="text-[#FAFAFA] font-semibold text-base">Edit Delivery Details</h3>
+              <h3 className="text-[#f0f0f0] font-semibold text-base">Edit Delivery Details</h3>
               <button
                 type="button"
                 onClick={() => onSetEditing(null)}
-                className="text-gray-500 hover:text-[#FAFAFA] transition-colors"
+                className="text-gray-500 hover:text-[#f0f0f0] transition-colors"
               >
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -841,14 +841,14 @@ function BulkPreviewCards({
               <button
                 type="button"
                 onClick={() => onSetEditing(null)}
-                className="flex-1 py-2.5 rounded-xl border border-[#2A2A2A] text-gray-400 text-sm hover:text-[#FAFAFA] transition-colors"
+                className="flex-1 py-2.5 rounded-xl border border-[rgba(255,255,255,0.08)] text-gray-400 text-sm hover:text-[#f0f0f0] transition-colors"
               >
                 Cancel
               </button>
               <button
                 type="button"
                 onClick={() => { onSaveRow(editingRow._id); onSetEditing(null); }}
-                className="flex-1 py-2.5 rounded-xl bg-[#F2FF66] text-[#0A0A0A] font-semibold text-sm hover:bg-[#e8f550] transition-colors"
+                className="flex-1 py-2.5 rounded-xl bg-[#F2FF66] text-[#000000] font-semibold text-sm hover:bg-[#e8f550] transition-colors"
               >
                 Save Changes
               </button>
@@ -871,7 +871,7 @@ interface PickupSectionProps {
 
 function PickupSection({ pickup, onChange }: PickupSectionProps) {
   return (
-    <div className="rounded-xl border border-[#2A2A2A] bg-[#191314] p-5 flex flex-col gap-4">
+    <div className="rounded-xl border border-[rgba(255,255,255,0.08)] bg-[#070707] p-5 flex flex-col gap-4">
       <SectionHeading>Pickup Details</SectionHeading>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -953,13 +953,13 @@ function PickupSection({ pickup, onChange }: PickupSectionProps) {
       <label className="flex items-center gap-3 cursor-pointer select-none">
         <div
           onClick={() => onChange('is_express', !pickup.is_express)}
-          className={`relative w-11 h-6 rounded-full transition-colors ${pickup.is_express ? 'bg-[#F2FF66]' : 'bg-gray-700'}`}
+          className={`relative w-11 h-6 rounded-full transition-colors ${pickup.is_express ? 'bg-[#3d5a3a]' : 'bg-[rgba(255,255,255,0.12)]'}`}
         >
           <span
-            className={`absolute top-1 w-4 h-4 rounded-full bg-[#0A0A0A] transition-all ${pickup.is_express ? 'left-6' : 'left-1'}`}
+            className={`absolute top-1 w-4 h-4 rounded-full bg-[#000000] transition-all ${pickup.is_express ? 'left-6' : 'left-1'}`}
           />
         </div>
-        <span className="text-sm text-[#FAFAFA]">Express Delivery</span>
+        <span className="text-sm text-[#f0f0f0]">Express Delivery</span>
         <span className="text-xs text-gray-500">(faster, higher rate)</span>
       </label>
     </div>
@@ -977,7 +977,7 @@ interface SingleDeliveryFormProps {
 
 function SingleDeliveryForm({ delivery, onChange }: SingleDeliveryFormProps) {
   return (
-    <div className="rounded-xl border border-[#2A2A2A] bg-[#191314] p-5 flex flex-col gap-4">
+    <div className="rounded-xl border border-[rgba(255,255,255,0.08)] bg-[#070707] p-5 flex flex-col gap-4">
       <SectionHeading>Delivery Details</SectionHeading>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -1492,25 +1492,25 @@ function CreateOrderPageContent() {
   ==================================================================== */
 
   return (
-    <div className="min-h-screen bg-[#0A0A0A] text-[#FAFAFA]">
+    <div className="min-h-screen bg-[#000000] text-[#f0f0f0]">
       {/* Header */}
-      <header className="border-b border-[#1a1a1a] bg-[#0A0A0A] sticky top-0 z-10">
+      <header className="border-b border-[#1a1a1a] bg-[#000000] sticky top-0 z-10">
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center gap-4">
-          <Link href="/customer/orders" className="text-gray-500 hover:text-[#FAFAFA] transition-colors text-sm">
+          <Link href="/customer/orders" className="text-gray-500 hover:text-[#f0f0f0] transition-colors text-sm">
             ← Back
           </Link>
-          <h1 className="text-[#FAFAFA] font-bold text-lg">Create Order</h1>
+          <h1 className="text-[#f0f0f0] font-bold text-lg">Create Order</h1>
         </div>
       </header>
 
       <main className="max-w-6xl mx-auto px-4 py-8">
         {/* Draft order banner */}
         {draftOrderNumber && (
-          <div className="mb-6 rounded-xl border border-amber-600/40 bg-amber-900/20 px-4 py-3 flex items-center gap-3">
-            <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-amber-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <div className="mb-6 rounded-xl border border-[rgba(130,85,25,0.25)] bg-[rgba(80,50,15,0.15)] px-4 py-3 flex items-center gap-3">
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-[#aa8040] flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            <p className="text-amber-300 text-sm">
+            <p className="text-[#b89050] text-sm">
               Editing draft order <span className="font-bold">{draftOrderNumber}</span>
             </p>
           </div>
@@ -1518,20 +1518,20 @@ function CreateOrderPageContent() {
 
         {/* Loading draft spinner */}
         {loadingDraft && (
-          <div className="mb-6 rounded-xl border border-[#2A2A2A] bg-[#191314] px-4 py-3 text-gray-400 text-sm">
+          <div className="mb-6 rounded-xl border border-[rgba(255,255,255,0.08)] bg-[#070707] px-4 py-3 text-gray-400 text-sm">
             Loading draft order…
           </div>
         )}
 
         {/* Tab switcher */}
-        <div className="flex gap-1 p-1 bg-[#191314] border border-[#2A2A2A] rounded-xl w-fit mb-8">
+        <div className="flex gap-1 p-1 bg-[#070707] border border-[rgba(255,255,255,0.08)] rounded-xl w-fit mb-8">
           <button
             type="button"
             onClick={() => handleTabSwitch('single')}
             className={`px-5 py-2 rounded-lg text-sm font-semibold transition-colors ${
               activeTab === 'single'
-                ? 'bg-[#F2FF66] text-[#0A0A0A]'
-                : 'text-gray-400 hover:text-[#FAFAFA]'
+                ? 'bg-[#18191ce0] text-[#f0f0f0]'
+                : 'text-gray-400 hover:text-[#f0f0f0]'
             }`}
           >
             Single Delivery
@@ -1541,8 +1541,8 @@ function CreateOrderPageContent() {
             onClick={() => handleTabSwitch('multi')}
             className={`px-5 py-2 rounded-lg text-sm font-semibold transition-colors ${
               activeTab === 'multi'
-                ? 'bg-[#F2FF66] text-[#0A0A0A]'
-                : 'text-gray-400 hover:text-[#FAFAFA]'
+                ? 'bg-[#18191ce0] text-[#f0f0f0]'
+                : 'text-gray-400 hover:text-[#f0f0f0]'
             }`}
           >
             Multiple Deliveries
@@ -1564,8 +1564,8 @@ function CreateOrderPageContent() {
                   onClick={() => setMultiInputMode('manual')}
                   className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
                     multiInputMode === 'manual'
-                      ? 'bg-[#F2FF66] text-[#0A0A0A]'
-                      : 'border border-[#2A2A2A] text-[#888888] hover:border-gray-500'
+                      ? 'bg-[#18191ce0] text-[#f0f0f0]'
+                      : 'border border-[rgba(255,255,255,0.08)] text-[#a1a4a5] hover:border-gray-500'
                   }`}
                 >
                   Enter Manually
@@ -1575,8 +1575,8 @@ function CreateOrderPageContent() {
                   onClick={() => setMultiInputMode('bulk')}
                   className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
                     multiInputMode === 'bulk'
-                      ? 'bg-[#F2FF66] text-[#0A0A0A]'
-                      : 'border border-[#2A2A2A] text-[#888888] hover:border-gray-500'
+                      ? 'bg-[#18191ce0] text-[#f0f0f0]'
+                      : 'border border-[rgba(255,255,255,0.08)] text-[#a1a4a5] hover:border-gray-500'
                   }`}
                 >
                   Bulk Upload
@@ -1612,7 +1612,7 @@ function CreateOrderPageContent() {
                 <button
                   type="button"
                   onClick={addDelivery}
-                  className="w-full py-3 rounded-xl border border-dashed border-[#2A2A2A] text-gray-400 hover:text-[#F2FF66] hover:border-[#F2FF66] text-sm font-medium transition-colors"
+                  className="w-full py-3 rounded-xl border border-dashed border-[rgba(255,255,255,0.08)] text-gray-400 hover:text-[#F2FF66] hover:border-[#212629] text-sm font-medium transition-colors"
                 >
                   + Add Another Delivery
                 </button>
@@ -1621,7 +1621,7 @@ function CreateOrderPageContent() {
 
             {/* Multi mode: bulk upload */}
             {isMulti && multiInputMode === 'bulk' && (
-              <div className="rounded-xl border border-[#2A2A2A] bg-[#191314] p-5 flex flex-col gap-4">
+              <div className="rounded-xl border border-[rgba(255,255,255,0.08)] bg-[#070707] p-5 flex flex-col gap-4">
                 <SectionHeading>Bulk Upload</SectionHeading>
 
                 {csvPreview ? (
@@ -1656,7 +1656,7 @@ function CreateOrderPageContent() {
 
             {/* Error */}
             {error && (
-              <div className="rounded-lg border border-red-800 bg-red-900/20 px-4 py-3 text-red-400 text-sm">
+              <div className="rounded-lg border border-red-800 bg-red-900/20 px-4 py-3 text-[#a85858] text-sm">
                 {error}
               </div>
             )}
@@ -1666,7 +1666,7 @@ function CreateOrderPageContent() {
               type="button"
               onClick={handleEstimate}
               disabled={estimating}
-              className="w-full py-4 rounded-xl font-bold text-sm bg-[#F2FF66] text-[#0A0A0A] hover:bg-[#e8f550] transition-colors disabled:opacity-60"
+              className="w-full py-4 rounded-xl font-bold text-sm bg-[#F2FF66] text-[#000000] hover:bg-[#e8f550] transition-colors disabled:opacity-60"
             >
               {estimating ? 'Estimating…' : 'Estimate Cost'}
             </button>
@@ -1700,13 +1700,13 @@ function CreateOrderPageContent() {
 
       {/* ======= MOBILE: Full-screen estimate sheet ======= */}
       {showMobileEstimate && hasEstimated && estimates && (
-        <div className="lg:hidden fixed inset-0 z-[60] bg-[#0A0A0A] flex flex-col">
+        <div className="lg:hidden fixed inset-0 z-[60] bg-[#000000] flex flex-col">
           {/* Sheet header */}
           <div className="flex items-center gap-3 px-4 py-4 border-b border-[#1A1A1A] flex-shrink-0">
             <button
               type="button"
               onClick={() => setShowMobileEstimate(false)}
-              className="flex items-center gap-1.5 text-gray-400 hover:text-[#FAFAFA] text-sm transition-colors"
+              className="flex items-center gap-1.5 text-gray-400 hover:text-[#f0f0f0] text-sm transition-colors"
             >
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
@@ -1736,7 +1736,7 @@ function CreateOrderPageContent() {
 
 export default function CreateOrderPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center"><div className="w-6 h-6 border-2 border-[#F2FF66] border-t-transparent rounded-full animate-spin" /></div>}>
+    <Suspense fallback={<div className="min-h-screen bg-[#000000] flex items-center justify-center"><div className="w-6 h-6 border-2 border-[#F2FF66] border-t-transparent rounded-full animate-spin" /></div>}>
       <CreateOrderPageContent />
     </Suspense>
   );

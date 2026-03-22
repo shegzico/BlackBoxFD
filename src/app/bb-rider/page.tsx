@@ -51,30 +51,30 @@ export default function RiderLoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0A0A0A] text-[#FAFAFA] flex flex-col">
+    <div className="min-h-screen bg-[#000000] text-[#f0f0f0] flex flex-col">
       <Navbar showBack backHref="/" title="Rider Portal" />
 
       <main className="flex-1 flex flex-col items-center justify-center px-4 py-12">
         {/* Logo */}
         <div className="mb-8 flex flex-col items-center gap-2">
           <Logo size="large" />
-          <p className="text-[#888888] text-sm tracking-widest uppercase">Rider Portal</p>
+          <p className="text-[#a1a4a5] text-sm tracking-widest uppercase">Rider Portal</p>
         </div>
 
         {/* Card */}
-        <div className="w-full max-w-sm bg-[#191314] border border-[#2A2A2A] rounded-2xl p-6 shadow-xl">
-          <h1 className="text-xl font-bold text-[#FAFAFA] mb-1">Rider Sign In</h1>
-          <p className="text-[#888888] text-sm mb-6">Enter your username and PIN to continue</p>
+        <div className="w-full max-w-sm bg-[#070707] border border-[rgba(255,255,255,0.08)] rounded-2xl p-6 shadow-xl">
+          <h1 className="text-xl font-bold text-[#f0f0f0] mb-1">Rider Sign In</h1>
+          <p className="text-[#a1a4a5] text-sm mb-6">Enter your username and PIN to continue</p>
 
           {error && (
-            <div className="mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm">
+            <div className="mb-4 p-3 bg-[rgba(135,55,55,0.12)] border border-red-500/30 rounded-lg text-[#a85858] text-sm">
               {error}
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <div className="flex flex-col gap-1.5">
-              <label htmlFor="username" className="text-[#888888] text-xs font-medium uppercase tracking-wider">
+              <label htmlFor="username" className="text-[#a1a4a5] text-xs font-medium uppercase tracking-wider">
                 Username
               </label>
               <input
@@ -87,17 +87,17 @@ export default function RiderLoginPage() {
                 autoComplete="username"
                 autoCapitalize="none"
                 className="
-                  w-full bg-[#0A0A0A] border border-[#2A2A2A] rounded-lg
-                  px-4 py-3 text-[#FAFAFA] text-sm
-                  placeholder:text-[#888888]
-                  focus:outline-none focus:border-[#F2FF66] focus:ring-1 focus:ring-[#F2FF66]/30
+                  w-full bg-[#000000] border border-[rgba(255,255,255,0.08)] rounded-lg
+                  px-4 py-3 text-[#f0f0f0] text-sm
+                  placeholder:text-[#a1a4a5]
+                  focus:outline-none focus:border-[#212629] focus:ring-1 focus:ring-[rgba(33,38,41,0.4)]
                   transition-colors
                 "
               />
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <label htmlFor="pin" className="text-[#888888] text-xs font-medium uppercase tracking-wider">
+              <label htmlFor="pin" className="text-[#a1a4a5] text-xs font-medium uppercase tracking-wider">
                 4-Digit PIN
               </label>
               <input
@@ -116,10 +116,10 @@ export default function RiderLoginPage() {
                 maxLength={4}
                 pattern="\d{4}"
                 className="
-                  w-full bg-[#0A0A0A] border border-[#2A2A2A] rounded-lg
-                  px-4 py-3 text-[#FAFAFA] text-sm tracking-[0.5em]
-                  placeholder:text-[#888888] placeholder:tracking-normal
-                  focus:outline-none focus:border-[#F2FF66] focus:ring-1 focus:ring-[#F2FF66]/30
+                  w-full bg-[#000000] border border-[rgba(255,255,255,0.08)] rounded-lg
+                  px-4 py-3 text-[#f0f0f0] text-sm tracking-[0.5em]
+                  placeholder:text-[#a1a4a5] placeholder:tracking-normal
+                  focus:outline-none focus:border-[#212629] focus:ring-1 focus:ring-[rgba(33,38,41,0.4)]
                   transition-colors
                 "
               />
@@ -130,7 +130,7 @@ export default function RiderLoginPage() {
               type="submit"
               disabled={loading || pin.length !== 4}
               className="
-                mt-2 w-full bg-[#F2FF66] text-[#0A0A0A] font-bold
+                mt-2 w-full bg-[#F2FF66] text-[#000000] font-bold
                 py-3 rounded-lg text-sm
                 hover:bg-[#e8f55c] active:scale-95
                 transition-all duration-150
@@ -153,7 +153,7 @@ export default function RiderLoginPage() {
           </form>
         </div>
 
-        <p className="mt-6 text-[#888888] text-xs text-center">
+        <p className="mt-6 text-[#a1a4a5] text-xs text-center">
           BlackBox Logistics &mdash; Riders Only
         </p>
       </main>

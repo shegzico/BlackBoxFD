@@ -38,7 +38,7 @@ export default function ProgressBar({ status }: { status: DeliveryStatus }) {
                     ? 'bg-[#F2FF66] border-[#F2FF66]'
                     : isCurrent
                     ? 'bg-transparent border-[#F2FF66] ring-2 ring-[#F2FF66]/30'
-                    : 'bg-gray-800 border-gray-700'
+                    : 'bg-[#161616] border-[rgba(255,255,255,0.06)]'
                 }`}
               >
                 {isCompleted ? (

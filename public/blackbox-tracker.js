@@ -30,31 +30,31 @@
     cancelled: 'Cancelled',
   };
   var STATUS_COLORS = {
-    pending: '#f59e0b',
-    assigned: '#3b82f6',
-    picked_up: '#8b5cf6',
-    in_transit: '#f97316',
-    delivered: '#22c55e',
-    confirmed: '#F2FF66',
-    cancelled: '#ef4444',
+    pending:   '#8090a0',
+    assigned:  '#6a8fbf',
+    picked_up: '#aa8040',
+    in_transit:'#a06530',
+    delivered: '#3d8050',
+    confirmed: '#2d6840',
+    cancelled: '#a85858',
   };
 
   // ── Theme definitions ────────────────────────────────────────
   var THEMES = {
     dark: {
-      surface: '#191314',
-      border: '#2A2A2A',
-      text: '#FAFAFA',
-      textMuted: '#888888',
+      surface: '#070707',
+      border: "rgba(255,255,255,0.08)",
+      text: '#f0f0f0',
+      textMuted: '#a1a4a5',
       textDim: '#555555',
       accent: '#F2FF66',
-      accentText: '#0A0A0A',
-      inputBg: '#232023',
+      accentText: '#000000',
+      inputBg: '#18191c',
       inputBorder: '#3A3A3A',
       errorBg: 'rgba(239,68,68,0.1)',
       errorBorder: 'rgba(239,68,68,0.3)',
       errorText: '#f87171',
-      progressTrack: '#2A2A2A',
+      progressTrack: "rgba(255,255,255,0.08)",
       progressDone: 'rgba(255,255,255,0.6)',
       progressActive: 'rgba(255,255,255,0.9)',
       progressLine: 'rgba(255,255,255,0.15)',
@@ -68,7 +68,7 @@
       text: '#111827',
       textMuted: '#6b7280',
       textDim: '#9ca3af',
-      accent: '#0A0A0A',
+      accent: '#000000',
       accentText: '#ffffff',
       inputBg: '#ffffff',
       inputBorder: '#d1d5db',
@@ -167,7 +167,7 @@
       '.bbx-tid{font-family:monospace;font-size:15px;font-weight:700;letter-spacing:1px;}',
       '.bbx-tid-label{font-size:10px;font-weight:500;letter-spacing:.5px;text-transform:uppercase;margin-bottom:3px;}',
       '.bbx-badge{display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;flex-shrink:0;}',
-      '.bbx-express{display:inline-flex;align-items:center;gap:4px;background:#F2FF66;color:#0A0A0A;padding:3px 8px;border-radius:999px;font-size:10px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;margin-left:8px;}',
+      '.bbx-express{display:inline-flex;align-items:center;gap:4px;background:#F2FF66;color:#000000;padding:3px 8px;border-radius:999px;font-size:10px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;margin-left:8px;}',
       /* Info cards */
       '.bbx-cards{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;}',
       '@media(max-width:400px){.bbx-cards{grid-template-columns:1fr;}}',
@@ -454,7 +454,7 @@
           dot.style.background = t.progressDone;
           dot.style.borderColor = t.progressDone;
           dot.innerHTML = ICONS.check;
-          dot.querySelector('svg').style.color = (self.theme === 'dark') ? '#0A0A0A' : '#ffffff';
+          dot.querySelector('svg').style.color = (self.theme === 'dark') ? '#000000' : '#ffffff';
         } else if (isActive) {
           // Outlined, filled center
           dot.style.background = t.progressActive;

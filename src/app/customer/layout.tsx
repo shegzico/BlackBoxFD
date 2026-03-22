@@ -39,13 +39,13 @@ function CustomerShell({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="h-screen bg-[#0A0A0A] text-[#FAFAFA] flex flex-col md:flex-row overflow-hidden">
+    <div className="h-screen bg-[#000000] text-[#f0f0f0] flex flex-col md:flex-row overflow-hidden">
       {/* Desktop Sidebar */}
-      <aside className="hidden md:flex flex-col w-56 bg-[#191314] border-r border-[#2A2A2A] h-screen flex-shrink-0">
+      <aside className="hidden md:flex flex-col w-56 bg-[#070707] border-r border-[rgba(255,255,255,0.08)] h-screen flex-shrink-0">
         {/* Sidebar Header */}
-        <div className="px-5 py-5 border-b border-[#2A2A2A]">
+        <div className="px-5 py-5 border-b border-[rgba(255,255,255,0.08)]">
           <Logo size="default" />
-          <p className="text-[#888888] text-xs mt-1 tracking-widest uppercase">Customer</p>
+          <p className="text-[#a1a4a5] text-xs mt-1 tracking-widest uppercase">Customer</p>
         </div>
 
         {/* Sidebar Nav */}
@@ -60,8 +60,8 @@ function CustomerShell({ children }: { children: React.ReactNode }) {
                   flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium
                   transition-colors duration-150
                   ${isActive
-                    ? 'bg-[#F2FF66]/10 text-[#F2FF66] border border-[#F2FF66]/20'
-                    : 'text-[#888888] hover:text-[#FAFAFA] hover:bg-[#1E1E1E]'
+                    ? 'bg-[#18191ce0] text-[#f0f0f0]'
+                    : 'text-[#a1a4a5] hover:text-[#f0f0f0] hover:bg-[#161616]'
                   }
                 `}
               >
@@ -73,15 +73,15 @@ function CustomerShell({ children }: { children: React.ReactNode }) {
         </nav>
 
         {/* Sidebar Footer */}
-        <div className="px-3 py-4 border-t border-[#2A2A2A]">
+        <div className="px-3 py-4 border-t border-[rgba(255,255,255,0.08)]">
           {customerInfo?.name && (
-            <p className="text-[#888888] text-xs px-3 mb-2 truncate">{customerInfo.name}</p>
+            <p className="text-[#a1a4a5] text-xs px-3 mb-2 truncate">{customerInfo.name}</p>
           )}
           <button
             onClick={handleLogout}
             className="
               w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm
-              text-red-400 hover:bg-red-500/10 hover:text-red-300
+              text-[#a85858] hover:bg-[rgba(135,55,55,0.12)] hover:text-red-300
               transition-colors duration-150
             "
           >
@@ -94,29 +94,29 @@ function CustomerShell({ children }: { children: React.ReactNode }) {
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
         {/* Mobile Top Bar */}
-        <header className="md:hidden flex items-center justify-between px-4 py-3 bg-[#191314] border-b border-[#2A2A2A] sticky top-0 z-40">
+        <header className="md:hidden flex items-center justify-between px-4 py-3 bg-[#070707] border-b border-[rgba(255,255,255,0.08)] sticky top-0 z-40">
           <Logo size="default" />
           <button
             onClick={handleLogout}
-            className="text-[#888888] hover:text-red-400 transition-colors text-sm px-3 py-1.5 rounded-lg border border-[#2A2A2A]"
+            className="text-[#a1a4a5] hover:text-[#a85858] transition-colors text-sm px-3 py-1.5 rounded-lg border border-[rgba(255,255,255,0.08)]"
           >
             Logout
           </button>
         </header>
 
         {/* Desktop Top Bar */}
-        <header className="hidden md:flex items-center justify-between px-6 py-3 bg-[#191314] border-b border-[#2A2A2A] sticky top-0 z-40">
+        <header className="hidden md:flex items-center justify-between px-6 py-3 bg-[#070707] border-b border-[rgba(255,255,255,0.08)] sticky top-0 z-40">
           <div>
-            <p className="text-[#FAFAFA] font-semibold text-sm">
+            <p className="text-[#f0f0f0] font-semibold text-sm">
               {NAV_TABS.find((t) => pathname === t.href || pathname.startsWith(t.href + '/'))?.label ?? 'Customer Portal'}
             </p>
             {customerInfo?.email && (
-              <p className="text-[#888888] text-xs">{customerInfo.email}</p>
+              <p className="text-[#a1a4a5] text-xs">{customerInfo.email}</p>
             )}
           </div>
           <button
             onClick={handleLogout}
-            className="text-[#888888] hover:text-red-400 transition-colors text-sm px-3 py-1.5 rounded-lg border border-[#2A2A2A]"
+            className="text-[#a1a4a5] hover:text-[#a85858] transition-colors text-sm px-3 py-1.5 rounded-lg border border-[rgba(255,255,255,0.08)]"
           >
             {'\u{1F6AA}'} Logout
           </button>
@@ -129,7 +129,7 @@ function CustomerShell({ children }: { children: React.ReactNode }) {
       </div>
 
       {/* Mobile Bottom Navigation */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#191314] border-t border-[#2A2A2A] flex">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#070707] border-t border-[rgba(255,255,255,0.08)] flex">
         {NAV_TABS.map((tab) => {
           const isActive = pathname === tab.href || pathname.startsWith(tab.href + '/');
           return (
@@ -139,15 +139,15 @@ function CustomerShell({ children }: { children: React.ReactNode }) {
               className={`
                 flex-1 flex flex-col items-center justify-center gap-1 py-3 relative
                 transition-colors duration-150
-                ${isActive ? 'text-[#F2FF66]' : 'text-[#888888]'}
+                ${isActive ? 'text-[#f0f0f0]' : 'text-[#a1a4a5]'}
               `}
             >
               <span className="text-xl leading-none">{tab.icon}</span>
-              <span className={`text-[10px] font-medium ${isActive ? 'text-[#F2FF66]' : 'text-[#888888]'}`}>
+              <span className={`text-[10px] font-medium ${isActive ? 'text-[#f0f0f0]' : 'text-[#a1a4a5]'}`}>
                 {tab.label}
               </span>
               {isActive && (
-                <span className="absolute bottom-0 h-0.5 w-8 bg-[#F2FF66] rounded-full" />
+                <span className="absolute bottom-0 h-0.5 w-8 bg-[rgba(255,255,255,0.4)] rounded-full" />
               )}
             </Link>
           );
