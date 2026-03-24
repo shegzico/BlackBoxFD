@@ -577,14 +577,75 @@ export default function CustomerOrders() {
     const token = localStorage.getItem('customer_token');
     if (!token) return;
     try {
-      const res = await fetch('/api/orders', { headers: { Authorization: `Bearer ${token}` } });
-      if (res.ok) {
-        const data = await res.json();
-        const orders: Order[] = Array.isArray(data) ? data : data.orders || [];
-        setAllOrders(orders);
-        // expand all by default
-        setExpandedOrderNums(new Set(orders.map((o) => o.order_number)));
+      // Fetch all deliveries AND order metadata in parallel
+      const [deliveriesRes, ordersRes] = await Promise.all([
+        fetch('/api/customer/deliveries', { headers: { Authorization: `Bearer ${token}` } }),
+        fetch('/api/orders', { headers: { Authorization: `Bearer ${token}` } }),
+      ]);
+
+      type DeliveryWithOrderId = Delivery & { order_id?: number | null };
+      const rawDeliveries: DeliveryWithOrderId[] = [];
+      if (deliveriesRes.ok) {
+        const d = await deliveriesRes.json();
+        rawDeliveries.push(...(Array.isArray(d) ? d : d.deliveries || []));
       }
+
+      const rawOrders: Order[] = [];
+      if (ordersRes.ok) {
+        const d = await ordersRes.json();
+        rawOrders.push(...(Array.isArray(d) ? d : d.orders || []));
+      }
+
+      // Build lookup: numeric order id → Order metadata
+      const orderById = new Map<number, Order>();
+      for (const o of rawOrders) orderById.set(o.id, o);
+
+      // Group deliveries by their order_id; standalone deliveries get their own synthetic group
+      const grouped = new Map<string, { meta: Order | null; deliveries: DeliveryWithOrderId[] }>();
+
+      for (const delivery of rawDeliveries) {
+        if (delivery.order_id && orderById.has(delivery.order_id)) {
+          const key = `order-${delivery.order_id}`;
+          if (!grouped.has(key)) grouped.set(key, { meta: orderById.get(delivery.order_id)!, deliveries: [] });
+          grouped.get(key)!.deliveries.push(delivery);
+        } else {
+          // Old delivery with no associated order — treat as standalone
+          grouped.set(`d-${delivery.id}`, { meta: null, deliveries: [delivery] });
+        }
+      }
+
+      // Build final Order[] list
+      const finalOrders: Order[] = [];
+      for (const { meta, deliveries } of grouped.values()) {
+        if (meta) {
+          finalOrders.push({ ...meta, deliveries });
+        } else {
+          const d = deliveries[0];
+          finalOrders.push({
+            id: 0,
+            order_number: '',   // empty = standalone, no tag shown
+            status: d.status,
+            is_draft: false,
+            pickup_area: d.pickup_area,
+            pickup_address: d.pickup_address,
+            pickup_date: d.pickup_date,
+            total_fee: d.fee,
+            delivery_count: 1,
+            created_at: d.created_at,
+            updated_at: d.updated_at,
+            sender_name: d.sender_name,
+            sender_phone: d.sender_phone,
+            deliveries,
+          });
+        }
+      }
+
+      // Sort by created_at descending (active orders with pickup_date float up via filter logic)
+      finalOrders.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+
+      setAllOrders(finalOrders);
+      // Expand all groups by default — use order_number or delivery id as key
+      setExpandedOrderNums(new Set(finalOrders.map((o) => o.order_number || `d-${o.deliveries[0]?.id}`)));
     } catch (err) {
       console.error(err);
     } finally {
@@ -999,17 +1060,18 @@ export default function CustomerOrders() {
               </thead>
               <tbody>
                 {filteredOrders.map((order) => {
+                  const orderKey = order.order_number || `d-${order.deliveries[0]?.id}`;
                   const isMulti = order.deliveries.length > 1;
-                  const isExpanded = expandedOrderNums.has(order.order_number);
+                  const isExpanded = expandedOrderNums.has(orderKey);
                   const orderDeliveryIds = order.deliveries.map((d) => d.id);
                   const allOrderSelected = orderDeliveryIds.every((id) => selectedDeliveryIds.has(id));
                   const someOrderSelected = orderDeliveryIds.some((id) => selectedDeliveryIds.has(id));
 
                   return (
-                    <Fragment key={order.order_number}>
+                    <Fragment key={orderKey}>
                       {/* ---- Order Header Row ---- */}
                       <tr
-                        key={order.order_number}
+                        key={orderKey}
                         className={`border-b border-[#1A1A1A] ${isMulti ? 'bg-[#0c0c0c] hover:bg-[#131313]' : 'hover:bg-[#1A1A1A]'} transition-colors ${!isMulti ? 'cursor-pointer' : ''}`}
                         onClick={!isMulti ? () => openView(order.deliveries[0].id) : undefined}
                       >
@@ -1018,14 +1080,14 @@ export default function CustomerOrders() {
                           <Checkbox
                             checked={allOrderSelected}
                             indeterminate={!allOrderSelected && someOrderSelected}
-                            onChange={() => toggleSelectOrder(order.order_number, orderDeliveryIds)}
+                            onChange={() => toggleSelectOrder(orderKey, orderDeliveryIds)}
                           />
                         </td>
                         {/* Expand toggle */}
                         <td className="py-3 pr-1">
                           {isMulti ? (
                             <button
-                              onClick={(e) => { e.stopPropagation(); toggleExpand(order.order_number); }}
+                              onClick={(e) => { e.stopPropagation(); toggleExpand(orderKey); }}
                               className="text-[#555] hover:text-[#a1a4a5] transition-colors p-0.5"
                             >
                               {isExpanded
@@ -1039,7 +1101,9 @@ export default function CustomerOrders() {
                         {/* Order # / Tracking ID */}
                         <td className="px-3 py-3">
                           <div className="flex flex-col gap-0.5">
-                            <span className="font-mono text-[10px] text-[#F2FF66]/70">{order.order_number}</span>
+                            {order.order_number && (
+                              <span className="font-mono text-[10px] text-[#F2FF66]/70">{order.order_number}</span>
+                            )}
                             {!isMulti && (
                               <span className="font-mono text-xs text-[#a1a4a5]">{order.deliveries[0].id}</span>
                             )}
@@ -1196,15 +1260,16 @@ export default function CustomerOrders() {
           {/* ===== MOBILE CARDS ===== */}
           <div className="md:hidden space-y-3">
             {filteredOrders.map((order) => {
+              const orderKey = order.order_number || `d-${order.deliveries[0]?.id}`;
               const isMulti = order.deliveries.length > 1;
-              const isExpanded = expandedOrderNums.has(order.order_number);
+              const isExpanded = expandedOrderNums.has(orderKey);
               const orderDeliveryIds = order.deliveries.map((d) => d.id);
               const allOrderSelected = orderDeliveryIds.every((id) => selectedDeliveryIds.has(id));
               const someOrderSelected = orderDeliveryIds.some((id) => selectedDeliveryIds.has(id));
 
               return (
                 <div
-                  key={order.order_number}
+                  key={orderKey}
                   className="bg-[#070707] border border-[rgba(255,255,255,0.08)] rounded-xl overflow-hidden"
                 >
                   {/* Order header */}
@@ -1213,15 +1278,15 @@ export default function CustomerOrders() {
                       <Checkbox
                         checked={allOrderSelected}
                         indeterminate={!allOrderSelected && someOrderSelected}
-                        onChange={() => toggleSelectOrder(order.order_number, orderDeliveryIds)}
+                        onChange={() => toggleSelectOrder(orderKey, orderDeliveryIds)}
                       />
                     </div>
                     <div
                       className="flex-1 min-w-0 cursor-pointer"
-                      onClick={isMulti ? () => toggleExpand(order.order_number) : () => openView(order.deliveries[0].id)}
+                      onClick={isMulti ? () => toggleExpand(orderKey) : () => openView(order.deliveries[0].id)}
                     >
                       <div className="flex items-center justify-between gap-2 mb-1">
-                        <span className="font-mono text-[10px] text-[#F2FF66]/70">{order.order_number}</span>
+                        {order.order_number && <span className="font-mono text-[10px] text-[#F2FF66]/70">{order.order_number}</span>}
                         <div className="flex items-center gap-2">
                           {isMulti ? (
                             <span className="text-[10px] text-[#a1a4a5]">{order.deliveries.length} deliveries</span>
