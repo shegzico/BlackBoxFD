@@ -96,6 +96,26 @@ function formatCurrency(amount: number): string {
   }).format(amount);
 }
 
+/** Match a Google Places area name to the nearest Lagos zone, or return ''. */
+function matchLagosZone(placeName: string): string {
+  if (!placeName) return '';
+  const lower = placeName.toLowerCase();
+  for (const zones of Object.values(LAGOS_ZONES)) {
+    for (const zone of zones as readonly string[]) {
+      if (zone.toLowerCase() === lower) return zone;
+    }
+  }
+  // Partial match — zone name contains the place name or vice versa
+  for (const zones of Object.values(LAGOS_ZONES)) {
+    for (const zone of zones as readonly string[]) {
+      if (zone.toLowerCase().includes(lower) || lower.includes(zone.toLowerCase())) {
+        return zone;
+      }
+    }
+  }
+  return '';
+}
+
 function authHeaders(): Record<string, string> {
   const token =
     typeof window !== 'undefined' ? localStorage.getItem('customer_token') : null;
@@ -413,22 +433,33 @@ function CompactDeliveryCard({
             />
           </Field>
 
-          <Field label="Dropoff Area" htmlFor={`r_area_${delivery._id}`}>
-            <ZoneSelect
-              id={`r_area_${delivery._id}`}
-              value={delivery.dropoff_area}
-              onChange={(v) => onChange('dropoff_area', v)}
-            />
-          </Field>
+          <div className="sm:col-span-2">
+            <Field label="Dropoff Address" htmlFor={`r_addr_${delivery._id}`}>
+              <AddressInput
+                id={`r_addr_${delivery._id}`}
+                value={delivery.dropoff_address}
+                onChange={(v) => onChange('dropoff_address', v)}
+                onAreaDetected={(area) => {
+                  const matched = matchLagosZone(area);
+                  if (matched) onChange('dropoff_area', matched);
+                }}
+                placeholder="Street address or landmark"
+              />
+            </Field>
+          </div>
 
-          <Field label="Dropoff Address" htmlFor={`r_addr_${delivery._id}`}>
-            <AddressInput
-              id={`r_addr_${delivery._id}`}
-              value={delivery.dropoff_address}
-              onChange={(v) => onChange('dropoff_address', v)}
-              placeholder="Street address or landmark"
-            />
-          </Field>
+          <div className="sm:col-span-2">
+            <Field label="Dropoff Area" htmlFor={`r_area_${delivery._id}`}>
+              <ZoneSelect
+                id={`r_area_${delivery._id}`}
+                value={delivery.dropoff_area}
+                onChange={(v) => onChange('dropoff_area', v)}
+              />
+              <p className="text-gray-600 text-xs mt-1.5">
+                Note: Google may autofill the wrong area. Please check and edit if needed.
+              </p>
+            </Field>
+          </div>
 
           <Field label="Package Weight (kg)" htmlFor={`r_weight_${delivery._id}`}>
             <input
@@ -868,14 +899,6 @@ function PickupSection({ pickup, onChange }: PickupSectionProps) {
           />
         </Field>
 
-        <Field label="Pickup Area" htmlFor="pickup_area">
-          <ZoneSelect
-            id="pickup_area"
-            value={pickup.pickup_area}
-            onChange={(v) => onChange('pickup_area', v)}
-          />
-        </Field>
-
         <Field label="Pickup Date" htmlFor="pickup_date">
           <input
             id="pickup_date"
@@ -888,14 +911,33 @@ function PickupSection({ pickup, onChange }: PickupSectionProps) {
           />
         </Field>
 
-        <Field label="Pickup Address" htmlFor="pickup_address">
-          <AddressInput
-            id="pickup_address"
-            value={pickup.pickup_address}
-            onChange={(v) => onChange('pickup_address', v)}
-            placeholder="Street address or landmark"
-          />
-        </Field>
+        <div className="sm:col-span-2">
+          <Field label="Pickup Address" htmlFor="pickup_address">
+            <AddressInput
+              id="pickup_address"
+              value={pickup.pickup_address}
+              onChange={(v) => onChange('pickup_address', v)}
+              onAreaDetected={(area) => {
+                const matched = matchLagosZone(area);
+                if (matched) onChange('pickup_area', matched);
+              }}
+              placeholder="Street address or landmark"
+            />
+          </Field>
+        </div>
+
+        <div className="sm:col-span-2">
+          <Field label="Pickup Area" htmlFor="pickup_area">
+            <ZoneSelect
+              id="pickup_area"
+              value={pickup.pickup_area}
+              onChange={(v) => onChange('pickup_area', v)}
+            />
+            <p className="text-gray-600 text-xs mt-1.5">
+              Note: Google may autofill the wrong area. Please check and edit if needed.
+            </p>
+          </Field>
+        </div>
 
       </div>
 
@@ -966,22 +1008,33 @@ function SingleDeliveryForm({ delivery, onChange }: SingleDeliveryFormProps) {
           />
         </Field>
 
-        <Field label="Dropoff Area" htmlFor="dropoff_area">
-          <ZoneSelect
-            id="dropoff_area"
-            value={delivery.dropoff_area}
-            onChange={(v) => onChange('dropoff_area', v)}
-          />
-        </Field>
+        <div className="sm:col-span-2">
+          <Field label="Dropoff Address" htmlFor="dropoff_address">
+            <AddressInput
+              id="dropoff_address"
+              value={delivery.dropoff_address}
+              onChange={(v) => onChange('dropoff_address', v)}
+              onAreaDetected={(area) => {
+                const matched = matchLagosZone(area);
+                if (matched) onChange('dropoff_area', matched);
+              }}
+              placeholder="Street address or landmark"
+            />
+          </Field>
+        </div>
 
-        <Field label="Dropoff Address" htmlFor="dropoff_address">
-          <AddressInput
-            id="dropoff_address"
-            value={delivery.dropoff_address}
-            onChange={(v) => onChange('dropoff_address', v)}
-            placeholder="Street address or landmark"
-          />
-        </Field>
+        <div className="sm:col-span-2">
+          <Field label="Dropoff Area" htmlFor="dropoff_area">
+            <ZoneSelect
+              id="dropoff_area"
+              value={delivery.dropoff_area}
+              onChange={(v) => onChange('dropoff_area', v)}
+            />
+            <p className="text-gray-600 text-xs mt-1.5">
+              Note: Google may autofill the wrong area. Please check and edit if needed.
+            </p>
+          </Field>
+        </div>
 
         <Field label="Package Weight (kg)" htmlFor="package_weight">
           <input
@@ -1653,15 +1706,17 @@ function CreateOrderPageContent() {
               </div>
             )}
 
-            {/* Estimate button */}
-            <button
-              type="button"
-              onClick={handleEstimate}
-              disabled={estimating}
-              className="w-full py-4 rounded-xl font-bold text-sm bg-[#F2FF66] text-[#000000] hover:bg-[#e8f550] transition-colors disabled:opacity-60"
-            >
-              {estimating ? 'Estimating…' : 'Estimate Cost'}
-            </button>
+            {/* Estimate button — hidden once estimate is loaded; reappears if form changes */}
+            {!hasEstimated && (
+              <button
+                type="button"
+                onClick={handleEstimate}
+                disabled={estimating}
+                className="w-full py-4 rounded-xl font-bold text-sm bg-[#F2FF66] text-[#000000] hover:bg-[#e8f550] transition-colors disabled:opacity-60"
+              >
+                {estimating ? 'Estimating…' : 'Estimate Cost'}
+              </button>
+            )}
 
           </div>
 

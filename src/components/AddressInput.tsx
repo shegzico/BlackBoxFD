@@ -7,10 +7,17 @@ interface AddressInputProps {
   name?: string;
   value: string;
   onChange: (value: string) => void;
+  onAreaDetected?: (area: string) => void;
   placeholder?: string;
   required?: boolean;
   disabled?: boolean;
   className?: string;
+}
+
+interface PlaceComponent {
+  long_name: string;
+  short_name: string;
+  types: string[];
 }
 
 declare global {
@@ -23,7 +30,11 @@ declare global {
             opts?: Record<string, unknown>
           ) => {
             addListener: (event: string, cb: () => void) => void;
-            getPlace: () => { formatted_address?: string; name?: string };
+            getPlace: () => {
+              formatted_address?: string;
+              name?: string;
+              address_components?: PlaceComponent[];
+            };
             setOptions: (opts: Record<string, unknown>) => void;
           };
         };
@@ -67,6 +78,7 @@ export default function AddressInput({
   name,
   value,
   onChange,
+  onAreaDetected,
   placeholder = 'Enter address...',
   required,
   disabled,
@@ -75,6 +87,8 @@ export default function AddressInput({
   const inputRef = useRef<HTMLInputElement>(null);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const autocompleteRef = useRef<any>(null);
+  const onAreaDetectedRef = useRef(onAreaDetected);
+  onAreaDetectedRef.current = onAreaDetected;
   const [placesAvailable, setPlacesAvailable] = useState(false);
 
   useEffect(() => {
@@ -84,7 +98,7 @@ export default function AddressInput({
         if (inputRef.current && window.google && !autocompleteRef.current) {
           const autocomplete = new window.google.maps.places.Autocomplete(inputRef.current, {
             componentRestrictions: { country: 'ng' },
-            fields: ['formatted_address', 'name'],
+            fields: ['formatted_address', 'name', 'address_components'],
             types: ['geocode', 'establishment'],
           });
 
@@ -92,6 +106,17 @@ export default function AddressInput({
             const place = autocomplete.getPlace();
             const address = place.formatted_address || place.name || '';
             onChange(address);
+
+            // Try to extract the area/sublocality for auto-fill
+            if (onAreaDetectedRef.current && place.address_components) {
+              const components = place.address_components;
+              // Prefer sublocality_level_1, then sublocality, then locality
+              const sub =
+                components.find((c) => c.types.includes('sublocality_level_1')) ||
+                components.find((c) => c.types.includes('sublocality')) ||
+                components.find((c) => c.types.includes('locality'));
+              if (sub) onAreaDetectedRef.current(sub.long_name);
+            }
           });
 
           autocompleteRef.current = autocomplete;
