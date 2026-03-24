@@ -51,9 +51,7 @@ export async function GET(
     // Determine if the id param is numeric (order id) or string (order_number)
     const isNumeric = /^\d+$/.test(id);
 
-    let query = supabase
-      .from('orders')
-      .select('*, deliveries(*, rider:riders(id, name, phone), delivery_history(*))');
+    let query = supabase.from('orders').select('*');
 
     if (isNumeric) {
       query = query.eq('id', parseInt(id, 10));
@@ -76,7 +74,14 @@ export async function GET(
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
-    return NextResponse.json({ order });
+    // Fetch deliveries separately (avoids Supabase FK resolution issues)
+    const { data: deliveries } = await supabase
+      .from('deliveries')
+      .select('*, rider:riders(id, name, phone)')
+      .eq('order_id', order.id)
+      .order('created_at', { ascending: true });
+
+    return NextResponse.json({ order: { ...order, deliveries: deliveries || [] } });
   } catch (err) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
