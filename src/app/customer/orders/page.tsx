@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback, useRef } from 'react';
+import { useEffect, useState, useCallback, useRef, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import StatusBadge from '@/components/StatusBadge';
@@ -579,7 +579,7 @@ function exportDeliveriesToExcel(deliveries: DeliveryRow[]) {
 /*  Main Page                                                           */
 /* ------------------------------------------------------------------ */
 
-export default function CustomerOrders() {
+function CustomerOrdersContent() {
   const router = useRouter();
   const searchParamsHook = useSearchParams();
 
@@ -1309,5 +1309,13 @@ export default function CustomerOrders() {
         />
       )}
     </div>
+  );
+}
+
+export default function CustomerOrders() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center min-h-[40vh]"><div className="w-6 h-6 rounded-full border-2 border-[#F2FF66]/30 border-t-[#F2FF66] animate-spin" /></div>}>
+      <CustomerOrdersContent />
+    </Suspense>
   );
 }
