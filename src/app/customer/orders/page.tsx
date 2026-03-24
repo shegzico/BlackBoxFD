@@ -577,75 +577,65 @@ export default function CustomerOrders() {
     const token = localStorage.getItem('customer_token');
     if (!token) return;
     try {
-      // Fetch all deliveries AND order metadata in parallel
       const [deliveriesRes, ordersRes] = await Promise.all([
         fetch('/api/customer/deliveries', { headers: { Authorization: `Bearer ${token}` } }),
         fetch('/api/orders', { headers: { Authorization: `Bearer ${token}` } }),
       ]);
 
-      type DeliveryWithOrderId = Delivery & { order_id?: number | null };
-      const rawDeliveries: DeliveryWithOrderId[] = [];
-      if (deliveriesRes.ok) {
-        const d = await deliveriesRes.json();
-        rawDeliveries.push(...(Array.isArray(d) ? d : d.deliveries || []));
-      }
+      const rawDeliveries: Delivery[] = deliveriesRes.ok
+        ? await deliveriesRes.json().then((d) => (Array.isArray(d) ? d : d.deliveries || []))
+        : [];
 
-      const rawOrders: Order[] = [];
-      if (ordersRes.ok) {
-        const d = await ordersRes.json();
-        rawOrders.push(...(Array.isArray(d) ? d : d.orders || []));
-      }
+      const rawOrders: Order[] = ordersRes.ok
+        ? await ordersRes.json().then((d) => (Array.isArray(d) ? d : d.orders || []))
+        : [];
 
-      // Build lookup: numeric order id → Order metadata
-      const orderById = new Map<number, Order>();
-      for (const o of rawOrders) orderById.set(o.id, o);
-
-      // Group deliveries by their order_id; standalone deliveries get their own synthetic group
-      const grouped = new Map<string, { meta: Order | null; deliveries: DeliveryWithOrderId[] }>();
-
-      for (const delivery of rawDeliveries) {
-        if (delivery.order_id && orderById.has(delivery.order_id)) {
-          const key = `order-${delivery.order_id}`;
-          if (!grouped.has(key)) grouped.set(key, { meta: orderById.get(delivery.order_id)!, deliveries: [] });
-          grouped.get(key)!.deliveries.push(delivery);
-        } else {
-          // Old delivery with no associated order — treat as standalone
-          grouped.set(`d-${delivery.id}`, { meta: null, deliveries: [delivery] });
+      // Build a set of delivery IDs already covered by the orders API (nested deliveries).
+      // This is more reliable than matching order_id because it avoids any type mismatch.
+      const deliveryIdsInOrders = new Set<string>();
+      for (const order of rawOrders) {
+        for (const d of order.deliveries || []) {
+          deliveryIdsInOrders.add(d.id);
         }
       }
 
-      // Build final Order[] list
-      const finalOrders: Order[] = [];
-      for (const { meta, deliveries } of grouped.values()) {
-        if (meta) {
-          finalOrders.push({ ...meta, deliveries });
-        } else {
-          const d = deliveries[0];
+      // Start with all proper orders (non-draft), using their nested deliveries from the API
+      const finalOrders: Order[] = rawOrders
+        .filter((o) => !o.is_draft && (o.deliveries?.length ?? 0) > 0)
+        .map((o) => ({ ...o, deliveries: o.deliveries || [] }));
+
+      // Drafts kept separately (handled by draftOrders derived state below)
+      const draftOrdersList: Order[] = rawOrders
+        .filter((o) => o.is_draft)
+        .map((o) => ({ ...o, deliveries: o.deliveries || [] }));
+
+      // Any delivery from the flat list not covered by an order → standalone row
+      for (const delivery of rawDeliveries) {
+        if (!deliveryIdsInOrders.has(delivery.id)) {
           finalOrders.push({
             id: 0,
-            order_number: '',   // empty = standalone, no tag shown
-            status: d.status,
+            order_number: '',
+            status: delivery.status,
             is_draft: false,
-            pickup_area: d.pickup_area,
-            pickup_address: d.pickup_address,
-            pickup_date: d.pickup_date,
-            total_fee: d.fee,
+            pickup_area: delivery.pickup_area,
+            pickup_address: delivery.pickup_address,
+            pickup_date: delivery.pickup_date,
+            total_fee: delivery.fee,
             delivery_count: 1,
-            created_at: d.created_at,
-            updated_at: d.updated_at,
-            sender_name: d.sender_name,
-            sender_phone: d.sender_phone,
-            deliveries,
+            created_at: delivery.created_at,
+            updated_at: delivery.updated_at,
+            sender_name: delivery.sender_name,
+            sender_phone: delivery.sender_phone,
+            deliveries: [delivery],
           });
         }
       }
 
-      // Sort by created_at descending (active orders with pickup_date float up via filter logic)
       finalOrders.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
-      setAllOrders(finalOrders);
-      // Expand all groups by default — use order_number or delivery id as key
-      setExpandedOrderNums(new Set(finalOrders.map((o) => o.order_number || `d-${o.deliveries[0]?.id}`)));
+      const allToShow = [...draftOrdersList, ...finalOrders];
+      setAllOrders(allToShow);
+      setExpandedOrderNums(new Set(allToShow.map((o) => o.order_number || `d-${o.deliveries[0]?.id}`)));
     } catch (err) {
       console.error(err);
     } finally {
