@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { LAGOS_ZONES } from '@/lib/types';
+import { LAGOS_ZONES, matchLagosZone } from '@/lib/types';
 import AddressInput from '@/components/AddressInput';
 import { Refresh2, TickCircle, CloseCircle, Add } from 'iconsax-react';
 
@@ -941,11 +941,28 @@ export default function CustomerAccount() {
 
             <form onSubmit={handleSaveLocation} className="space-y-4">
               <div>
+                <label className={labelClass}>Pickup Address</label>
+                <AddressInput
+                  value={pickupAddress}
+                  onChange={(val) => setPickupAddress(val)}
+                  onAreaDetected={(detected) => {
+                    const matched = matchLagosZone(detected);
+                    if (matched) setPickupArea(matched);
+                  }}
+                  placeholder="e.g. 12 Admiralty Way, Lekki"
+                  className={inputClass}
+                />
+                <p className="text-[10px] text-[#555] mt-1">
+                  Note: Google may autofill the wrong city. Please check the area below and edit if needed.
+                </p>
+              </div>
+
+              <div>
                 <label className={labelClass}>Pickup Area</label>
                 <select
                   value={pickupArea}
                   onChange={(e) => setPickupArea(e.target.value)}
-                  className={inputClass}
+                  className={inputClass + ' [color-scheme:dark]'}
                 >
                   <option value="">Select area</option>
                   {Object.entries(LAGOS_ZONES).map(([zone, areas]) => (
@@ -958,17 +975,6 @@ export default function CustomerAccount() {
                     </optgroup>
                   ))}
                 </select>
-              </div>
-
-              <div>
-                <label className={labelClass}>Pickup Address</label>
-                <input
-                  type="text"
-                  value={pickupAddress}
-                  onChange={(e) => setPickupAddress(e.target.value)}
-                  className={inputClass}
-                  placeholder="e.g. 12 Admiralty Way, Lekki"
-                />
               </div>
 
               {locationError && (

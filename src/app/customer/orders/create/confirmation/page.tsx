@@ -11,11 +11,12 @@ function ConfirmationContent() {
   const countStr = searchParams.get('count') ?? '1';
   const count = parseInt(countStr, 10) || 1;
   const isSingle = count === 1;
+  const trackingId = searchParams.get('tracking_id') ?? '';
 
   const siteUrl = typeof window !== 'undefined' ? window.location.origin : '';
-  const shareText = isSingle
-    ? `Track my BlackBox delivery (Order ${orderNumber}): ${siteUrl}/customer/orders`
-    : `I placed ${count} deliveries with BlackBox Logistics (Order ${orderNumber}). Track at: ${siteUrl}/customer/orders`;
+  const shareText = isSingle && trackingId
+    ? `Track my BlackBox delivery: ${siteUrl}/track/${trackingId}`
+    : `I placed ${count} ${count === 1 ? 'delivery' : 'deliveries'} with BlackBox Logistics (Order ${orderNumber}). Track at: ${siteUrl}/customer/orders?search=${encodeURIComponent(orderNumber)}`;
   const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
 
   return (

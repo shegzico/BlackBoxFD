@@ -6,9 +6,10 @@ import Link from 'next/link';
 import AddressInput from '@/components/AddressInput';
 import {
   LAGOS_ZONES,
+  matchLagosZone,
   isValidNigerianPhone,
 } from '@/lib/types';
-import { DocumentDownload, Danger, Edit2, Trash, InfoCircle, ArrowLeft2 } from 'iconsax-react';
+import { DocumentDownload, Danger, Edit2, Trash, InfoCircle, ArrowLeft2, CloseCircle } from 'iconsax-react';
 
 /* ------------------------------------------------------------------ */
 /*  Styling constants                                                   */
@@ -98,25 +99,6 @@ function formatCurrency(amount: number): string {
   }).format(amount);
 }
 
-/** Match a Google Places area name to the nearest Lagos zone, or return ''. */
-function matchLagosZone(placeName: string): string {
-  if (!placeName) return '';
-  const lower = placeName.toLowerCase();
-  for (const zones of Object.values(LAGOS_ZONES)) {
-    for (const zone of zones as readonly string[]) {
-      if (zone.toLowerCase() === lower) return zone;
-    }
-  }
-  // Partial match — zone name contains the place name or vice versa
-  for (const zones of Object.values(LAGOS_ZONES)) {
-    for (const zone of zones as readonly string[]) {
-      if (zone.toLowerCase().includes(lower) || lower.includes(zone.toLowerCase())) {
-        return zone;
-      }
-    }
-  }
-  return '';
-}
 
 function authHeaders(): Record<string, string> {
   const token =
@@ -1400,12 +1382,16 @@ function CreateOrderPageContent() {
         const orderNumber: string =
           data.order?.order_number ?? data.order_number ?? data.id ?? '';
         const count = items.length;
+        const firstTrackingId: string = data.order?.deliveries?.[0]?.id ?? '';
 
         if (isDraft) {
           router.push('/customer/orders?saved=draft');
         } else {
+          const trackingParam = count === 1 && firstTrackingId
+            ? `&tracking_id=${encodeURIComponent(firstTrackingId)}`
+            : '';
           router.push(
-            `/customer/orders/create/confirmation?order_number=${encodeURIComponent(orderNumber)}&count=${count}`
+            `/customer/orders/create/confirmation?order_number=${encodeURIComponent(orderNumber)}&count=${count}${trackingParam}`
           );
         }
       } catch {

@@ -147,12 +147,17 @@ export const LAGOS_ZONES = {
   'Island Core': [
     'Victoria Island', 'Ikoyi', 'Lagos Island', 'Lekki Phase 1', 'Lekki Phase 2',
     'Banana Island', 'Oniru', 'Marina', 'Bade', 'Eko Atlantic',
+    'Obalende', 'Lafiaji', 'Bar Beach', 'Ozumba Mbadiwe',
+    'Adeola Odeku', 'Ademola Adetokunbo', 'Ligali Ayorinde',
   ],
   'Island Extended': [
     'Lekki', 'Chevron', 'Agungi', 'Idado', 'Osapa London', 'Igbo Efon', 'VGC',
     'Ilaje', 'Awoyaya', 'Thomas Estate', 'Abraham Adesanya', 'Badore', 'Ogombo',
     'Abijo', 'Lakowe', 'Eleko', 'Bogije', 'Ajah', 'Sangotedo',
     'Ibeju-Lekki', 'Epe',
+    'Ikate', 'Ikate Elegushi', 'Ologolo', 'Orchid Road', 'Freedom Way',
+    'Jakande', 'Lekki Gardens', 'Pennfield', 'Chevron Drive',
+    'Ado', 'Ado Odo', 'Ibeju', 'Mowe',
   ],
   'Mainland Core': [
     'Yaba', 'Surulere', 'Maryland', 'Ikeja', 'Costain', 'Ketu', 'Ogudu',
@@ -161,6 +166,10 @@ export const LAGOS_ZONES = {
     'Fadeyi', 'Onike', 'Akoka', 'Igbobi',
     'Agidingbi', 'Allen Avenue', 'Opebi', 'GRA Ikeja', 'Alausa',
     'Oregun', 'Omole Phase 1', 'Omole Phase 2', 'Kosofe',
+    'Anthony Village', 'Mende', 'Shomolu', 'Palmgrove Estate',
+    'Ilupeju', 'Toyin Street', 'Allen', 'Ikeja GRA',
+    'Mafoluku', 'Airport Road', 'Mangoro', 'Bode Thomas', 'Lawanson',
+    'Western Avenue', 'Iganmu',
   ],
   'Mainland Extended': [
     'Ogba', 'Egbeda', 'Olowoora', 'Egan', 'Ajangbadi', 'Aspamda',
@@ -169,9 +178,91 @@ export const LAGOS_ZONES = {
     'Ago Palace Way', 'Okota', 'Isolo', 'Ilasamaja', 'Mile 2',
     'Dopemu', 'Abule Egba', 'Iyana Ipaja', 'Idimu',
     'Ifako-Ijaiye', 'Meiran', 'Ipaja', 'Ayobo',
+    'Berger', 'Ketu-Alapere', 'Mile 12', 'Oworo', 'Owuronshoki',
+    'Alapere', 'Ojuelegba', 'Ajegunle', 'Orile', 'Kirikiri',
+    'Ijesha', 'Igando', 'Ikotun', 'Ejigbo', 'Bucknor',
+    'Coker', 'Cement', 'Isale Eko',
   ],
-  'Far Areas': ['Agege', 'Iba', 'Lasu', 'Ojo', 'Seme', 'Agbara', 'Mowo', 'Badagry'],
+  'Far Areas': [
+    'Agege', 'Iba', 'Lasu', 'Ojo', 'Seme', 'Agbara', 'Mowo', 'Badagry',
+    'Alimosho', 'Egbe', 'Egbe-Idimu',
+  ],
 } as const;
+
+/**
+ * Alternate names Google Places API may return that map to a canonical zone entry.
+ * Keys are lower-cased alternate names.
+ */
+export const AREA_ALIASES: Record<string, string> = {
+  'lekki phase i': 'Lekki Phase 1',
+  'lekki phase ii': 'Lekki Phase 2',
+  'ibeju lekki': 'Ibeju-Lekki',
+  'ibeju - lekki': 'Ibeju-Lekki',
+  'vi': 'Victoria Island',
+  'v.i.': 'Victoria Island',
+  'v/i': 'Victoria Island',
+  'victoria island annex': 'Victoria Island',
+  'ikeja gra': 'GRA Ikeja',
+  'gra, ikeja': 'GRA Ikeja',
+  'government residential area': 'GRA Ikeja',
+  'anthony village': 'Anthony',
+  'allen': 'Allen Avenue',
+  'berger': 'Ojodu Berger',
+  'ojodu - berger': 'Ojodu Berger',
+  'festac': 'Festac Town',
+  'satellite': 'Satellite Town',
+  'ago palace': 'Ago Palace Way',
+  'somolu': 'Shomolu',
+  'mende': 'Maryland',
+  'onipetesi': 'Maryland',
+  'orchid hotel road': 'Orchid Road',
+  'orchid hotel': 'Orchid Road',
+  'ikate elegushi': 'Ikate',
+  'elegushi': 'Ikate',
+  'cms': 'Lagos Island',
+  'broad street': 'Lagos Island',
+  'tinubu square': 'Lagos Island',
+  'bar beach': 'Victoria Island',
+  'eko hotel': 'Victoria Island',
+  'ligali': 'Victoria Island',
+  'mile 2': 'Mile 2',
+  'ketu-alapere': 'Ketu',
+  'alapere': 'Ketu',
+  'mile 12': 'Ketu',
+  'egbe idimu': 'Egbe-Idimu',
+  'chevron drive': 'Chevron',
+  'freedom way': 'Lekki Phase 1',
+  'admiralty way': 'Lekki Phase 1',
+  'oniru estate': 'Oniru',
+};
+
+/** Match a Google Places area name to the nearest Lagos zone, or return ''. */
+export function matchLagosZone(placeName: string): string {
+  if (!placeName) return '';
+  const lower = placeName.toLowerCase().trim();
+
+  // Check aliases first (handles common Google spelling variations)
+  const aliasMatch = AREA_ALIASES[lower];
+  if (aliasMatch) return aliasMatch;
+
+  // Exact match (case-insensitive)
+  for (const zones of Object.values(LAGOS_ZONES)) {
+    for (const zone of zones as readonly string[]) {
+      if (zone.toLowerCase() === lower) return zone;
+    }
+  }
+
+  // Partial match — zone name contains the place name or vice versa
+  for (const zones of Object.values(LAGOS_ZONES)) {
+    for (const zone of zones as readonly string[]) {
+      if (zone.toLowerCase().includes(lower) || lower.includes(zone.toLowerCase())) {
+        return zone;
+      }
+    }
+  }
+
+  return '';
+}
 
 export type ZoneCategory = keyof typeof LAGOS_ZONES;
 
