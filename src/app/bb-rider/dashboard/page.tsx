@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Navbar from '@/components/Navbar';
 import StatusBadge from '@/components/StatusBadge';
 import { Delivery, DeliveryStatus, PAYMENT_LABELS } from '@/lib/types';
-import { LogoutCurve, Location, Refresh2, Box, ArrowDown2, Call } from 'iconsax-react';
+import { LogoutCurve, Location, Refresh2, Box, ArrowDown2, Call, Camera, TickCircle } from 'iconsax-react';
 
 interface RiderInfo {
   id: number;
@@ -80,19 +80,167 @@ function PhoneLink({ phone, label }: { phone: string; label: string }) {
   );
 }
 
+function ConfirmHandoverPanel({
+  delivery,
+  onConfirmed,
+}: {
+  delivery: Delivery;
+  onConfirmed: () => void;
+}) {
+  const isReturn = delivery.status === 'returning';
+  const [code, setCode] = useState('');
+  const [photo, setPhoto] = useState<File | null>(null);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  function handlePhotoChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setPhoto(file);
+    const reader = new FileReader();
+    reader.onload = (ev) => setPhotoPreview(ev.target?.result as string);
+    reader.readAsDataURL(file);
+  }
+
+  async function handleSubmit() {
+    if (!code.trim()) { setError('Enter the confirmation code'); return; }
+    setLoading(true);
+    setError('');
+    try {
+      const form = new FormData();
+      form.append('code', code.trim().toUpperCase());
+      if (photo) form.append('photo', photo);
+
+      const res = await fetch(`/api/deliveries/${delivery.id}/confirm`, {
+        method: 'POST',
+        body: form,
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error || 'Failed to confirm');
+        return;
+      }
+
+      setSuccess(true);
+      setTimeout(onConfirmed, 1200);
+    } catch {
+      setError('Network error. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  if (success) {
+    return (
+      <div className="flex flex-col items-center gap-2 py-4">
+        <div className="w-10 h-10 rounded-full bg-[#1e5030] flex items-center justify-center">
+          <TickCircle size={22} color="#F2FF66" variant="Bold" />
+        </div>
+        <p className="text-[#3d8050] text-sm font-semibold">{isReturn ? 'Return confirmed!' : 'Delivery confirmed!'}</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className={`flex flex-col gap-3 p-3 rounded-xl border ${
+      isReturn
+        ? 'bg-[rgba(80,100,160,0.08)] border-[rgba(80,100,160,0.3)]'
+        : 'bg-[rgba(38,100,58,0.08)] border-[rgba(38,100,58,0.3)]'
+    }`}>
+      <p className={`text-xs font-semibold ${isReturn ? 'text-[#6080c0]' : 'text-[#3d8050]'}`}>
+        {isReturn ? 'Return Confirmation' : 'Delivery Confirmation'}
+      </p>
+      <p className="text-[#a1a4a5] text-xs leading-snug">
+        Ask the {isReturn ? 'sender' : 'recipient'} for their{' '}
+        <strong className="text-[#f0f0f0]">{isReturn ? 'return' : 'delivery'} confirmation code</strong>{' '}
+        and enter it below.
+      </p>
+
+      {/* Code input */}
+      <input
+        type="text"
+        value={code}
+        onChange={(e) => setCode(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ''))}
+        placeholder="XXXXXX"
+        maxLength={6}
+        className="w-full bg-[#000000] border border-[rgba(255,255,255,0.12)] rounded-xl px-4 py-3 text-center text-[#f0f0f0] font-mono font-bold text-2xl tracking-[0.4em] focus:outline-none focus:border-[#F2FF66] uppercase transition-colors"
+        autoComplete="off"
+        autoCapitalize="characters"
+      />
+
+      {/* Photo capture */}
+      <div>
+        <input
+          ref={fileRef}
+          type="file"
+          accept="image/*"
+          capture="environment"
+          className="hidden"
+          onChange={handlePhotoChange}
+        />
+        {photoPreview ? (
+          <div className="relative">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={photoPreview} alt="Package photo" className="w-full h-32 object-cover rounded-lg border border-[rgba(255,255,255,0.08)]" />
+            <button
+              onClick={() => { setPhoto(null); setPhotoPreview(null); if (fileRef.current) fileRef.current.value = ''; }}
+              className="absolute top-1.5 right-1.5 bg-black/60 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-black/80 transition-colors"
+            >✕</button>
+          </div>
+        ) : (
+          <button
+            onClick={() => fileRef.current?.click()}
+            className="w-full py-2.5 rounded-xl border border-[rgba(255,255,255,0.08)] text-[#a1a4a5] hover:text-[#f0f0f0] hover:border-[#333] text-xs flex items-center justify-center gap-2 transition-colors"
+          >
+            <Camera size={15} color="currentColor" />
+            Take photo of package (optional)
+          </button>
+        )}
+      </div>
+
+      {error && <p className="text-[#c05040] text-xs text-center">{error}</p>}
+
+      <button
+        onClick={handleSubmit}
+        disabled={loading || code.length < 6}
+        className={`
+          w-full py-3 rounded-xl font-bold text-sm
+          flex items-center justify-center gap-2
+          active:scale-95 transition-all duration-150
+          disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100
+          ${isReturn ? 'bg-[#2a3560] text-white border border-[#6080c0]/30' : 'bg-[#1e5030] text-white'}
+        `}
+      >
+        {loading ? (
+          <><Refresh2 size={16} color="currentColor" className="animate-spin" /> Confirming...</>
+        ) : (
+          isReturn ? 'Confirm Return' : 'Confirm Delivery'
+        )}
+      </button>
+    </div>
+  );
+}
+
 function ActiveDeliveryCard({
   delivery,
   onStatusUpdate,
+  onConfirmed,
   updating,
 }: {
   delivery: Delivery;
   onStatusUpdate: (id: string, nextStatus: DeliveryStatus) => void;
+  onConfirmed: (id: string) => void;
   updating: boolean;
 }) {
   const [showFailConfirm, setShowFailConfirm] = useState(false);
+  const [showConfirmPanel, setShowConfirmPanel] = useState(false);
   const nextStatus = NEXT_STATUS[delivery.status];
   const buttonLabel = STATUS_BUTTON_LABEL[delivery.status];
-  const isDelivered = delivery.status === 'in_transit';
+  const needsConfirmCode = delivery.status === 'in_transit' || delivery.status === 'returning';
   const isReturnFlow = delivery.status === 'delivery_failed' || delivery.status === 'returning';
 
   return (
@@ -157,8 +305,16 @@ function ActiveDeliveryCard({
         </span>
       </div>
 
-      {/* Status update buttons */}
-      {nextStatus && buttonLabel && (
+      {/* Confirm handover panel (code + photo) — for in_transit and returning */}
+      {needsConfirmCode && showConfirmPanel && (
+        <ConfirmHandoverPanel
+          delivery={delivery}
+          onConfirmed={() => onConfirmed(delivery.id)}
+        />
+      )}
+
+      {/* Status update buttons — for statuses that don't need a code */}
+      {!needsConfirmCode && nextStatus && buttonLabel && (
         <button
           onClick={() => onStatusUpdate(delivery.id, nextStatus)}
           disabled={updating}
@@ -167,9 +323,7 @@ function ActiveDeliveryCard({
             flex items-center justify-center gap-2
             active:scale-95 transition-all duration-150
             disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100
-            ${isDelivered
-              ? 'bg-[#1e5030] hover:bg-green-400 text-white'
-              : isReturnFlow
+            ${isReturnFlow
               ? 'bg-[#2a3560] hover:bg-[#354080] text-white border border-[#6080c0]/30'
               : 'bg-[#F2FF66] hover:bg-[#e8f55c] text-[#000000]'
             }
@@ -186,8 +340,26 @@ function ActiveDeliveryCard({
         </button>
       )}
 
+      {/* "Confirm Delivery" trigger button — shown when not yet showing the panel */}
+      {needsConfirmCode && !showConfirmPanel && (
+        <button
+          onClick={() => setShowConfirmPanel(true)}
+          className={`
+            w-full py-3 rounded-xl font-bold text-sm
+            flex items-center justify-center gap-2
+            active:scale-95 transition-all duration-150
+            ${delivery.status === 'returning'
+              ? 'bg-[#2a3560] hover:bg-[#354080] text-white border border-[#6080c0]/30'
+              : 'bg-[#1e5030] hover:bg-green-700 text-white'
+            }
+          `}
+        >
+          {delivery.status === 'returning' ? 'Confirm Return to Sender' : 'Confirm Delivery'}
+        </button>
+      )}
+
       {/* Mark as Failed — only on in_transit deliveries */}
-      {delivery.status === 'in_transit' && !showFailConfirm && (
+      {delivery.status === 'in_transit' && !showFailConfirm && !showConfirmPanel && (
         <button
           onClick={() => setShowFailConfirm(true)}
           disabled={updating}
@@ -436,6 +608,10 @@ export default function RiderDashboardPage() {
                   key={delivery.id}
                   delivery={delivery}
                   onStatusUpdate={handleStatusUpdate}
+                  onConfirmed={(id) => {
+                    if (rider) fetchDeliveries(rider.id, true);
+                    else setActiveDeliveries((prev) => prev.filter((d) => d.id !== id));
+                  }}
                   updating={updatingId === delivery.id}
                 />
               ))}

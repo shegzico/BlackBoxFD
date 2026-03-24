@@ -82,6 +82,12 @@ export interface Delivery {
   customer_id: number | null;
   created_by: 'customer' | 'admin';
   rider?: Rider;
+  /** Confirmation codes — only present in server-side contexts / admin views */
+  delivery_confirmation_code?: string | null;
+  return_confirmation_code?: string | null;
+  /** Photos taken by rider at handover */
+  delivery_photo_url?: string | null;
+  return_photo_url?: string | null;
 }
 
 export interface DeliveryHistory {

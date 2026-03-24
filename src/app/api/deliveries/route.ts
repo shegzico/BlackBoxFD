@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 import { generateTrackingId } from '@/lib/tracking-id';
+import { generateConfirmationCode, sendDeliveryConfirmationEmail, sendSMS } from '@/lib/email';
 
 export async function GET(request: NextRequest) {
   try {
@@ -99,6 +100,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Could not generate a unique tracking ID' }, { status: 500 });
     }
 
+    const confirmationCode = generateConfirmationCode();
+
     // Insert the delivery record
     const { data: delivery, error: deliveryError } = await supabase
       .from('deliveries')
@@ -119,6 +122,7 @@ export async function POST(request: NextRequest) {
         fee: fee ?? null,
         created_by,
         status: 'pending',
+        delivery_confirmation_code: confirmationCode,
       })
       .select()
       .single();
@@ -134,12 +138,24 @@ export async function POST(request: NextRequest) {
         delivery_id: tracking_id,
         status: 'pending',
         triggered_by: 'system',
-        note: 'Delivery created',
+        note: 'Delivery created — confirmation code sent to recipient',
       });
 
     if (historyError) {
       return NextResponse.json({ error: historyError.message }, { status: 500 });
     }
+
+    // Send confirmation code to recipient (fire-and-forget)
+    const recipientEmailAddr = body.recipient_email as string | undefined;
+    if (recipientEmailAddr) {
+      sendDeliveryConfirmationEmail(
+        recipientEmailAddr, recipient_name, confirmationCode, tracking_id, pickup_area, dropoff_area
+      ).catch(() => {});
+    }
+    sendSMS(
+      recipient_phone,
+      `Hi ${recipient_name.split(' ')[0]}, a BlackBox Logistics package is on its way to you (${tracking_id}). Your delivery confirmation code is: ${confirmationCode}. Give this code ONLY to the rider at your door.`
+    ).catch(() => {});
 
     return NextResponse.json({ delivery }, { status: 201 });
   } catch (err) {
