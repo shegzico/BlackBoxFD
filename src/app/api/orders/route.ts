@@ -66,10 +66,10 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Fetch orders with nested deliveries and rider info
+    // Fetch orders (metadata only — deliveries are grouped client-side from the flat deliveries API)
     const { data: orders, error } = await supabase
       .from('orders')
-      .select('*, deliveries(*, rider:riders(id, name, phone))')
+      .select('*')
       .eq('customer_id', payload.id)
       .order('created_at', { ascending: false });
 

@@ -590,26 +590,36 @@ export default function CustomerOrders() {
         ? await ordersRes.json().then((d) => (Array.isArray(d) ? d : d.orders || []))
         : [];
 
-      // Build a set of delivery IDs already covered by the orders API (nested deliveries).
-      // This is more reliable than matching order_id because it avoids any type mismatch.
-      const deliveryIdsInOrders = new Set<string>();
-      for (const order of rawOrders) {
-        for (const d of order.deliveries || []) {
-          deliveryIdsInOrders.add(d.id);
+      // Group flat deliveries by order_id (using string keys to avoid number/string mismatch).
+      // The flat deliveries API returns order_id even though it's not in the TS Delivery type.
+      const deliveriesByOrderId = new Map<string, Delivery[]>();
+      for (const delivery of rawDeliveries) {
+        const orderId = (delivery as Delivery & { order_id?: number | string | null }).order_id;
+        if (orderId != null) {
+          const key = String(orderId);
+          if (!deliveriesByOrderId.has(key)) deliveriesByOrderId.set(key, []);
+          deliveriesByOrderId.get(key)!.push(delivery);
         }
       }
 
-      // Start with all proper orders (non-draft), using their nested deliveries from the API
+      // Build proper orders using flat deliveries grouped by order_id
       const finalOrders: Order[] = rawOrders
-        .filter((o) => !o.is_draft && (o.deliveries?.length ?? 0) > 0)
-        .map((o) => ({ ...o, deliveries: o.deliveries || [] }));
+        .filter((o) => !o.is_draft)
+        .map((o) => ({ ...o, deliveries: deliveriesByOrderId.get(String(o.id)) || [] }))
+        .filter((o) => o.deliveries.length > 0);
 
-      // Drafts kept separately (handled by draftOrders derived state below)
+      // Drafts kept separately
       const draftOrdersList: Order[] = rawOrders
         .filter((o) => o.is_draft)
-        .map((o) => ({ ...o, deliveries: o.deliveries || [] }));
+        .map((o) => ({ ...o, deliveries: deliveriesByOrderId.get(String(o.id)) || [] }));
 
-      // Any delivery from the flat list not covered by an order → standalone row
+      // Collect all delivery IDs covered by an order
+      const deliveryIdsInOrders = new Set<string>();
+      for (const order of finalOrders) {
+        for (const d of order.deliveries) deliveryIdsInOrders.add(d.id);
+      }
+
+      // Any delivery with no order_id (legacy) → standalone row
       for (const delivery of rawDeliveries) {
         if (!deliveryIdsInOrders.has(delivery.id)) {
           finalOrders.push({
