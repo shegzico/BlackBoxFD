@@ -76,7 +76,7 @@ export default function AdminPricingPage() {
       });
       if (!res.ok) throw new Error('Failed to fetch');
       const data = await res.json();
-      setLocations(Array.isArray(data) ? data : data.locations ?? []);
+      setLocations(Array.isArray(data) ? data : data.pricing ?? []);
     } catch {
       setError('Failed to load pricing data');
     } finally {

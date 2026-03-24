@@ -8,7 +8,7 @@ import {
   LAGOS_ZONES,
   isValidNigerianPhone,
 } from '@/lib/types';
-import { DocumentDownload, Danger, CloseCircle, InfoCircle, ArrowLeft2 } from 'iconsax-react';
+import { DocumentDownload, Danger, Edit2, Trash, InfoCircle, ArrowLeft2 } from 'iconsax-react';
 
 /* ------------------------------------------------------------------ */
 /*  Styling constants                                                   */
@@ -768,7 +768,7 @@ function BulkPreviewCards({
                         title="Edit"
                         className="p-1.5 text-[#a1a4a5] hover:text-[#f0f0f0] hover:bg-[rgba(255,255,255,0.06)] rounded-lg transition-colors"
                       >
-                        <CloseCircle size={14} color="currentColor" />
+                        <Edit2 size={14} color="currentColor" />
                       </button>
                       <button
                         type="button"
@@ -776,7 +776,7 @@ function BulkPreviewCards({
                         title="Remove"
                         className="p-1.5 text-red-500/60 hover:text-[#a85858] hover:bg-red-400/10 rounded-lg transition-colors"
                       >
-                        <Danger size={14} color="currentColor" />
+                        <Trash size={14} color="currentColor" />
                       </button>
                     </div>
                   </td>

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabase';
 import { verifyToken } from '@/lib/auth';
 
 export async function POST(request: NextRequest) {
@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
       if (d.dropoff_area) areas.add(d.dropoff_area);
     }
 
-    const { data: pricingData, error: pricingError } = await supabase
+    const { data: pricingData, error: pricingError } = await supabaseAdmin
       .from('pricing')
       .select('location, price')
       .in('location', Array.from(areas))
