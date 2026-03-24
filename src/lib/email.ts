@@ -302,6 +302,15 @@ async function resendEmail(to: string, subject: string, html: string): Promise<b
     return true;
   }
 
+  // Resend's onboarding@resend.dev sender can only deliver to the account owner's email.
+  // For all other recipients you MUST verify a domain and set the EMAIL_FROM env var.
+  if (!process.env.EMAIL_FROM) {
+    console.warn(
+      `[EMAIL WARNING] EMAIL_FROM is not set. Using "onboarding@resend.dev" which only delivers to the Resend account owner's email. ` +
+      `To send to any recipient, verify a domain in your Resend dashboard and set EMAIL_FROM=<name>@<your-verified-domain> in your environment variables.`
+    );
+  }
+
   try {
     const res = await fetch('https://api.resend.com/emails', {
       method: 'POST',

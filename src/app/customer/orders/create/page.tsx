@@ -6,8 +6,6 @@ import Link from 'next/link';
 import AddressInput from '@/components/AddressInput';
 import {
   LAGOS_ZONES,
-  PAYMENT_LABELS,
-  PaymentMethod,
   isValidNigerianPhone,
 } from '@/lib/types';
 import { DocumentDownload, Danger, CloseCircle, InfoCircle, ArrowLeft2 } from 'iconsax-react';
@@ -32,7 +30,6 @@ interface PickupState {
   pickup_area: string;
   pickup_address: string;
   pickup_date: string;
-  payment_method: PaymentMethod;
   is_express: boolean;
 }
 
@@ -900,25 +897,6 @@ function PickupSection({ pickup, onChange }: PickupSectionProps) {
           />
         </Field>
 
-        <Field label="Payment Method" htmlFor="payment_method">
-          <div className="relative">
-            <select
-              id="payment_method"
-              value={pickup.payment_method}
-              onChange={(e) => onChange('payment_method', e.target.value as PaymentMethod)}
-              className={selectClass}
-            >
-              {(Object.entries(PAYMENT_LABELS) as [PaymentMethod, string][]).map(([k, v]) => (
-                <option key={k} value={k}>
-                  {v}
-                </option>
-              ))}
-            </select>
-            <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs">
-              ▼
-            </span>
-          </div>
-        </Field>
       </div>
 
       {/* Express toggle */}
@@ -1058,9 +1036,9 @@ function CreateOrderPageContent() {
     pickup_area: '',
     pickup_address: '',
     pickup_date: todayString(),
-    payment_method: 'sender_pays',
     is_express: false,
   });
+  const [customerEmail, setCustomerEmail] = useState('');
   const [deliveries, setDeliveries] = useState<DeliveryItem[]>([emptyDelivery()]);
   const [estimates, setEstimates] = useState<Estimates | null>(null);
   const [hasEstimated, setHasEstimated] = useState(false);
@@ -1095,6 +1073,7 @@ function CreateOrderPageContent() {
         if (!res.ok) return;
         const data = await res.json();
         const profile = data.customer ?? data;
+        if (profile.email) setCustomerEmail(profile.email);
         setPickup((p) => ({
           ...p,
           sender_name: profile.name ?? p.sender_name,
@@ -1135,7 +1114,6 @@ function CreateOrderPageContent() {
           pickup_area: order.pickup_area ?? '',
           pickup_address: order.pickup_address ?? '',
           pickup_date: order.pickup_date ?? todayString(),
-          payment_method: (order.payment_method as PaymentMethod) ?? 'sender_pays',
           is_express: order.is_express ?? false,
         });
 
@@ -1455,6 +1433,50 @@ function CreateOrderPageContent() {
     }
   }, []);
 
+  /* ---- Load Paystack inline script ---- */
+  const [paystackReady, setPaystackReady] = useState(false);
+  useEffect(() => {
+    const existing = document.querySelector('script[src="https://js.paystack.co/v1/inline.js"]');
+    if (existing) { setPaystackReady(true); return; }
+    const script = document.createElement('script');
+    script.src = 'https://js.paystack.co/v1/inline.js';
+    script.onload = () => setPaystackReady(true);
+    document.body.appendChild(script);
+  }, []);
+
+  /* ---- Open Paystack then submit ---- */
+  const handlePlaceOrder = useCallback(() => {
+    if (!estimates) return;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    if (!paystackReady || !(window as any).PaystackPop) {
+      setError('Payment system not ready. Please refresh the page and try again.');
+      return;
+    }
+    const subtotal = estimates.total;
+    const total = subtotal + subtotal * 0.075;
+    const paystackKey = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY;
+    if (!paystackKey) {
+      setError('Payment not configured. Please contact support.');
+      return;
+    }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const handler = (window as any).PaystackPop.setup({
+      key: paystackKey,
+      email: customerEmail || `order-${Date.now()}@blackboxlogistics.ng`,
+      amount: Math.round(total * 100), // Paystack expects kobo
+      currency: 'NGN',
+      ref: `BB-${Date.now()}`,
+      label: 'BlackBox Logistics',
+      onClose: () => {
+        // user closed the modal without paying — do nothing
+      },
+      callback: () => {
+        submitOrder(false);
+      },
+    });
+    handler.openIframe();
+  }, [estimates, paystackReady, customerEmail, submitOrder]);
+
   /* ---- Derived values ---- */
   const isMulti = activeTab === 'multi';
   const activeDeliveries = isMulti ? deliveries : [deliveries[0]];
@@ -1653,7 +1675,7 @@ function CreateOrderPageContent() {
                     deliveries={activeDeliveries}
                     estimates={estimates}
                     isMulti={isMulti}
-                    onPlaceOrder={() => submitOrder(false)}
+                    onPlaceOrder={handlePlaceOrder}
                     onSaveDraft={() => submitOrder(true)}
                     placing={placing}
                     savingDraft={savingDraft}
@@ -1689,7 +1711,7 @@ function CreateOrderPageContent() {
               deliveries={activeDeliveries}
               estimates={estimates}
               isMulti={isMulti}
-              onPlaceOrder={() => { setShowMobileEstimate(false); submitOrder(false); }}
+              onPlaceOrder={() => { setShowMobileEstimate(false); handlePlaceOrder(); }}
               onSaveDraft={() => { setShowMobileEstimate(false); submitOrder(true); }}
               placing={placing}
               savingDraft={savingDraft}
