@@ -142,7 +142,7 @@ export async function POST(request: NextRequest) {
         sender_email: pickup.sender_email || null,
         pickup_area: pickup.pickup_area,
         pickup_address: pickup.pickup_address,
-        payment_method: pickup.payment_method,
+        payment_method: pickup.payment_method || 'sender_pays',
         is_express: pickup.is_express ?? false,
         total_fee: total_fee ?? null,
         delivery_count: deliveryItems.length,
@@ -181,7 +181,7 @@ export async function POST(request: NextRequest) {
           pickup_area: pickup.pickup_area,
           pickup_address: pickup.pickup_address,
           pickup_date: pickup.pickup_date,
-          payment_method: pickup.payment_method,
+          payment_method: pickup.payment_method || 'sender_pays',
           is_express: pickup.is_express ?? false,
           // Recipient fields from delivery item
           recipient_name: item.recipient_name,

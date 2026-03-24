@@ -144,11 +144,33 @@ export interface Admin {
 }
 
 export const LAGOS_ZONES = {
-  'Island Core': ['Victoria Island', 'Ikoyi', 'Lagos Island', 'Lekki Phase 1', 'Lekki Phase 2'],
-  'Mainland Core': ['Yaba', 'Surulere', 'Maryland', 'Ikeja', 'Costain', 'Ketu', 'Ogudu', 'Ojota', 'Jibowu', 'Oshodi-Isolo', 'Mushin'],
-  'Mainland Extended': ['Ogba', 'Egbeda', 'Olowoora', 'Egan', 'Ajangbadi', 'Aspamda', 'Ikorodu', 'Ojodu Berger', 'Isheri-Berger', 'Ojodu', 'Amuwo Odofin', 'Apapa', 'Festac Town'],
-  'Island Extended': ['Ajah', 'Sangotedo', 'Lakowe', 'Eleko', 'Bogije', 'Ibeju-Lekki', 'Epe'],
-  'Far Areas': ['Agege', 'Iba', 'Lasu', 'Ojo', 'Seme', 'Agbara', 'Mowo'],
+  'Island Core': [
+    'Victoria Island', 'Ikoyi', 'Lagos Island', 'Lekki Phase 1', 'Lekki Phase 2',
+    'Banana Island', 'Oniru', 'Marina', 'Bade', 'Eko Atlantic',
+  ],
+  'Island Extended': [
+    'Lekki', 'Chevron', 'Agungi', 'Idado', 'Osapa London', 'Igbo Efon', 'VGC',
+    'Ilaje', 'Awoyaya', 'Thomas Estate', 'Abraham Adesanya', 'Badore', 'Ogombo',
+    'Abijo', 'Lakowe', 'Eleko', 'Bogije', 'Ajah', 'Sangotedo',
+    'Ibeju-Lekki', 'Epe',
+  ],
+  'Mainland Core': [
+    'Yaba', 'Surulere', 'Maryland', 'Ikeja', 'Costain', 'Ketu', 'Ogudu',
+    'Ojota', 'Jibowu', 'Oshodi', 'Oshodi-Isolo', 'Mushin',
+    'Gbagada', 'Bariga', 'Palmgrove', 'Anthony', 'Pedro',
+    'Fadeyi', 'Onike', 'Akoka', 'Igbobi',
+    'Agidingbi', 'Allen Avenue', 'Opebi', 'GRA Ikeja', 'Alausa',
+    'Oregun', 'Omole Phase 1', 'Omole Phase 2', 'Kosofe',
+  ],
+  'Mainland Extended': [
+    'Ogba', 'Egbeda', 'Olowoora', 'Egan', 'Ajangbadi', 'Aspamda',
+    'Ikorodu', 'Ojodu Berger', 'Isheri-Berger', 'Ojodu',
+    'Amuwo Odofin', 'Apapa', 'Festac Town', 'Satellite Town',
+    'Ago Palace Way', 'Okota', 'Isolo', 'Ilasamaja', 'Mile 2',
+    'Dopemu', 'Abule Egba', 'Iyana Ipaja', 'Idimu',
+    'Ifako-Ijaiye', 'Meiran', 'Ipaja', 'Ayobo',
+  ],
+  'Far Areas': ['Agege', 'Iba', 'Lasu', 'Ojo', 'Seme', 'Agbara', 'Mowo', 'Badagry'],
 } as const;
 
 export type ZoneCategory = keyof typeof LAGOS_ZONES;

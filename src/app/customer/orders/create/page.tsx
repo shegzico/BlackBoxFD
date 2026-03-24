@@ -27,6 +27,7 @@ const selectClass =
 interface PickupState {
   sender_name: string;
   sender_phone: string;
+  sender_email: string;
   pickup_area: string;
   pickup_address: string;
   pickup_date: string;
@@ -42,6 +43,7 @@ interface DeliveryItem {
   dropoff_address: string;
   package_description: string;
   package_weight: string;
+  item_value: string;
   estimated_fee?: number;
 }
 
@@ -135,6 +137,7 @@ function emptyDelivery(): DeliveryItem {
     dropoff_address: '',
     package_description: '',
     package_weight: '',
+    item_value: '',
   };
 }
 
@@ -400,16 +403,18 @@ function CompactDeliveryCard({
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <Field label="Recipient Name" htmlFor={`r_name_${delivery._id}`}>
-            <input
-              id={`r_name_${delivery._id}`}
-              type="text"
-              value={delivery.recipient_name}
-              onChange={(e) => onChange('recipient_name', e.target.value)}
-              className={inputClass}
-              placeholder="Full name"
-            />
-          </Field>
+          <div className="sm:col-span-2">
+            <Field label="Recipient Name" htmlFor={`r_name_${delivery._id}`}>
+              <input
+                id={`r_name_${delivery._id}`}
+                type="text"
+                value={delivery.recipient_name}
+                onChange={(e) => onChange('recipient_name', e.target.value)}
+                className={inputClass}
+                placeholder="Full name"
+              />
+            </Field>
+          </div>
 
           <Field label="Recipient Phone" htmlFor={`r_phone_${delivery._id}`}>
             <input
@@ -461,6 +466,18 @@ function CompactDeliveryCard({
             </Field>
           </div>
 
+          <Field label="Item Value (₦)" htmlFor={`r_val_${delivery._id}`} optional>
+            <input
+              id={`r_val_${delivery._id}`}
+              type="number"
+              min="0"
+              value={delivery.item_value}
+              onChange={(e) => onChange('item_value', e.target.value)}
+              className={inputClass}
+              placeholder="e.g. 25000"
+            />
+          </Field>
+
           <Field label="Package Weight (kg)" htmlFor={`r_weight_${delivery._id}`}>
             <input
               id={`r_weight_${delivery._id}`}
@@ -482,12 +499,12 @@ function CompactDeliveryCard({
                 value={delivery.package_description}
                 onChange={(e) => onChange('package_description', e.target.value)}
                 className={inputClass + ' resize-none'}
-                placeholder="₦25,000 – Sneakers – Yes Insurance – Apt 2B"
+                placeholder="Sneakers – Yes Insurance – Apt 2B"
               />
               <p className="text-gray-600 text-xs mt-1">
-                Format: Item value, description, insurance request (interstate/international only), delivery instructions
+                Format: description, insurance request (interstate/international only), delivery instructions
                 <br />
-                Example: ₦25,000 – Sneakers – Yes Insurance – Apt 2B or ₦15,000 – Laptop Bag – No Insurance – Leave with reception
+                Example: Sneakers – Yes Insurance – Apt 2B or Laptop Bag – No Insurance – Leave with reception
               </p>
             </Field>
           </div>
@@ -899,6 +916,19 @@ function PickupSection({ pickup, onChange }: PickupSectionProps) {
           />
         </Field>
 
+        <div className="sm:col-span-2">
+          <Field label="Sender Email" htmlFor="sender_email" optional>
+            <input
+              id="sender_email"
+              type="email"
+              value={pickup.sender_email}
+              onChange={(e) => onChange('sender_email', e.target.value)}
+              className={inputClass}
+              placeholder="email@example.com"
+            />
+          </Field>
+        </div>
+
         <Field label="Pickup Date" htmlFor="pickup_date">
           <input
             id="pickup_date"
@@ -973,17 +1003,19 @@ function SingleDeliveryForm({ delivery, onChange }: SingleDeliveryFormProps) {
       <SectionHeading>Delivery Details</SectionHeading>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <Field label="Recipient Name" htmlFor="recipient_name">
-          <input
-            id="recipient_name"
-            type="text"
-            value={delivery.recipient_name}
-            onChange={(e) => onChange('recipient_name', e.target.value)}
-            className={inputClass}
-            placeholder="Full name"
-            required
-          />
-        </Field>
+        <div className="sm:col-span-2">
+          <Field label="Recipient Name" htmlFor="recipient_name">
+            <input
+              id="recipient_name"
+              type="text"
+              value={delivery.recipient_name}
+              onChange={(e) => onChange('recipient_name', e.target.value)}
+              className={inputClass}
+              placeholder="Full name"
+              required
+            />
+          </Field>
+        </div>
 
         <Field label="Recipient Phone" htmlFor="recipient_phone">
           <input
@@ -1036,6 +1068,18 @@ function SingleDeliveryForm({ delivery, onChange }: SingleDeliveryFormProps) {
           </Field>
         </div>
 
+        <Field label="Item Value (₦)" htmlFor="item_value" optional>
+          <input
+            id="item_value"
+            type="number"
+            min="0"
+            value={delivery.item_value}
+            onChange={(e) => onChange('item_value', e.target.value)}
+            className={inputClass}
+            placeholder="e.g. 25000"
+          />
+        </Field>
+
         <Field label="Package Weight (kg)" htmlFor="package_weight">
           <input
             id="package_weight"
@@ -1058,7 +1102,7 @@ function SingleDeliveryForm({ delivery, onChange }: SingleDeliveryFormProps) {
               value={delivery.package_description}
               onChange={(e) => onChange('package_description', e.target.value)}
               className={inputClass + ' resize-none'}
-              placeholder="₦25,000 – Sneakers – Yes Insurance – Apt 2B"
+              placeholder="Sneakers – Yes Insurance – Apt 2B"
             />
             <p className="text-gray-600 text-xs mt-1">
               Format: Item value, description, insurance request (interstate/international only), delivery instructions
@@ -1086,6 +1130,7 @@ function CreateOrderPageContent() {
   const [pickup, setPickup] = useState<PickupState>({
     sender_name: '',
     sender_phone: '',
+    sender_email: '',
     pickup_area: '',
     pickup_address: '',
     pickup_date: todayString(),
@@ -1131,6 +1176,7 @@ function CreateOrderPageContent() {
           ...p,
           sender_name: profile.name ?? p.sender_name,
           sender_phone: profile.phone ?? p.sender_phone,
+          sender_email: profile.email ?? p.sender_email,
           pickup_area: profile.default_pickup_area ?? p.pickup_area,
           pickup_address: profile.default_pickup_address ?? p.pickup_address,
         }));
@@ -1164,6 +1210,7 @@ function CreateOrderPageContent() {
         setPickup({
           sender_name: order.sender_name ?? '',
           sender_phone: order.sender_phone ?? '',
+          sender_email: order.sender_email ?? '',
           pickup_area: order.pickup_area ?? '',
           pickup_address: order.pickup_address ?? '',
           pickup_date: order.pickup_date ?? todayString(),
@@ -1454,6 +1501,7 @@ function CreateOrderPageContent() {
       dropoff_address: r.dropoff_address,
       package_description: r.package_description,
       package_weight: r.package_weight,
+      item_value: '',
     }));
     setDeliveries((ds) => {
       const base = ds.filter(
