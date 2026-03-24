@@ -42,6 +42,21 @@ export function getStatusNote(status: string, ctx: StatusNoteContext = {}): stri
         ? `Delivery cancelled${actor}`
         : 'Delivery was cancelled';
 
+    case 'delivery_failed':
+      return actorName
+        ? `Delivery attempt failed — marked${actor}. Sender or recipient may request a reattempt within 48 hours`
+        : 'Delivery attempt was unsuccessful. Sender or recipient may request a reattempt within 48 hours';
+
+    case 'returning':
+      return riderName
+        ? `${riderName} is en route to return the package to the sender`
+        : 'Package is being returned to the sender';
+
+    case 'returned':
+      return riderName
+        ? `Package returned to sender by ${riderName}`
+        : 'Package has been returned to the sender';
+
     default:
       return status;
   }

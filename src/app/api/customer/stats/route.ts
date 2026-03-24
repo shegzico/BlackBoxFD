@@ -47,6 +47,9 @@ export async function GET(request: NextRequest) {
       delivered: 0,
       confirmed: 0,
       cancelled: 0,
+      delivery_failed: 0,
+      returning: 0,
+      returned: 0,
     };
 
     for (const delivery of deliveries) {

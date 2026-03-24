@@ -5,7 +5,7 @@ import Link from 'next/link';
 import DeliveryOverlay from '@/components/DeliveryOverlay';
 import { Delivery } from '@/lib/types';
 import StatusBadge from '@/components/StatusBadge';
-import { Calendar, ArrowDown2, TickCircle, Add, Location, Clock, InfoCircle, TruckFast, ArrowRotateLeft, Refresh2, Grid4, Box } from 'iconsax-react';
+import { Calendar, ArrowDown2, TickCircle, Add, Location, Clock, InfoCircle, TruckFast, ArrowRotateLeft, Refresh2, Grid4, Box, Warning2 } from 'iconsax-react';
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                               */
@@ -20,6 +20,9 @@ interface Stats {
   delivered: number;
   confirmed: number;
   cancelled: number;
+  delivery_failed: number;
+  returning: number;
+  returned: number;
 }
 
 type PeriodKey = 'last7' | 'lastMonth' | 'thisYear' | 'lastYear' | 'custom';
@@ -335,18 +338,16 @@ function QuickActions() {
 /*  Stat Card                                                           */
 /* ------------------------------------------------------------------ */
 
-function StatCard({ label, value, icon, accent, loading }: {
+function StatCard({ label, value, icon, accent, loading, href }: {
   label: string;
   value: number;
   icon: React.ReactNode;
   accent: string;
   loading: boolean;
+  href?: string;
 }) {
-  return (
-    <div
-      className="rounded-xl p-3.5 flex items-center gap-3 border border-[rgba(255,255,255,0.08)]"
-      style={{ background: 'linear-gradient(rgba(80,80,80,0.10) 0%, rgba(0,0,0,0) 70%)' }}
-    >
+  const inner = (
+    <>
       <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${accent}`}>
         {icon}
       </div>
@@ -356,6 +357,23 @@ function StatCard({ label, value, icon, accent, loading }: {
           {loading ? <span className="inline-block w-6 h-5 bg-[rgba(255,255,255,0.08)] rounded animate-pulse align-middle" /> : value}
         </p>
       </div>
+    </>
+  );
+
+  const base = 'rounded-xl p-3.5 flex items-center gap-3 border border-[rgba(255,255,255,0.08)]';
+  const style = { background: 'linear-gradient(rgba(80,80,80,0.10) 0%, rgba(0,0,0,0) 70%)' };
+
+  if (href && !loading && value > 0) {
+    return (
+      <Link href={href} className={`${base} hover:border-[#212629] transition-colors`} style={style}>
+        {inner}
+      </Link>
+    );
+  }
+
+  return (
+    <div className={base} style={style}>
+      {inner}
     </div>
   );
 }
@@ -364,9 +382,11 @@ function StatCard({ label, value, icon, accent, loading }: {
 /*  Helpers                                                             */
 /* ------------------------------------------------------------------ */
 
+const TERMINAL_STATUSES = new Set(['delivered', 'confirmed', 'cancelled', 'returned']);
+
 function sortRecentOrders(orders: Delivery[]): Delivery[] {
-  const active = orders.filter((o) => o.status !== 'delivered' && o.status !== 'confirmed' && o.status !== 'cancelled');
-  const rest = orders.filter((o) => o.status === 'delivered' || o.status === 'confirmed' || o.status === 'cancelled');
+  const active = orders.filter((o) => !TERMINAL_STATUSES.has(o.status));
+  const rest = orders.filter((o) => TERMINAL_STATUSES.has(o.status));
   active.sort((a, b) => {
     if (a.pickup_date && b.pickup_date) return new Date(a.pickup_date).getTime() - new Date(b.pickup_date).getTime();
     if (a.pickup_date) return -1;
@@ -393,7 +413,7 @@ function buildStatsUrl(period: PeriodKey, customFrom: string, customTo: string):
 /* ------------------------------------------------------------------ */
 
 export default function CustomerDashboard() {
-  const [stats, setStats] = useState<Stats>({ total: 0, pending: 0, assigned: 0, picked_up: 0, in_transit: 0, delivered: 0, confirmed: 0, cancelled: 0 });
+  const [stats, setStats] = useState<Stats>({ total: 0, pending: 0, assigned: 0, picked_up: 0, in_transit: 0, delivered: 0, confirmed: 0, cancelled: 0, delivery_failed: 0, returning: 0, returned: 0 });
   const [recentOrders, setRecentOrders] = useState<Delivery[]>([]);
   const [loading, setLoading] = useState(true);
   const [customerName, setCustomerName] = useState('');
@@ -484,15 +504,22 @@ export default function CustomerDashboard() {
       icon: <TickCircle size={20} color="currentColor" />,
     },
     {
+      label: 'Delivery failed',
+      value: stats.delivery_failed,
+      accent: 'bg-[rgba(180,60,40,0.12)]',
+      icon: <Warning2 size={20} color="currentColor" />,
+      href: '/customer/orders?filter=delivery_failed',
+    },
+    {
       label: 'In transit back to you',
-      value: 0,
-      accent: 'bg-[rgba(50,110,145,0.12)]',
+      value: stats.returning,
+      accent: 'bg-[rgba(80,100,160,0.12)]',
       icon: <ArrowRotateLeft size={20} color="currentColor" />,
     },
     {
       label: 'Returned items',
-      value: 0,
-      accent: 'bg-[rgba(135,55,55,0.12)]',
+      value: stats.returned,
+      accent: 'bg-[rgba(90,60,130,0.12)]',
       icon: <Refresh2 size={20} color="currentColor" />,
     },
     {
@@ -550,6 +577,7 @@ export default function CustomerDashboard() {
               icon={card.icon}
               accent={card.accent}
               loading={loading}
+              href={'href' in card ? card.href : undefined}
             />
           ))}
         </div>

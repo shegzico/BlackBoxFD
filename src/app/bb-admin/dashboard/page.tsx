@@ -15,13 +15,16 @@ interface Stats {
 }
 
 const STAT_COLORS: Record<DeliveryStatus, string> = {
-  pending:    'bg-[#3a4450]',
-  assigned:   'bg-[#2d5a8a]',
-  picked_up:  'bg-[#5a4018]',
-  in_transit: 'bg-[#4a3010]',
-  delivered:  'bg-[#1e5030]',
-  confirmed:  'bg-[#153820]',
-  cancelled:  'bg-[#6a2828]',
+  pending:          'bg-[#3a4450]',
+  assigned:         'bg-[#2d5a8a]',
+  picked_up:        'bg-[#5a4018]',
+  in_transit:       'bg-[#4a3010]',
+  delivered:        'bg-[#1e5030]',
+  confirmed:        'bg-[#153820]',
+  cancelled:        'bg-[#6a2828]',
+  delivery_failed:  'bg-[#802820]',
+  returning:        'bg-[#2a3560]',
+  returned:         'bg-[#3a2558]',
 };
 
 function formatNaira(amount: number | undefined | null): string {

@@ -23,6 +23,10 @@ const FILTER_TABS: { label: string; value: DeliveryStatus | 'all' }[] = [
   { label: 'In Transit', value: 'in_transit' },
   { label: 'Delivered', value: 'delivered' },
   { label: 'Confirmed', value: 'confirmed' },
+  { label: 'Failed', value: 'delivery_failed' },
+  { label: 'Returning', value: 'returning' },
+  { label: 'Returned', value: 'returned' },
+  { label: 'Cancelled', value: 'cancelled' },
 ];
 
 function formatNaira(amount: number | null): string {
@@ -670,7 +674,7 @@ export default function AdminOrdersPage() {
                           }}
                         >
                           <option value="">Change status to…</option>
-                          {(['pending', 'assigned', 'picked_up', 'in_transit', 'delivered', 'confirmed'] as DeliveryStatus[])
+                          {(['pending', 'assigned', 'picked_up', 'in_transit', 'delivered', 'confirmed', 'delivery_failed', 'returning', 'returned', 'cancelled'] as DeliveryStatus[])
                             .filter((s) => s !== order.status)
                             .map((s) => (
                               <option key={s} value={s}>{STATUS_LABELS[s]}</option>
@@ -682,8 +686,24 @@ export default function AdminOrdersPage() {
                       </div>
                     </div>
 
-                    {/* Assign / Reassign Rider — hidden for delivered/confirmed */}
-                    {!['delivered', 'confirmed'].includes(order.status) && (
+                    {/* Assign for Return — shown on delivery_failed orders */}
+                    {order.status === 'delivery_failed' && (
+                      <div className="p-3 bg-[rgba(180,60,40,0.08)] border border-[rgba(180,60,40,0.25)] rounded-xl flex flex-col gap-2">
+                        <p className="text-[#c05040] text-xs font-semibold">Delivery Failed</p>
+                        <p className="text-[#a1a4a5] text-xs leading-snug">
+                          Assign a rider to return this package to the sender, then change status to <strong className="text-[#6080c0]">Returning</strong>.
+                        </p>
+                        <button
+                          onClick={() => handleStatusChange(order.id, 'returning')}
+                          className="w-full py-2 rounded-lg text-xs font-semibold bg-[#2a3560] text-[#6080c0] border border-[#6080c0]/30 hover:bg-[#354080] transition-colors"
+                        >
+                          Mark as Returning (Assign Rider for Return)
+                        </button>
+                      </div>
+                    )}
+
+                    {/* Assign / Reassign Rider — hidden for delivered/confirmed/returned */}
+                    {!['delivered', 'confirmed', 'returned'].includes(order.status) && (
                       <div className="pt-1">
                         <p className="text-[#a1a4a5] text-[10px] uppercase tracking-wider mb-1.5 font-medium">
                           {order.rider_id ? 'Reassign Rider' : 'Assign Rider'}

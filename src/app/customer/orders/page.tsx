@@ -45,7 +45,10 @@ interface OrderStats {
 
 const STATUS_FILTERS: (DeliveryStatus | 'all')[] = [
   'all', 'pending', 'assigned', 'picked_up', 'in_transit', 'delivered', 'confirmed', 'cancelled',
+  'delivery_failed', 'returning', 'returned',
 ];
+
+const REATTEMPT_WINDOW_MS = 48 * 60 * 60 * 1000;
 
 function computeStats(orders: Delivery[]): OrderStats {
   return {
@@ -438,6 +441,99 @@ function DeleteDraftModal({
 }
 
 /* ------------------------------------------------------------------ */
+/*  Reattempt Modal                                                     */
+/* ------------------------------------------------------------------ */
+
+function ReattemptModal({
+  order,
+  onClose,
+  onDone,
+}: {
+  order: Delivery;
+  onClose: () => void;
+  onDone: (updated: Delivery) => void;
+}) {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [initiatedBy, setInitiatedBy] = useState<'sender' | 'recipient'>('sender');
+
+  const failedAt = new Date(order.updated_at).getTime();
+  const hoursLeft = Math.max(0, Math.ceil((REATTEMPT_WINDOW_MS - (Date.now() - failedAt)) / 3600000));
+
+  async function handleReattempt() {
+    setLoading(true);
+    setError('');
+    const token = localStorage.getItem('customer_token');
+    try {
+      const res = await fetch(`/api/customer/deliveries/${order.id}/reattempt`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token || ''}` },
+        body: JSON.stringify({ initiated_by: initiatedBy }),
+      });
+      const data = await res.json();
+      if (!res.ok) { setError(data.error || 'Failed to request reattempt'); return; }
+      onDone({ ...order, status: 'pending' });
+      onClose();
+    } catch {
+      setError('Network error. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm" onClick={onClose}>
+      <div className="bg-[#070707] border border-[rgba(255,255,255,0.08)] rounded-2xl w-full max-w-sm p-6" onClick={(e) => e.stopPropagation()}>
+        <div className="w-12 h-12 rounded-full bg-[rgba(180,60,40,0.12)] flex items-center justify-center mb-4">
+          <Danger size={24} color="#c05040" />
+        </div>
+        <h3 className="text-[#f0f0f0] font-semibold text-base mb-1">Request Reattempt</h3>
+        <p className="text-[#a1a4a5] text-sm mb-1">
+          Order <span className="font-mono text-[#f0f0f0]">{order.id}</span> will be reset to pending for a new delivery attempt.
+        </p>
+        <p className="text-[#c05040] text-xs mb-4">
+          A reattempt fee will be charged to whoever initiates this request. Window closes in ~{hoursLeft}h.
+        </p>
+
+        <div className="mb-4">
+          <p className="text-[#a1a4a5] text-xs uppercase tracking-wider mb-2">Who is initiating this reattempt?</p>
+          <div className="flex gap-2">
+            {(['sender', 'recipient'] as const).map((role) => (
+              <button
+                key={role}
+                onClick={() => setInitiatedBy(role)}
+                className={`flex-1 py-2 rounded-lg text-xs font-medium border transition-colors capitalize ${
+                  initiatedBy === role
+                    ? 'bg-[#F2FF66] text-[#000000] border-[#F2FF66]'
+                    : 'bg-[#000000] text-[#a1a4a5] border-[rgba(255,255,255,0.08)] hover:text-[#f0f0f0]'
+                }`}
+              >
+                {role === 'sender' ? 'Me (Sender)' : 'Recipient'}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {error && <p className="text-[#a85858] text-xs mb-3">{error}</p>}
+
+        <div className="flex gap-3">
+          <button onClick={onClose} className="flex-1 px-4 py-2.5 text-sm text-[#a1a4a5] border border-[rgba(255,255,255,0.08)] rounded-lg hover:text-[#f0f0f0] transition-colors">
+            Cancel
+          </button>
+          <button
+            onClick={handleReattempt}
+            disabled={loading}
+            className="flex-1 px-4 py-2.5 bg-[#F2FF66] text-[#000000] text-sm font-semibold rounded-lg disabled:opacity-50 transition-colors hover:bg-[#e8f55c]"
+          >
+            {loading ? 'Requesting…' : 'Request Reattempt'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
 /*  Row Action Buttons                                                  */
 /* ------------------------------------------------------------------ */
 
@@ -488,6 +584,7 @@ export default function CustomerOrders() {
   const [editOrder, setEditOrder] = useState<Delivery | null>(null);
   const [cancelOrder, setCancelOrder] = useState<Delivery | null>(null);
   const [deleteDraft, setDeleteDraft] = useState<DraftOrder | null>(null);
+  const [reattemptOrder, setReattemptOrder] = useState<Delivery | null>(null);
 
   /* -- fetch -- */
   const fetchOrders = useCallback(async () => {
@@ -741,10 +838,12 @@ export default function CustomerOrders() {
                 {orders.map((order) => {
                   const canEdit = order.status === 'pending';
                   const canCancel = order.status === 'pending';
+                  const isFailed = order.status === 'delivery_failed';
+                  const withinWindow = isFailed && (Date.now() - new Date(order.updated_at).getTime()) < REATTEMPT_WINDOW_MS;
                   return (
                     <tr
                       key={order.id}
-                      className="group border-b border-[#1A1A1A] last:border-0 hover:bg-[#1A1A1A] transition-colors cursor-pointer"
+                      className={`group border-b border-[#1A1A1A] last:border-0 hover:bg-[#1A1A1A] transition-colors cursor-pointer ${isFailed ? 'bg-[rgba(180,60,40,0.04)]' : ''}`}
                       onClick={() => openView(order.id)}
                     >
                       <td className="px-4 py-3">
@@ -762,16 +861,26 @@ export default function CustomerOrders() {
                       </td>
                       <td className="px-4 py-3"><StatusBadge status={order.status} /></td>
                       <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
-                        <div className="flex items-center justify-end gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <ActionBtn title="View details" onClick={() => openView(order.id)}>
-                            {EyeIcon}
-                          </ActionBtn>
-                          <ActionBtn title={canEdit ? 'Edit order' : 'Cannot edit — order is in progress'} onClick={() => setEditOrder(order)} disabled={!canEdit}>
-                            {PencilIcon}
-                          </ActionBtn>
-                          <ActionBtn title={canCancel ? 'Cancel order' : 'Cannot cancel — order is in progress'} variant="danger" onClick={() => setCancelOrder(order)} disabled={!canCancel}>
-                            {BanIcon}
-                          </ActionBtn>
+                        <div className="flex items-center justify-end gap-1">
+                          {withinWindow && (
+                            <button
+                              onClick={() => setReattemptOrder(order)}
+                              className="text-[10px] font-semibold px-2 py-1 rounded-md bg-[#F2FF66] text-[#000000] hover:bg-[#e8f55c] transition-colors whitespace-nowrap"
+                            >
+                              Reattempt
+                            </button>
+                          )}
+                          <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <ActionBtn title="View details" onClick={() => openView(order.id)}>
+                              {EyeIcon}
+                            </ActionBtn>
+                            <ActionBtn title={canEdit ? 'Edit order' : 'Cannot edit'} onClick={() => setEditOrder(order)} disabled={!canEdit}>
+                              {PencilIcon}
+                            </ActionBtn>
+                            <ActionBtn title={canCancel ? 'Cancel order' : 'Cannot cancel'} variant="danger" onClick={() => setCancelOrder(order)} disabled={!canCancel}>
+                              {BanIcon}
+                            </ActionBtn>
+                          </div>
                         </div>
                       </td>
                     </tr>
@@ -786,8 +895,10 @@ export default function CustomerOrders() {
             {orders.map((order) => {
               const canEdit = order.status === 'pending';
               const canCancel = order.status === 'pending';
+              const isFailed = order.status === 'delivery_failed';
+              const withinWindow = isFailed && (Date.now() - new Date(order.updated_at).getTime()) < REATTEMPT_WINDOW_MS;
               return (
-                <div key={order.id} className="bg-[#070707] border border-[rgba(255,255,255,0.08)] rounded-xl p-4">
+                <div key={order.id} className={`border rounded-xl p-4 ${isFailed ? 'bg-[rgba(180,60,40,0.06)] border-[rgba(180,60,40,0.25)]' : 'bg-[#070707] border-[rgba(255,255,255,0.08)]'}`}>
                   <div className="flex items-start justify-between gap-3 mb-3">
                     <div className="min-w-0 flex-1">
                       <p className="font-mono text-xs text-[#a1a4a5] truncate">{order.id}</p>
@@ -800,6 +911,17 @@ export default function CustomerOrders() {
                     </div>
                     <StatusBadge status={order.status} />
                   </div>
+
+                  {/* Reattempt CTA for failed deliveries */}
+                  {withinWindow && (
+                    <button
+                      onClick={() => setReattemptOrder(order)}
+                      className="w-full mb-3 py-2 rounded-lg text-xs font-semibold bg-[#F2FF66] text-[#000000] hover:bg-[#e8f55c] transition-colors"
+                    >
+                      Request Reattempt (fee applies)
+                    </button>
+                  )}
+
                   {/* Always-visible actions on mobile */}
                   <div className="flex items-center gap-1 border-t border-[rgba(255,255,255,0.08)] pt-3">
                     <ActionBtn title="View details" onClick={() => openView(order.id)}>
@@ -862,6 +984,16 @@ export default function CustomerOrders() {
           onDeleted={(orderNumber) => {
             setDrafts((prev) => prev.filter((d) => d.order_number !== orderNumber));
             setDeleteDraft(null);
+          }}
+        />
+      )}
+      {reattemptOrder && (
+        <ReattemptModal
+          order={reattemptOrder}
+          onClose={() => setReattemptOrder(null)}
+          onDone={(updated) => {
+            setAllOrders((prev) => prev.map((o) => o.id === updated.id ? updated : o));
+            setReattemptOrder(null);
           }}
         />
       )}

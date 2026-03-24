@@ -1,37 +1,53 @@
-export type DeliveryStatus = 'pending' | 'assigned' | 'picked_up' | 'in_transit' | 'delivered' | 'confirmed' | 'cancelled';
+export type DeliveryStatus =
+  | 'pending' | 'assigned' | 'picked_up' | 'in_transit'
+  | 'delivered' | 'confirmed' | 'cancelled'
+  | 'delivery_failed' | 'returning' | 'returned';
 
+/** Normal forward delivery flow — used by ProgressBar */
 export const STATUS_ORDER: DeliveryStatus[] = ['pending', 'assigned', 'picked_up', 'in_transit', 'delivered', 'confirmed'];
 
+/** Return flow — shown when delivery has failed and is heading back */
+export const RETURN_STATUS_ORDER: DeliveryStatus[] = ['delivery_failed', 'returning', 'returned'];
+
 export const STATUS_LABELS: Record<DeliveryStatus, string> = {
-  pending: 'Pending',
-  assigned: 'Assigned',
-  picked_up: 'Picked Up',
-  in_transit: 'In Transit',
-  delivered: 'Delivered',
-  confirmed: 'Confirmed',
-  cancelled: 'Cancelled',
+  pending:          'Pending',
+  assigned:         'Assigned',
+  picked_up:        'Picked Up',
+  in_transit:       'In Transit',
+  delivered:        'Delivered',
+  confirmed:        'Confirmed',
+  cancelled:        'Cancelled',
+  delivery_failed:  'Delivery Failed',
+  returning:        'Returning',
+  returned:         'Returned',
 };
 
 // Full badge class: bg + border + text — used in StatusBadge
 export const STATUS_COLORS: Record<DeliveryStatus, string> = {
-  pending:   'bg-[rgba(100,115,130,0.15)] border border-[rgba(100,115,130,0.25)] text-[#8090a0]',
-  assigned:  'bg-[rgba(65,100,155,0.15)] border border-[rgba(65,100,155,0.25)] text-[#6a8fbf]',
-  picked_up: 'bg-[rgba(150,105,35,0.15)] border border-[rgba(150,105,35,0.25)] text-[#aa8040]',
-  in_transit:'bg-[rgba(145,80,35,0.15)] border border-[rgba(145,80,35,0.25)] text-[#a06530]',
-  delivered: 'bg-[rgba(38,100,58,0.15)] border border-[rgba(38,100,58,0.25)] text-[#3d8050]',
-  confirmed: 'bg-[rgba(30,80,48,0.15)] border border-[rgba(30,80,48,0.25)] text-[#2d6840]',
-  cancelled: 'bg-[rgba(135,55,55,0.15)] border border-[rgba(135,55,55,0.25)] text-[#a85858]',
+  pending:         'bg-[rgba(100,115,130,0.15)] border border-[rgba(100,115,130,0.25)] text-[#8090a0]',
+  assigned:        'bg-[rgba(65,100,155,0.15)] border border-[rgba(65,100,155,0.25)] text-[#6a8fbf]',
+  picked_up:       'bg-[rgba(150,105,35,0.15)] border border-[rgba(150,105,35,0.25)] text-[#aa8040]',
+  in_transit:      'bg-[rgba(145,80,35,0.15)] border border-[rgba(145,80,35,0.25)] text-[#a06530]',
+  delivered:       'bg-[rgba(38,100,58,0.15)] border border-[rgba(38,100,58,0.25)] text-[#3d8050]',
+  confirmed:       'bg-[rgba(30,80,48,0.15)] border border-[rgba(30,80,48,0.25)] text-[#2d6840]',
+  cancelled:       'bg-[rgba(135,55,55,0.15)] border border-[rgba(135,55,55,0.25)] text-[#a85858]',
+  delivery_failed: 'bg-[rgba(180,60,40,0.15)] border border-[rgba(180,60,40,0.25)] text-[#c05040]',
+  returning:       'bg-[rgba(80,100,160,0.15)] border border-[rgba(80,100,160,0.25)] text-[#6080c0]',
+  returned:        'bg-[rgba(90,60,130,0.15)] border border-[rgba(90,60,130,0.25)] text-[#8060a8]',
 };
 
 // Text-only color — used in timelines, labels, etc.
 export const STATUS_TEXT_COLORS: Record<DeliveryStatus, string> = {
-  pending:   'text-[#8090a0]',
-  assigned:  'text-[#6a8fbf]',
-  picked_up: 'text-[#aa8040]',
-  in_transit:'text-[#a06530]',
-  delivered: 'text-[#3d8050]',
-  confirmed: 'text-[#2d6840]',
-  cancelled: 'text-[#a85858]',
+  pending:         'text-[#8090a0]',
+  assigned:        'text-[#6a8fbf]',
+  picked_up:       'text-[#aa8040]',
+  in_transit:      'text-[#a06530]',
+  delivered:       'text-[#3d8050]',
+  confirmed:       'text-[#2d6840]',
+  cancelled:       'text-[#a85858]',
+  delivery_failed: 'text-[#c05040]',
+  returning:       'text-[#6080c0]',
+  returned:        'text-[#8060a8]',
 };
 
 export type PaymentMethod = 'sender_pays' | 'receiver_pays';

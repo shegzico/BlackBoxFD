@@ -14,15 +14,21 @@ interface RiderInfo {
 }
 
 const NEXT_STATUS: Partial<Record<DeliveryStatus, DeliveryStatus>> = {
-  assigned: 'picked_up',
+  assigned:  'picked_up',
   picked_up: 'in_transit',
   in_transit: 'delivered',
+  // Return flow
+  delivery_failed: 'returning',
+  returning: 'returned',
 };
 
 const STATUS_BUTTON_LABEL: Partial<Record<DeliveryStatus, string>> = {
-  assigned: 'Mark as Picked Up',
+  assigned:  'Mark as Picked Up',
   picked_up: 'Mark as In Transit',
   in_transit: 'Mark as Delivered',
+  // Return flow
+  delivery_failed: 'Mark as Returning to Sender',
+  returning: 'Mark as Returned to Sender',
 };
 
 function RiderNavbar({ riderName, onLogout }: { riderName: string; onLogout: () => void }) {
@@ -83,9 +89,11 @@ function ActiveDeliveryCard({
   onStatusUpdate: (id: string, nextStatus: DeliveryStatus) => void;
   updating: boolean;
 }) {
+  const [showFailConfirm, setShowFailConfirm] = useState(false);
   const nextStatus = NEXT_STATUS[delivery.status];
   const buttonLabel = STATUS_BUTTON_LABEL[delivery.status];
   const isDelivered = delivery.status === 'in_transit';
+  const isReturnFlow = delivery.status === 'delivery_failed' || delivery.status === 'returning';
 
   return (
     <div className="bg-[#070707] border border-[rgba(255,255,255,0.08)] rounded-2xl p-4 flex flex-col gap-3">
@@ -149,7 +157,7 @@ function ActiveDeliveryCard({
         </span>
       </div>
 
-      {/* Status update button */}
+      {/* Status update buttons */}
       {nextStatus && buttonLabel && (
         <button
           onClick={() => onStatusUpdate(delivery.id, nextStatus)}
@@ -161,19 +169,56 @@ function ActiveDeliveryCard({
             disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100
             ${isDelivered
               ? 'bg-[#1e5030] hover:bg-green-400 text-white'
+              : isReturnFlow
+              ? 'bg-[#2a3560] hover:bg-[#354080] text-white border border-[#6080c0]/30'
               : 'bg-[#F2FF66] hover:bg-[#e8f55c] text-[#000000]'
             }
           `}
         >
           {updating ? (
             <>
-              <Refresh2 size={16} className="animate-spin" />
+              <Refresh2 size={16} color="currentColor" className="animate-spin" />
               Updating...
             </>
           ) : (
             buttonLabel
           )}
         </button>
+      )}
+
+      {/* Mark as Failed — only on in_transit deliveries */}
+      {delivery.status === 'in_transit' && !showFailConfirm && (
+        <button
+          onClick={() => setShowFailConfirm(true)}
+          disabled={updating}
+          className="w-full py-2.5 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 border border-[rgba(180,60,40,0.4)] text-[#c05040] hover:bg-[rgba(180,60,40,0.10)] active:scale-95 transition-all duration-150 disabled:opacity-50"
+        >
+          Mark as Delivery Failed
+        </button>
+      )}
+
+      {/* Confirm failure */}
+      {delivery.status === 'in_transit' && showFailConfirm && (
+        <div className="flex flex-col gap-2 p-3 bg-[rgba(180,60,40,0.10)] border border-[rgba(180,60,40,0.3)] rounded-xl">
+          <p className="text-[#c05040] text-xs font-medium text-center">
+            Confirm: Was unable to deliver this package?
+          </p>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setShowFailConfirm(false)}
+              className="flex-1 py-2 rounded-lg text-xs font-semibold bg-[#161616] text-[#a1a4a5] hover:text-[#f0f0f0] border border-[rgba(255,255,255,0.08)] transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={() => { setShowFailConfirm(false); onStatusUpdate(delivery.id, 'delivery_failed'); }}
+              disabled={updating}
+              className="flex-1 py-2 rounded-lg text-xs font-bold bg-[rgba(180,60,40,0.25)] text-[#c05040] border border-[rgba(180,60,40,0.4)] hover:bg-[rgba(180,60,40,0.4)] transition-colors disabled:opacity-50"
+            >
+              {updating ? 'Updating...' : 'Yes, Failed'}
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );
@@ -219,8 +264,8 @@ export default function RiderDashboardPage() {
     setFetchError('');
     try {
       const [activeRes, completedRes] = await Promise.all([
-        fetch(`/api/deliveries?rider_id=${riderId}&status=assigned,picked_up,in_transit&sort=priority`),
-        fetch(`/api/deliveries?rider_id=${riderId}&status=delivered,confirmed`),
+        fetch(`/api/deliveries?rider_id=${riderId}&status=assigned,picked_up,in_transit,delivery_failed,returning&sort=priority`),
+        fetch(`/api/deliveries?rider_id=${riderId}&status=delivered,confirmed,returned`),
       ]);
 
       const activeData = await activeRes.json();
