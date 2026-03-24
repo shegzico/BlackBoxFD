@@ -107,15 +107,22 @@ export default function AddressInput({
             const address = place.formatted_address || place.name || '';
             onChange(address);
 
-            // Try to extract the area/sublocality for auto-fill
+            // Try to extract the area/sublocality for auto-fill.
+            // Order of preference: sublocality_level_1 → sublocality_level_2 → neighborhood → sublocality.
+            // We intentionally skip `locality` because Google returns "Lagos Island" as the
+            // locality for most Lagos addresses (it's the old administrative municipality name),
+            // which causes false matches for completely unrelated neighbourhoods.
             if (onAreaDetectedRef.current && place.address_components) {
               const components = place.address_components;
-              // Prefer sublocality_level_1, then sublocality, then locality
-              const sub =
+              const GENERIC = new Set(['lagos island', 'lagos', 'nigeria']);
+              const candidate =
                 components.find((c) => c.types.includes('sublocality_level_1')) ||
-                components.find((c) => c.types.includes('sublocality')) ||
-                components.find((c) => c.types.includes('locality'));
-              if (sub) onAreaDetectedRef.current(sub.long_name);
+                components.find((c) => c.types.includes('sublocality_level_2')) ||
+                components.find((c) => c.types.includes('neighborhood')) ||
+                components.find((c) => c.types.includes('sublocality'));
+              if (candidate && !GENERIC.has(candidate.long_name.toLowerCase())) {
+                onAreaDetectedRef.current(candidate.long_name);
+              }
             }
           });
 
