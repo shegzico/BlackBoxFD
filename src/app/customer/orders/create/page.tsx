@@ -916,18 +916,16 @@ function PickupSection({ pickup, onChange }: PickupSectionProps) {
           />
         </Field>
 
-        <div className="sm:col-span-2">
-          <Field label="Sender Email" htmlFor="sender_email" optional>
-            <input
-              id="sender_email"
-              type="email"
-              value={pickup.sender_email}
-              onChange={(e) => onChange('sender_email', e.target.value)}
-              className={inputClass}
-              placeholder="email@example.com"
-            />
-          </Field>
-        </div>
+        <Field label="Sender Email" htmlFor="sender_email" optional>
+          <input
+            id="sender_email"
+            type="email"
+            value={pickup.sender_email}
+            onChange={(e) => onChange('sender_email', e.target.value)}
+            className={inputClass}
+            placeholder="email@example.com"
+          />
+        </Field>
 
         <Field label="Pickup Date" htmlFor="pickup_date">
           <input
