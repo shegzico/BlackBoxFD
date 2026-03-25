@@ -4,7 +4,7 @@
  *
  * Config via data attributes on the container div:
  *   data-theme="dark|light"              (default: dark)
- *   data-prefill="BB-XXXXXX"             (pre-fills tracking ID)
+ *   data-prefill="BB1A2B3C4D"            (pre-fills tracking ID)
  *   data-heading="Track your package"    (custom heading text)
  *   data-show-heading="true|false"       (show/hide heading, default: true)
  *   data-sub="Enter your tracking ID…"  (custom sub text)
@@ -15,8 +15,8 @@
 (function () {
   'use strict';
 
-  var API_BASE = 'https://app-blackbox.vercel.app/api/public/track';
-  var APP_TRACK = 'https://app-blackbox.vercel.app/track';
+  var API_BASE = 'https://app.blackboxng.com/api/public/track';
+  var APP_TRACK = 'https://app.blackboxng.com/track';
 
   // ── Status config ────────────────────────────────────────────
   var STATUS_ORDER = ['pending', 'assigned', 'picked_up', 'in_transit', 'delivered', 'confirmed'];
@@ -270,7 +270,7 @@
 
     var inputAttrs = {
       type: 'text',
-      placeholder: 'e.g. BB-A1B2C3',
+      placeholder: 'e.g. BB1A2B3C4D',
       maxlength: '20',
       autocomplete: 'off',
       spellcheck: 'false',
@@ -375,8 +375,8 @@
     var self = this;
     var id = (this._input.value || '').trim().toUpperCase();
     if (!id) { this._showError('Please enter a tracking ID.'); return; }
-    if (!/^BB-[A-Z0-9]{4,10}$/.test(id)) {
-      this._showError('Invalid tracking ID format. It should look like BB-A1B2C3.');
+    if (!/^BB[A-Z0-9]{8}$/.test(id) && !/^BB-[A-Z0-9]{6}$/.test(id)) {
+      this._showError('Invalid tracking ID format. It should look like BB1A2B3C4D.');
       return;
     }
 
