@@ -12,7 +12,7 @@ export default function TrackPage() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const raw = e.target.value.toUpperCase();
-    // Allow only letters, digits and hyphens; enforce BB-XXXXXX format loosely
+    // Allow letters, digits and hyphens (hyphens for legacy BB-XXXXXX format)
     const cleaned = raw.replace(/[^A-Z0-9-]/g, '');
     setTrackingId(cleaned);
     setError('');
@@ -25,9 +25,9 @@ export default function TrackPage() {
       setError('Please enter a tracking ID.');
       return;
     }
-    // Basic format check: BB-XXXXXX (letters/digits after dash)
-    if (!/^BB-[A-Z0-9]{6}$/.test(trimmed)) {
-      setError('Invalid format. Use BB-XXXXXX (e.g., BB-A3K9X2).');
+    // Accept new format (BB + 8 chars) or legacy format (BB-XXXXXX)
+    if (!/^BB[A-Z0-9]{8}$/.test(trimmed) && !/^BB-[A-Z0-9]{6}$/.test(trimmed)) {
+      setError('Invalid tracking ID format.');
       return;
     }
     router.push(`/track/${trimmed}`);
@@ -64,8 +64,8 @@ export default function TrackPage() {
                 spellCheck={false}
                 value={trackingId}
                 onChange={handleChange}
-                placeholder="Enter tracking ID (e.g., BB-A3K9X2)"
-                maxLength={9}
+                placeholder="Enter tracking ID (e.g., BB1A2B3C4D)"
+                maxLength={10}
                 className={`w-full bg-[#070707] border rounded-xl px-4 py-3.5 text-[#f0f0f0] text-base placeholder-gray-600 font-mono tracking-wider outline-none transition-colors
                   ${error ? 'border-red-500 focus:border-red-400' : 'border-[rgba(255,255,255,0.08)] focus:border-[#212629]'}`}
               />
@@ -84,7 +84,7 @@ export default function TrackPage() {
 
           {/* Helper hint */}
           <p className="mt-6 text-center text-xs text-gray-600">
-            Your tracking ID was sent via SMS or email when your order was placed.
+            Your tracking ID was sent via SMS or email when your order was placed. It starts with <span className="font-mono">BB</span>.
           </p>
         </div>
       </main>

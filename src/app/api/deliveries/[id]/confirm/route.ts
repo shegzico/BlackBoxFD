@@ -40,7 +40,7 @@ export async function POST(
     // Fetch the delivery
     const { data: delivery, error: fetchError } = await supabase
       .from('deliveries')
-      .select('id, status, delivery_confirmation_code, return_confirmation_code, rider_id, sender_name, recipient_name')
+      .select('id, status, delivery_confirmation_code, confirmation_code, return_confirmation_code, rider_id, sender_name, recipient_name')
       .eq('id', id)
       .single();
 
@@ -60,8 +60,10 @@ export async function POST(
     }
 
     // Validate code
+    // delivery_confirmation_code = set by legacy /api/customer/deliveries route
+    // confirmation_code = set by /api/orders route
     const expectedCode = isDelivery
-      ? delivery.delivery_confirmation_code
+      ? (delivery.delivery_confirmation_code || delivery.confirmation_code)
       : delivery.return_confirmation_code;
 
     if (!expectedCode) {

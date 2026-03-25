@@ -88,33 +88,32 @@ export async function PATCH(
 
     updates.updated_at = new Date().toISOString();
 
-    const { data: delivery, error: updateError } = await supabase
+    const { error: updateError } = await supabase
       .from('deliveries')
       .update(updates)
-      .eq('id', id)
-      .select('*, rider:riders(id, name, phone)')
-      .single();
+      .eq('id', id);
 
     if (updateError) {
       return NextResponse.json({ error: updateError.message }, { status: 500 });
     }
 
-    // If status changed, insert a new history entry
+    // Fetch updated delivery (separate query to avoid FK resolution issues)
+    const { data: delivery } = await supabase
+      .from('deliveries')
+      .select('*, rider:riders(id, name, phone)')
+      .eq('id', id)
+      .maybeSingle();
+
+    // If status changed, insert a history entry (non-fatal if it fails)
     const newStatus = resolvedStatus;
     if (newStatus && newStatus !== current.status) {
-      const rider = Array.isArray(delivery.rider) ? delivery.rider[0] : delivery.rider;
-      const { error: historyError } = await supabase
-        .from('delivery_history')
-        .insert({
-          delivery_id: id,
-          status: newStatus,
-          triggered_by,
-          note: note || getStatusNote(newStatus, { riderName: rider?.name }),
-        });
-
-      if (historyError) {
-        return NextResponse.json({ error: historyError.message }, { status: 500 });
-      }
+      const rider = Array.isArray(delivery?.rider) ? delivery?.rider[0] : delivery?.rider;
+      await supabase.from('delivery_history').insert({
+        delivery_id: id,
+        status: newStatus,
+        triggered_by,
+        note: note || getStatusNote(newStatus, { riderName: rider?.name }),
+      });
     }
 
     // Send return confirmation code to sender when package starts heading back

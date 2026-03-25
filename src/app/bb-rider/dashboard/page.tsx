@@ -421,6 +421,7 @@ export default function RiderDashboardPage() {
   const [loadingData, setLoadingData] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
+  const [updateError, setUpdateError] = useState('');
   const [completedOpen, setCompletedOpen] = useState(false);
   const [fetchError, setFetchError] = useState('');
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -502,6 +503,7 @@ export default function RiderDashboardPage() {
 
   async function handleStatusUpdate(deliveryId: string, nextStatus: DeliveryStatus) {
     setUpdatingId(deliveryId);
+    setUpdateError('');
     try {
       const res = await fetch(`/api/deliveries/${deliveryId}`, {
         method: 'PATCH',
@@ -512,12 +514,14 @@ export default function RiderDashboardPage() {
         }),
       });
 
-      if (res.ok && rider) {
-        // Refresh list after successful update
-        await fetchDeliveries(rider.id, true);
+      if (res.ok) {
+        if (rider) await fetchDeliveries(rider.id, true);
+      } else {
+        const data = await res.json().catch(() => ({}));
+        setUpdateError(data.error || `Failed to update status. Please try again.`);
       }
     } catch {
-      // silently fail, will refresh on next interval
+      setUpdateError('Network error. Check your connection and try again.');
     } finally {
       setUpdatingId(null);
     }
@@ -572,6 +576,12 @@ export default function RiderDashboardPage() {
         {fetchError && (
           <div className="p-3 bg-[rgba(135,55,55,0.12)] border border-red-500/30 rounded-lg text-[#a85858] text-sm">
             {fetchError}
+          </div>
+        )}
+        {updateError && (
+          <div className="p-3 bg-[rgba(135,55,55,0.12)] border border-red-500/30 rounded-lg text-[#a85858] text-sm flex items-center justify-between gap-3">
+            <span>{updateError}</span>
+            <button onClick={() => setUpdateError('')} className="text-[#a85858] hover:text-red-400 flex-shrink-0 text-lg leading-none">✕</button>
           </div>
         )}
 
